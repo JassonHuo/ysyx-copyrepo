@@ -1,6 +1,5 @@
 #include <nvboard.h>
 #include <Vstrlig.h>
-#include <unistd.h>
 
 static TOP_NAME dut;
 
@@ -32,6 +31,5 @@ int main()
 	{
 		nvboard_update();
 		single_cycle();
-		sleep(0.5);
 	}
 }
