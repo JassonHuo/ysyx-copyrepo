@@ -1,8 +1,8 @@
-TOPNAME = top
-NXDC_FILE = constr/top.nxdc
+TOPNAME = strlig
+NXDC_FILE = constr/strlig.nxdc
 INC_PATH ?= 
 
-include ../Makefile 
+include /home/jasonhuo/ysyx/ysyx-workbench/Makefile
 include $(NVBOARD_HOME)/scripts/nvboard.mk 
 
 
@@ -21,28 +21,27 @@ SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND) : $(NXDC_FILE)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
-CSRC = /home/jasonhuo/ysyx/ysyx-workbench/npc/csrc/nv_switch.cpp
-VSRC = /home/jasonhuo/ysyx/ysyx-workbench/npc/vsrc/top.v
-#VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-#CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cpp")
-CSRC += $(SRC_AUTO_BIND)
+#CSRC = /home/jasonhuo/ysyx/ysyx-workbench/npc/csrc/*.cpp
+#VSRC = /home/jasonhuo/ysyx/ysyx-workbench/npc/vsrc/*.v
+VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
+CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cpp")
+CSRCS += $(SRC_AUTO_BIND)
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 
-$(BIN): $(VSRC) $(CSRC) $(NVBOARD_ARCHIVE) 
+$(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE) 
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
-
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -Wall
 
 all: default
 	@echo "Write this Makefile by your self."
 
-run: $(BIN)
+run: $(BIN) 
 	@$^
 
 clean: 
@@ -53,4 +52,4 @@ sim: run
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	#@echo "Write this Makefile by your self."
 
-.PHONY: default all clean run
+.PHONY: default all clean run sim
