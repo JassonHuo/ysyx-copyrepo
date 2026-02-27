@@ -1,5 +1,6 @@
-TOPNAME = strlig
-NXDC_FILE = constr/strlig.nxdc
+TOPNAME = top
+#NXDC_FILE = constr/strlig.nxdc
+NXDC_FILE = $(shell find $(abspath ./constr) -name "*.nxdc")
 INC_PATH ?= 
 
 include /home/jasonhuo/ysyx/ysyx-workbench/Makefile
