@@ -7,7 +7,7 @@ module suber(
   wire [3: 0] nega_y;
   adder add1(
 	.x(~y),
-	.y(1),
+	.y(4'b1),
 	.z(nega_y),
 	/* verilator lint_off PINCONNECTEMPTY */
 	.cout()
