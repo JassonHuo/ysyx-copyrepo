@@ -1,12 +1,12 @@
 module top(
-  input [7: 0] x,
-  input [7: 0] y,
+  input [3: 0] x,
+  input [3: 0] y,
   input [1: 0] sel, //00 add; 01 sub; 10 and; 11 or
-  output [7: 0] z,
+  output [3: 0] z,
   output cout,
   output zf
 );
-  wire[7: 0] add, sub, _or, _and;
+  wire[3: 0] add, sub, _or, _and;
   wire cout_add, cout_sub;
   adder add_solution(
 	.x(x),
