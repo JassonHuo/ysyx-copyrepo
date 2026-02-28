@@ -1,9 +1,9 @@
 #include <nvboard.h>
 #include <Vtop.h>
 
-static Vtop dut;
+static TOP_NAME dut;
 
-void nvboard_bind_all_pins(Vtop *top);
+void nvboard_bind_all_pins(TOP_NAME *top);
 
 int main()
 {
