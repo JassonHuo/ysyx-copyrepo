@@ -1,7 +1,7 @@
 module top(
-  input x[3: 0],
-  input y[3: 0],
-  output z[3: 0],
+  input[3: 0] x,
+  input[3: 0] y,
+  output[3: 0] z, 
   output cout
 );
   wire cin;
