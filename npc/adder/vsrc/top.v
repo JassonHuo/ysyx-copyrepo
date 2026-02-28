@@ -4,11 +4,13 @@ module top(
   output z[3: 0],
   output cout
 );
+  wire cin;
+  assign cin = 0; 
   wire out0, out1, out2;
   sig_adder adder1(
 	.x(x[0]),
 	.y(y[0]),
-	.cin(0),
+	.cin(cin),
 	.z(z[0]),
 	.cout(out0)
   );
