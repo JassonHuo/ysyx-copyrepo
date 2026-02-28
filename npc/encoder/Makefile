@@ -5,7 +5,6 @@ INC_PATH ?=
 include /home/jasonhuo/ysyx/ysyx-workbench/Makefile
 include $(NVBOARD_HOME)/scripts/nvboard.mk 
 
-
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign fast \
 					--x-initial fast --noassert
