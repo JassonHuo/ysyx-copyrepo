@@ -8,6 +8,8 @@ module top(
  
   assign no_zero = (in != 8'b0);
   always@(*)begin
+	out = 0;
+	seg = 8'b11111100;
 	if(en)begin
 	  casez(in)
 		8'b1zzzzzzz: begin
@@ -48,6 +50,9 @@ module top(
 		end
 	  endcase
 	end
-	else out = 0;
+	else begin
+	  out = 0;
+	  seg = 0;
+	end
   end
 endmodule
