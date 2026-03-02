@@ -8,6 +8,7 @@ module bcd7seg(
 	  0: seg = 7'b0000001;
 	  1: seg = 7'b1001111;
 	  2: seg = 7'b0010010;
+	  3: seg = 7'b0110000;
 	  default: seg = 7'b0000001;
 	endcase
   end
