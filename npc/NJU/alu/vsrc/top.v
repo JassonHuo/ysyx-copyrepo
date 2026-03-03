@@ -36,7 +36,8 @@ module top(
 	  3'b101: z = x ^ y;
 	  3'b110: z = (x < y) ? 1: 0;
 	  3'b111: z = (x == y) ? 1: 0;
-	 default: z = 0;
+	  default: z = 0;
+
 	endcase
   end	
 
