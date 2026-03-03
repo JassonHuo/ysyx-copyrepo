@@ -8,7 +8,7 @@ module add_suber(
 );
 
   wire [3: 0] y1;
-  assign y1 = y ^ {4{cin}} + cin;
+  assign y1 = (y ^ {4{cin}}) + cin;
   assign {cout, z} = y1 + x;
 
   assign overflow = (x[3] == y1[3]) && (z[3] != x[3]); 
