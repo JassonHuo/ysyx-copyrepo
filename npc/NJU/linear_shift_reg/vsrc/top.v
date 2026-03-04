@@ -1,6 +1,7 @@
 module top(
   input rst,
   input clk,
+  input stop,
   output [6: 0] bcd_low,
   output [6: 0] bcd_high,
   output [7: 0] out
@@ -15,6 +16,7 @@ module top(
 	  cycle_num <= 0;
 	end
 	else begin
+	  if(stop == 0)begin
 	  if(tmp == 8'b0) 
 		tmp <= 8'b1;
 	  else 
@@ -22,7 +24,7 @@ module top(
 		  tmp <= {(tmp[4] ^ tmp[3] ^ tmp[2] ^ tmp[0]), tmp[7: 1]}; 
 		  cycle_num <= cycle_num + 1;
 		end
-		
+	  end	
 	end	  
   end
   assign out = tmp;
