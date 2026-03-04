@@ -31,10 +31,11 @@ int main(int argc, char** argv)
   {
 	int in = rand() & 1;
 	top->in = in;
+	printf("%d\t%d\t%d\t%d\t%d\n", in, top->out1, top->out2, top->out3, top->out4);
 	top->clk = !top->clk;
 	top->eval();
-
-	printf("%d\t%d\t%d\t%d\t%d\n", in, top->out1, top->out2, top->out3, top->out4);
+	top->clk = !top->clk;
+	top->eval();
 	contextp->timeInc(1);
 	tfp->dump(contextp->time());
 

@@ -5,7 +5,7 @@ module top(
   output out1,
   output out2, 
   output out3,
-  output out3
+  output out4
 );
 
   reg q1, q2, q3, q4;
