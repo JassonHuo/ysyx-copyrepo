@@ -21,7 +21,7 @@ int main()
   dut.rst = 1;
   one_cycle();
   dut.rst = 0;
-  int counter;
+  int counter = 0;
   int up = 0;
   while (1)
   {
