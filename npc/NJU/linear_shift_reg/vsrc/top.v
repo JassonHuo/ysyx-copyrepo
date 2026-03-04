@@ -13,13 +13,13 @@ module top(
   always@(posedge clk)begin
 	if(counter == 0)begin
 	if(rst)begin
-	  tmp <= 8'b1;
+	  tmp <= 8'b01110100;
 	  cycle_num <= 0;
 	  counter <= 0;
 	end
 	else begin
 	  if(tmp == 8'b0) 
-		tmp <= 8'b1;
+		tmp <= 8'b01110100;
 	  else 
 		if(cycle_num <= 255)begin
 		  tmp <= {(tmp[4] ^ tmp[3] ^ tmp[2] ^ tmp[0]), tmp[7: 1]}; 
