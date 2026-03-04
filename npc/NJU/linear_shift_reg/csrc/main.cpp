@@ -26,7 +26,6 @@ int main()
   int up = 0;
   while (1)
   {
-	printf("%d\n", counter);
 	if(dut.rst) 
 	{
 	  up = 0;
@@ -34,7 +33,7 @@ int main()
 	}
 	nvboard_update();
 	if(counter >= 255) continue;
-	up = (up >= 10000) ? 0: up + 1;
+	up = (up >= 100000) ? 0: up + 1;
 	if(up != 0) continue;
 	one_cycle();
 	counter += 1;
