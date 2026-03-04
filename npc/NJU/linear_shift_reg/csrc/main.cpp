@@ -26,7 +26,7 @@ int main()
   int up = 0;
   while (1)
   {
-	printf("");
+	printf("\n");
 	if(dut.rst) 
 	{
 	  up = 0;
