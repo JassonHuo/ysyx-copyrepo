@@ -24,6 +24,7 @@ int main()
   dut.rst = 0;
   for(int i = 0; i < 255; i ++)
   {
+	printf("\n");
 	nvboard_update();
 	one_cycle();
   }
