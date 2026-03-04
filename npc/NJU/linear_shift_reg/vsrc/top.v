@@ -2,7 +2,6 @@ module top(
   input rst,
   input clk,
   output [6: 0] bcd_low,
-  output [6: 0] bcd_mid,
   output [6: 0] bcd_high,
   output [7: 0] out
 );
@@ -22,7 +21,6 @@ module top(
   code_bcd bcd1(
 	.in(tmp),
 	.bcd_low(bcd_low),
-	.bcd_mid(bcd_mid),
 	.bcd_high(bcd_high)
   );
 

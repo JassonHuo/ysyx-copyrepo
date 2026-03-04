@@ -1,12 +1,11 @@
 module code_bcd(
   input [7: 0] in,
   output reg [6: 0] bcd_low,
-  output reg [6: 0] bcd_mid,
   output reg [6: 0] bcd_high
 );
 
   always@(*)begin
-	case(in % 10)
+	case(in[3: 0])
 	  0: bcd_low = 7'b0000001;
 	  1: bcd_low = 7'b1001111;
 	  2: bcd_low = 7'b0010010;
@@ -17,22 +16,15 @@ module code_bcd(
 	  7: bcd_low = 7'b0001111;
 	  8: bcd_low = 7'b0000000;
 	  9: bcd_low = 7'b0000100;
+	  10: bcd_low = 7'b0001000;
+	  11: bcd_low = 7'b1100000;
+	  12: bcd_low = 7'b0110001;
+	  13: bcd_low = 7'b1000010;
+	  14: bcd_low = 7'b0110000;
+	  15: bcd_low = 7'b0111000;
 	  default: bcd_low = 7'b0000001;
 	endcase
-	case((in / 10)% 10)
-	  0: bcd_mid = 7'b0000001;
-	  1: bcd_mid = 7'b1001111;
-	  2: bcd_mid = 7'b0010010;
-	  3: bcd_mid = 7'b0000110;
-	  4: bcd_mid = 7'b1001100;
-	  5: bcd_mid = 7'b0100100;
-	  6: bcd_mid = 7'b0100000;
-	  7: bcd_mid = 7'b0001111;
-	  8: bcd_mid = 7'b0000000;
-	  9: bcd_mid = 7'b0000100;
-	  default: bcd_mid = 7'b0000001;
-	endcase
-	case(in / 100)
+	case(in[7: 4])
 	  0: bcd_high = 7'b0000001;
 	  1: bcd_high = 7'b1001111;
 	  2: bcd_high = 7'b0010010;
@@ -43,6 +35,13 @@ module code_bcd(
 	  7: bcd_high = 7'b0001111;
 	  8: bcd_high = 7'b0000000;
 	  9: bcd_high = 7'b0000100;
+	  10: bcd_low = 7'b0001000;
+	  11: bcd_low = 7'b1100000;
+	  12: bcd_low = 7'b0110001;
+	  13: bcd_low = 7'b1000010;
+	  14: bcd_low = 7'b0110000;
+	  15: bcd_low = 7'b0111000;
+
 	  default: bcd_high = 7'b0000001;
 	endcase
 
