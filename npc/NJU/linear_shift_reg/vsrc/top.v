@@ -14,7 +14,7 @@ module top(
 	  if(tmp == 8'b0) 
 		tmp <= 8'b1;
 	  else 
-		tmp <= {(tmp[7] ^ tmp[5] ^ tmp[4] ^ tmp[3]), tmp[7: 1]}; 
+		tmp <= {(tmp[4] ^ tmp[3] ^ tmp[2] ^ tmp[0]), tmp[7: 1]}; 
 	end	  
   end
   assign out = tmp;
