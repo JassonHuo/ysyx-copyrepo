@@ -22,9 +22,14 @@ int main()
   one_cycle();
   dut.rst = 0;
   int counter;
-  int up;
+  int up = 0;
   while (1)
   {
+	if(dut.rst) 
+	{
+	  up = 0;
+	  counter = 0;
+	}
 	nvboard_update();
 	if(counter >= 255) continue;
 	up = (up >= 5000) ? 0: up + 1;
