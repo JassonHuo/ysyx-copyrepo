@@ -25,10 +25,11 @@ int main()
   int counter = 0;
   while (1)
   {
+	nvboard_update();
 	if(counter >= 255) continue;
 	printf("%d\n", counter);
-	nvboard_update();
 	one_cycle();
+	counter += 1;
   }
   return 0;
 }
