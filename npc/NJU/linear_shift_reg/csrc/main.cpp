@@ -22,8 +22,11 @@ int main()
   dut.rst = 1;
   one_cycle();
   dut.rst = 0;
+  int counter = 0;
   while (1)
   {
+	if(counter >= 255) continue;
+	printf("%d\n", counter);
 	nvboard_update();
 	one_cycle();
   }
