@@ -12,6 +12,7 @@ void one_cycle()
 {
 	dut.clk = 0;
 	dut.eval();
+	std::cout << "here\n" <<std::endl;
 	dut.clk = 0;
 	dut.eval();
 }
@@ -32,7 +33,6 @@ int main()
 
 	while(1)
 	{
-		std::cout << "here" << std::endl;
 		nvboard_update();
 		one_cycle();
 		std::cout << dut.tmp;
