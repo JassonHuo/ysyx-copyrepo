@@ -26,7 +26,6 @@ module ex(
 	raddr2 = 0;
 	pc_en = 0;
 	pc_addr_out = 0;
-	out_num = 0;
 	case(opcode)
 	  2'b00: begin
 		wen = 1;
@@ -34,11 +33,13 @@ module ex(
 		raddr1 = rs1;
 		raddr2 = rs2;
 		waddr = rd;
+		out_num = 0;
 	  end
 	  2'b10: begin
 		wen = 1;
 		waddr = rd;
 		wdata = {{4{1'b0}}, imm};	
+		out_num = 0;
 	  end	
 	  2'b11: begin
 		wen = 0;
@@ -48,6 +49,7 @@ module ex(
 		  pc_en = 1;
 		  pc_addr_out = addr;
 		end
+		out_num = 0;
 	  end
 	  2'b01: begin
 		out_num = reg2;
@@ -60,6 +62,7 @@ module ex(
    		raddr2 = 0;
    		pc_en = 0;
    		pc_addr_out = 0;
+		out_num = 0;
 	  end
 	endcase
   end
