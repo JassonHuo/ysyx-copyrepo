@@ -12,7 +12,7 @@ void one_cycle()
 {
 	dut.clk = 0;
 	dut.eval();
-	dut.clk = 0;
+	dut.clk = 1;
 	dut.eval();
 //	std::cout << dut.tmp <<std::endl;
 }
@@ -35,7 +35,7 @@ int main()
 	{
 		nvboard_update();
 		one_cycle();
-		std::cout << dut.tmp << std::endl;
+//		std::cout << dut.tmp << std::endl;
 	}
 	return 0;
 }
