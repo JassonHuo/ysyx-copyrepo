@@ -1,6 +1,7 @@
 module top(
   input clk,
-  input rst
+  input rst,
+  output [7: 0] tmp
 );
 
 //  wire [3: 0] pc;
@@ -81,7 +82,8 @@ module top(
 	.waddr(waddr),
 	.wdata(wdata),
 	.wen(wen),
-	.clk(clk)
+	.clk(clk),
+	.tmp(tmp)
   );
 
 endmodule

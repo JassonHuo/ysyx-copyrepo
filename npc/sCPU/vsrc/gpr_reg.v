@@ -6,7 +6,8 @@ module gpr_reg(
   input [1: 0] waddr,
   input [7: 0] wdata,
   input wen,
-  input clk
+  input clk,
+  output [7: 0] tmp
 );
 
   reg [7: 0] gpr [0: 3];
@@ -17,5 +18,7 @@ module gpr_reg(
   
   assign rdata1_out = gpr[raddr1_in];
   assign rdata2_out = gpr[raddr2_in];
+
+  assign tmp = gpr[2];
 
 endmodule
