@@ -35,7 +35,7 @@ int main()
 	{
 		nvboard_update();
 		one_cycle();
-//		std::cout << dut.tmp << std::endl;
+		std::cout << dut.tmp << std::endl;
 	}
 	return 0;
 }
