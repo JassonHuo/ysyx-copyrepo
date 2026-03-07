@@ -3,7 +3,8 @@ module pc_reg(
   input rst,
   input pc_en,
   input [3: 0] pc_addr_in,
-  output reg [3: 0] pc_out
+  output reg [3: 0] pc_out,
+  output [3: 0] tmp
 );
 
   always@(posedge clk)begin
@@ -14,5 +15,7 @@ module pc_reg(
 	else
 	  pc_out <= pc_out + 1;
   end
+
+  assign tmp = pc_out;
 
 endmodule

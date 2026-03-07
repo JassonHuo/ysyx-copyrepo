@@ -1,7 +1,7 @@
 module top(
   input clk,
   input rst,
-  output [7: 0] tmp
+  output [3: 0] tmp
 );
 
 //  wire [3: 0] pc;
@@ -31,7 +31,8 @@ module top(
 	.rst(rst),
 	.pc_en(pc_en),
 	.pc_addr_in(pc_addr),
-	.pc_out(pc_out)
+	.pc_out(pc_out),
+	.tmp(tmp)
   );
 
   inst_fetch ifet(
@@ -82,8 +83,8 @@ module top(
 	.waddr(waddr),
 	.wdata(wdata),
 	.wen(wen),
-	.clk(clk),
-	.tmp(tmp)
+	.clk(clk)
+//	.tmp(tmp)
   );
 
 endmodule
