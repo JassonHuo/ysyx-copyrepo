@@ -1,7 +1,6 @@
 module top(
   input clk,
   input rst,
-  output [3: 0] tmp,
   output [6: 0] seg0,
   output [6: 0] seg1,
   output [7: 0] _reg0,
@@ -42,8 +41,7 @@ module top(
 	.rst(rst),
 	.pc_en(pc_en),
 	.pc_addr_in(pc_addr),
-	.pc_out(pc_out),
-	.tmp(tmp)
+	.pc_out(pc_out)
   );
 
   inst_fetch ifet(
@@ -99,7 +97,6 @@ module top(
 	.reg1(reg1),
 	.reg2(reg2),
 	.reg3(reg3)
-//	.tmp(tmp)
   );
 
   bcd bcd0(
