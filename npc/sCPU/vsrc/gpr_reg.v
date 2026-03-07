@@ -18,5 +18,4 @@ module gpr_reg(
   assign rdata1_out = gpr[raddr1_in];
   assign rdata2_out = gpr[raddr2_in];
 
-
 endmodule

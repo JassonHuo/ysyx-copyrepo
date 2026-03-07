@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <nvboard.h>
 #include <Vtop.h>
+#include <iostream>
 
 static TOP_NAME dut;
 
