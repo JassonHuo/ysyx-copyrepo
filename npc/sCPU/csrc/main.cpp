@@ -14,7 +14,8 @@ void one_cycle()
 	dut.eval();
 	dut.clk = 1;
 	dut.eval();
-	printf("%d\n", dut.tmp);
+//	printf("%d\n", dut.tmp);
+	std::cout << dut.tmp << "\n";
 }
 
 void init_n(int n)
