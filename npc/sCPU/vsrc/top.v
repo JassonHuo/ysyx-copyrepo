@@ -35,6 +35,7 @@ module top(
   wire [7: 0] reg1;
   wire [7: 0] reg2;
   wire [7: 0] reg3;
+  wire [7: 0] num;
 
   pc_reg pc0(
 	.clk(clk),
@@ -81,7 +82,9 @@ module top(
 	.raddr1(raddr1),
 	.raddr2(raddr2),
 	.pc_en(pc_en),
-	.pc_addr_out(pc_addr)
+	.pc_addr_out(pc_addr),
+	.reg2(reg2),
+	.out_num(num)
   );
 
   gpr_reg gpr0(
@@ -100,12 +103,12 @@ module top(
   );
 
   bcd bcd0(
-	.data(reg2[3: 0]),
+	.data(num[3: 0]),
 	.out(seg0)
   );
 
   bcd bcd1(
-	.data(reg2[7: 4]),
+	.data(num[7: 4]),
 	.out(seg1)
   );
 
