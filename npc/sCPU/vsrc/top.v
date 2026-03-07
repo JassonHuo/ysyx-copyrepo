@@ -1,7 +1,13 @@
 module top(
   input clk,
   input rst,
-  output [3: 0] tmp
+  output [3: 0] tmp,
+  output [6: 0] seg0,
+  output [6: 0] seg1,
+  output [7: 0] _reg0,
+  output [7: 0] _reg1,
+  output [7: 0] _reg2,
+  output [7: 0] _reg3
 );
 
 //  wire [3: 0] pc;
@@ -25,6 +31,11 @@ module top(
   wire [1: 0] waddr;
   wire [1: 0] raddr1;
   wire [1: 0] raddr2;
+
+  wire [7: 0] reg0;
+  wire [7: 0] reg1;
+  wire [7: 0] reg2;
+  wire [7: 0] reg3;
 
   pc_reg pc0(
 	.clk(clk),
@@ -83,8 +94,30 @@ module top(
 	.waddr(waddr),
 	.wdata(wdata),
 	.wen(wen),
-	.clk(clk)
+	.clk(clk),
+	.reg0(reg0),
+	.reg1(reg1),
+	.reg2(reg2),
+	.reg3(reg3)
 //	.tmp(tmp)
   );
+
+  bcd bcd0(
+	.data(reg2[3: 0]),
+	.out(seg0)
+  );
+
+  bcd bcd1(
+	.data(reg2[7: 4]),
+	.out(seg1)
+  );
+
+  assign _reg0 = reg0;
+
+  assign _reg1 = reg1;
+
+  assign _reg2 = reg2;
+
+  assign _reg3 = reg3;
 
 endmodule
