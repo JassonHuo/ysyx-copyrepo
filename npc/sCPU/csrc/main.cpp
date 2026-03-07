@@ -30,10 +30,14 @@ int main()
 	
 	init_n(10);
 
-	while(1)
+	for(int i = 0; i < 7; i ++)
 	{
 		nvboard_update();
 		one_cycle();
+	}
+	while(1)
+	{
+		nvboard_update();
 	}
 	return 0;
 }

@@ -12,7 +12,7 @@ module rom(
 	rom_reg[4] = 8'b00010111;
 	rom_reg[5] = 8'b00101001;
 	rom_reg[6] = 8'b11010001;
-	rom_reg[7] = 8'b11011111;
+	rom_reg[7] = 8'b01000000;
   end
   assign inst_code_out = rom_reg[inst_addr_in];
 
