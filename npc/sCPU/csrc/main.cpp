@@ -32,6 +32,7 @@ int main()
 
 	while(1)
 	{
+		std::cout << "here" << std::endl;
 		nvboard_update();
 		one_cycle();
 		std::cout << dut.tmp;
