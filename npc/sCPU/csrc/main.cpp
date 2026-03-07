@@ -30,7 +30,7 @@ int main()
 	
 	init_n(10);
 
-	for(int i = 0; i < 7; i ++)
+	for(int i = 0; i < 8; i ++)
 	{
 		nvboard_update();
 		one_cycle();
