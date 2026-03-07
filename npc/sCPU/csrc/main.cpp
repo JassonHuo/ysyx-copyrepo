@@ -12,9 +12,9 @@ void one_cycle()
 {
 	dut.clk = 0;
 	dut.eval();
-	std::cout << "here\n" <<std::endl;
 	dut.clk = 0;
 	dut.eval();
+	std::cout << "here\n" <<std::endl;
 }
 
 void init_n(int n)
