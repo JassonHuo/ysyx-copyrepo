@@ -14,7 +14,7 @@ void one_cycle()
 	dut.eval();
 	dut.clk = 1;
 	dut.eval();
-//	std::cout << dut.tmp <<std::endl;
+	std::cout << dut.tmp <<std::endl;
 }
 
 void init_n(int n)
@@ -35,7 +35,6 @@ int main()
 	{
 		nvboard_update();
 		one_cycle();
-		std::cout << dut.tmp << std::endl;
 	}
 	return 0;
 }
