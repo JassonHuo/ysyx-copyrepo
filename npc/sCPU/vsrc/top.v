@@ -1,11 +1,17 @@
 module top(
   input clk,
-  input rst
+  input rst,
+  output [6: 0] seg0,
+  output [6: 0] seg1,
+  output [7: 0] _reg0,
+  output [7: 0] _reg1,
+  output [7: 0] _reg2,
+  output [7: 0] _reg3
 );
 
-  wire [3: 0] pc;
+//  wire [3: 0] pc;
   wire pc_en;
-  wire reg_wen;
+//  wire reg_wen;
   wire [3: 0] pc_addr;
   wire [3: 0] pc_out;
   wire [3: 0] rom_addr;
@@ -25,6 +31,12 @@ module top(
   wire [1: 0] raddr1;
   wire [1: 0] raddr2;
 
+  wire [7: 0] reg0;
+  wire [7: 0] reg1;
+  wire [7: 0] reg2;
+  wire [7: 0] reg3;
+  wire [7: 0] num;
+
   pc_reg pc0(
 	.clk(clk),
 	.rst(rst),
@@ -34,7 +46,7 @@ module top(
   );
 
   inst_fetch ifet(
-	.pc_in(pc),
+	.pc_in(pc_out),
 	.rom_addr_out(rom_addr),
 	.rom_in(rom_code),
 	.inst_out(inst_code)
@@ -70,10 +82,12 @@ module top(
 	.raddr1(raddr1),
 	.raddr2(raddr2),
 	.pc_en(pc_en),
-	.pc_addr_out(pc_addr)
+	.pc_addr_out(pc_addr),
+	.reg2(reg2),
+	.out_num(num)
   );
 
-  gpr_reg gpr(
+  gpr_reg gpr0(
 	.raddr1_in(raddr1),
 	.raddr2_in(raddr2),
 	.rdata1_out(rdata_in1),
@@ -81,7 +95,29 @@ module top(
 	.waddr(waddr),
 	.wdata(wdata),
 	.wen(wen),
-	.clk(clk)
+	.clk(clk),
+	.reg0(reg0),
+	.reg1(reg1),
+	.reg2(reg2),
+	.reg3(reg3)
   );
+
+  bcd bcd0(
+	.data(num[3: 0]),
+	.out(seg0)
+  );
+
+  bcd bcd1(
+	.data(num[7: 4]),
+	.out(seg1)
+  );
+
+  assign _reg0 = reg0;
+
+  assign _reg1 = reg1;
+
+  assign _reg2 = reg2;
+
+  assign _reg3 = reg3;
 
 endmodule

@@ -13,7 +13,9 @@ module ex(
   output reg [1: 0] raddr1,
   output reg [1: 0] raddr2,
   output reg pc_en,
-  output reg [3: 0] pc_addr_out
+  output reg [3: 0] pc_addr_out,
+  input [7: 0] reg2,
+  output [7: 0] out_num
 );
 
   always@(*)begin
@@ -24,7 +26,6 @@ module ex(
 	raddr2 = 0;
 	pc_en = 0;
 	pc_addr_out = 0;
-
 	case(opcode)
 	  2'b00: begin
 		wen = 1;
@@ -32,11 +33,13 @@ module ex(
 		raddr1 = rs1;
 		raddr2 = rs2;
 		waddr = rd;
+		out_num = 0;
 	  end
 	  2'b10: begin
 		wen = 1;
 		waddr = rd;
 		wdata = {{4{1'b0}}, imm};	
+		out_num = 0;
 	  end	
 	  2'b11: begin
 		wen = 0;
@@ -46,6 +49,10 @@ module ex(
 		  pc_en = 1;
 		  pc_addr_out = addr;
 		end
+		out_num = 0;
+	  end
+	  2'b01: begin
+		out_num = reg2;
 	  end
 	  default:begin
 		wen = 0;
@@ -55,6 +62,7 @@ module ex(
    		raddr2 = 0;
    		pc_en = 0;
    		pc_addr_out = 0;
+		out_num = 0;
 	  end
 	endcase
   end

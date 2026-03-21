@@ -7,6 +7,7 @@ module pc_reg(
 );
 
   always@(posedge clk)begin
+	if(pc_out == 7) pc_out <= 7;
 	if(rst)
 	  pc_out <= 0;
 	else if(pc_en == 1)
