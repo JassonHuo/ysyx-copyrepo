@@ -66,7 +66,8 @@ module top(
 		nextdata_n <= 1'b0;
 		reading <= 1'b1;
 		case(data)
-		  8'h15: result <= "Q";
+//		  8'h15: result <= "Q";
+		  8'h15: result <= 8'h88;
 		  8'h1d: result <= "W";
 		  8'h24: result <= "E";
 		  8'h2d: result <= "R";
