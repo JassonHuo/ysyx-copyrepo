@@ -31,7 +31,7 @@ int main()
 	data = dut.data_out;
 	if(data!= last_data)
 	{
-	  printf("%x\n", data);
+	  printf("%d\n", data);
 	}
   }
   return 0;
