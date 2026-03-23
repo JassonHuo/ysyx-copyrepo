@@ -53,9 +53,8 @@ module top(
   assign data_out = data;
   
   always@(posedge clk)begin
-	result <= 8'h88;
 	data <= (data_in == 8'hf0 ? data: data_in);
-	if(~rst)begin
+	if(rst)begin
 	  reading <= 1'b0;
 	  nextdata_n <= 1'b1;
 	  result <= 8'b0;
