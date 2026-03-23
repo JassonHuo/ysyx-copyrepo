@@ -25,6 +25,7 @@ int main()
   {
 	nvboard_update();
 	one_cycle();
+	printf("%d\b", dut.data_out);
   }
   return 0;
 }

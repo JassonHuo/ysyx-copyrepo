@@ -5,12 +5,15 @@ module top(
   input rst,
   output overflow,
   output [6: 0] seg0,
-  output [6: 0] seg1
+  output [6: 0] seg1,
+  output [7: 0] data_out
 );
 
   reg nextdata_n;
   wire [7: 0] data;
   wire ready;
+
+  assign data_out = data;
 
   ps2_keyboard pkbd(
 	.clk(clk),
