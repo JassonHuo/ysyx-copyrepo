@@ -8,14 +8,11 @@ module top(
   output [6: 0] seg1,
   output [6: 0] seg2,
   output [6: 0] seg3,
-  output reg [7: 0] data_out,
-  output ready_debug,
-  output reading_debug 
+  output reg [7: 0] data_out
 );
 
   reg nextdata_n;
-  wire [7: 0] data_in;
-  reg [7: 0] data;
+  wire [7: 0] data;
   wire ready;
 
   ps2_keyboard pkbd(
@@ -24,7 +21,7 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data({data_in[0], data_in[1], data_in[2], data_in[3], data_in[4], data_in[5], data_in[6], data_in[7]}),
+	.data({data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]}),
 	.ready(ready),
 	.overflow(overflow)
   );
@@ -47,13 +44,10 @@ module top(
   reg [7: 0] result;
   reg reading;
 
-  assign ready_debug = ready;
-  assign reading_debug = reading;
 
-  assign data_out = data;
+  assign data_out = result;
   
   always@(posedge clk)begin
-	data <= (data_in == 8'hf0 ? data: data_in);
 	if(rst)begin
 	  reading <= 1'b0;
 	  nextdata_n <= 1'b1;
