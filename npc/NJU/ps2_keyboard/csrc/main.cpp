@@ -29,7 +29,7 @@ int main()
 	last_data = data;
 	data = dut.data_out;
 	if(data!= last_data)
-	  printf("%x\n", data);
+	  printf("%x%x\n", data/16, data % 16);
   }
   return 0;
 }
