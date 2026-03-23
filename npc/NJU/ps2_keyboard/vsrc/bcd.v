@@ -1,6 +1,7 @@
 module bcd(
   input [7: 0] data,
   input clk,
+  input down,
   output reg [6: 0] bcd_low,
   output reg [6: 0] bcd_high
 );
@@ -9,6 +10,10 @@ module bcd(
   assign data_rev = {data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]};
   
   always@(posedge clk)begin
+	if(down)begin
+	  bcd_low <= 7'b1111111;
+	  bcd_high <= 7'b1111111;
+	end
 	case(data_rev[3: 0])
 	  0: bcd_low <= 7'b0000001;
 	  1: bcd_low <= 7'b1001111;

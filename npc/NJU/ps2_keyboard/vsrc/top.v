@@ -16,6 +16,9 @@ module top(
   wire ready;
   reg [7: 0] data;
 
+  reg [15: 0] counter;
+  reg down;
+
   ps2_keyboard pkbd(
 	.clk(clk),
 	.clrn(~rst),
@@ -31,14 +34,16 @@ module top(
 	.data({result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]}),
 	.clk(clk),
 	.bcd_low(seg0),
-	.bcd_high(seg1)
+	.bcd_high(seg1),
+	.down(down)
   );
 
   bcd bcd1(
 	.data({data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]}),
 	.clk(clk),
 	.bcd_low(seg2),
-	.bcd_high(seg3)
+	.bcd_high(seg3),
+	.down(down)
   );
 
 
@@ -50,15 +55,19 @@ module top(
   always@(posedge clk)begin
 	if(data_in != 8'hf0)
 	  data <= data_in;
+	else
+	  counter <= counter + 1;
   end
   
   always@(posedge clk)begin
 	if(rst)begin
 	  nextdata_n <= 1'b1;
+	  counter <= 0;
 	end
 	else begin
 	  nextdata_n <= 1'b1;
 	  if(ready == 1)begin
+		down <= 0;
 		nextdata_n <= ~ready;
 		case(data)
 		  8'h15: result <= "Q";
@@ -103,6 +112,8 @@ module top(
 		  end
 		endcase
 	  end
+	  else 
+		down <= 1;
 	end
   end
 endmodule
