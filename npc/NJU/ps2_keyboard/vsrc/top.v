@@ -22,7 +22,7 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data),
+	.data({data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]}),
 	.ready(ready),
 	.overflow(overflow)
   );
