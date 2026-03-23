@@ -59,7 +59,7 @@ module top(
   );
 
   bcd bcd3(
-	.data({counter[7], counter[6], counter[5], counter[4], counter[3], counter[2], counter[1], counter[0]}),
+	.data({counter[0], counter[1], counter[2], counter[3], counter[4], counter[5], counter[6], counter[7]}),
 	.clk(clk),
 	.bcd_low(seg6),
 	.bcd_high(seg7),
