@@ -6,6 +6,8 @@ module top(
   output overflow,
   output [6: 0] seg0,
   output [6: 0] seg1,
+  output [6: 0] seg2,
+  output [6: 0] seg3,
   output reg [7: 0] data_out
 );
 
@@ -30,6 +32,13 @@ module top(
 	.clk(clk),
 	.bcd_low(seg0),
 	.bcd_high(seg1)
+  );
+
+  bcd bcd1(
+	.data(data),
+	.clk(clk),
+	.bcd_low(seg2),
+	.bcd_high(seg3)
   );
 
 
