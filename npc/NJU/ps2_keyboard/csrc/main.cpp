@@ -22,17 +22,26 @@ int main()
   one_cycle();
   dut.rst = 1;
   int data, last_data;
+  int reading, reading_last, ready, ready_last;
+  data = 0;
+  reading = 0;
+  ready = 0;
   while(1)
   {
 	nvboard_update();
 	one_cycle();
 	last_data = data;
+	reading_last = reading;
+	ready_last = ready;
+	ready = dut.ready_debug;
+	reading = dut.reading_debug;
 	data = dut.data_out;
 	if(data!= last_data)
 	{
 	  printf("%x\n", data);
-	  printf("reading: %b, ready: %b\n", dut.reading_debug, dut.ready_debug);
 	}
+	if(reading != reading_last || ready != ready_last)
+	  printf("reading: %d, ready: %d\n", reading, ready);
 	
   }
   return 0;
