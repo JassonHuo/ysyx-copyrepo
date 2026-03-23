@@ -57,7 +57,6 @@ module top(
 	  if(ready == 1 && reading == 0)begin
 		nextdata_n <= 1'b0;
 		reading <= 1'b1;
-		$display("%d\n", result);
 		case(data)
 		  8'h15: result <= "Q";
 		  8'h1d: result <= "W";
