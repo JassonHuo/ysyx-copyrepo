@@ -51,7 +51,6 @@ module top(
 	if(rst)begin
 	  reading <= 1'b0;
 	  nextdata_n <= 1'b1;
-	  result <= 8'b0;
 	end
 	else begin
 	  nextdata_n <= 1'b1;
@@ -86,9 +85,7 @@ module top(
 	  end
 	  else begin
 		reading <= 1'b0;
-		result <= result;
 	  end
 	end
   end
-
 endmodule
