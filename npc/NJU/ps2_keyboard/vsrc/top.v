@@ -45,7 +45,7 @@ module top(
 	end
 	else begin
 	    nextdata_n <= 1'b1;
-	  if(ready == 1 && reading == 1)begin
+	  if(ready == 1 && reading == 0)begin
 		nextdata_n <= 1'b0;
 		reading <= 1'b1;
 		case(data)
