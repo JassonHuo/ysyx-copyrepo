@@ -8,27 +8,72 @@ module top(
   output [6: 0] seg1
 );
 
-//  wire nextdata_n, ready;
+  reg nextdata_n;
   wire [7: 0] data;
-  ps2_keyboard kb1(
+  wire ready;
+
+  ps2_keyboard pkbd(
 	.clk(clk),
-	.clrn(rst),
+	.clrn(~rst),
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
-	.ready(),
-	.nextdata_n(1),
-	.overflow(overflow),
-	.data(data)
+	.nextdata_n(nextdata_n),
+	.data(data),
+	.ready(ready),
+	.overflow(overflow)
   );
 
-  bcd bcd1(
+  bcd bcd0(
+	.data(result),
 	.clk(clk),
-	.rst(rst),
-	.data(data),
 	.bcd_low(seg0),
 	.bcd_high(seg1)
   );
 
-    
+
+  reg [7: 0] result;
+  reg reading;
+  
+  always@(posedge clk)begin
+	if(~rst)begin
+	  reading <= 1'b0;
+	  nextdata_n <= 1'b1;
+	  result <= 8'b0;
+	end
+	else begin
+	    nextdata_n <= 1'b1;
+	  if(ready == 1 && reading == 1)begin
+		nextdata_n <= 1'b0;
+		reading <= 1'b1;
+		case(data)
+		  8'h15: result <= "Q";
+		  8'h1d: result <= "W";
+		  8'h24: result <= "E";
+		  8'h2d: result <= "R";
+		  8'h2c: result <= "T";
+		  8'h35: result <= "Y";
+		  8'h3c: result <= "U";
+		  8'h43: result <= "I";
+		  8'h44: result <= "O";
+		  8'h4d: result <= "P";
+		  8'h1c: result <= "A";
+		  8'h1b: result <= "S";
+		  8'h23: result <= "D";
+		  8'h2b: result <= "F";
+		  8'h34: result <= "G";
+		  8'h33: result <= "H";
+		  8'h3b: result <= "J";
+		  8'h42: result <= "K";
+		  default:begin
+			result <= 8'b0;
+		  end
+		endcase
+	  end
+	  else begin
+		result <= 8'b0;
+		reading <= 1'b0;
+	  end
+	end
+  end
 
 endmodule

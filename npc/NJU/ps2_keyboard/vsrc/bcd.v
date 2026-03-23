@@ -1,6 +1,5 @@
 module bcd(
   input [7: 0] data,
-  input rst,
   input clk,
   output reg [6: 0] bcd_low,
   output reg [6: 0] bcd_high

@@ -11,8 +11,5 @@
 !.gitignore
 !init.sh
 /fceux-am
-<<<<<<< HEAD
 /nvboard
-=======
 /am-kernels
->>>>>>> pa1
