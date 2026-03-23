@@ -66,6 +66,7 @@ module top(
 		  8'h42: result <= "K";
 		  default:begin
 			result <= 8'b0;
+			reading <= 1'b0;
 		  end
 		endcase
 	  end
