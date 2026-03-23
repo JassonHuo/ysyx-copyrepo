@@ -49,7 +49,7 @@ module top(
   assign data_out = result;
 
   always@(posedge clk)begin
-	if(data_in != 8'h0f)
+	if(data_in != 8'hf0)
 	  data <= data_in;
   end
   
