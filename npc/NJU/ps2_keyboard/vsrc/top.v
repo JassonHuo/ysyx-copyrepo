@@ -8,6 +8,10 @@ module top(
   output [6: 0] seg1,
   output [6: 0] seg2,
   output [6: 0] seg3,
+  output [6: 0] seg4,
+  output [6: 0] seg5,
+  output [6: 0] seg6,
+  output [6: 0] seg7,
   output reg [7: 0] data_out
 );
 
@@ -44,6 +48,22 @@ module top(
 	.bcd_low(seg2),
 	.bcd_high(seg3),
 	.down(down)
+  );
+
+  bcd bcd2(
+	.data(counter[15: 8]),
+	.clk(clk),
+	.bcd_low(seg4),
+	.bcd_high(seg5),
+	.down(0)
+  );
+
+  bcd bcd3(
+	.data(counter[7: 0]),
+	.clk(clk),
+	.bcd_low(seg6),
+	.bcd_high(seg7),
+	.down(0)
   );
 
 
