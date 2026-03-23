@@ -14,6 +14,7 @@ module bcd(
 	  bcd_low <= 7'b1111111;
 	  bcd_high <= 7'b1111111;
 	end
+	else begin
 	case(data_rev[3: 0])
 	  0: bcd_low <= 7'b0000001;
 	  1: bcd_low <= 7'b1001111;
@@ -52,7 +53,7 @@ module bcd(
 	  15: bcd_high <= 7'b0111000;
 	  default: bcd_high <= 7'b0000001;
 	endcase
-
+  end
   end
 
 endmodule
