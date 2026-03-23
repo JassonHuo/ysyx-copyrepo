@@ -36,7 +36,7 @@ module top(
   reg [7: 0] result;
   reg reading;
 
-  assign data_out = result;
+  assign data_out = data;
   
   always@(posedge clk)begin
 	if(~rst)begin
