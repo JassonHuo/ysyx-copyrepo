@@ -70,7 +70,6 @@ module top(
 		endcase
 	  end
 	  else begin
-		result <= 8'b0;
 		reading <= 1'b0;
 	  end
 	end
