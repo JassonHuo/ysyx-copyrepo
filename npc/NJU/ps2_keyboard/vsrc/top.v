@@ -21,7 +21,7 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data({data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]}),
+	.data(data),
 	.ready(ready),
 	.overflow(overflow)
   );
@@ -34,7 +34,7 @@ module top(
   );
 
   bcd bcd1(
-	.data(data),
+	.data({data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]}),
 	.clk(clk),
 	.bcd_low(seg2),
 	.bcd_high(seg3)
