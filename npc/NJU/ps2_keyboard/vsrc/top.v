@@ -60,6 +60,7 @@ module top(
 	  result <= 8'b0;
 	end
 	else begin
+	  result <= 8'h88;
 	    nextdata_n <= 1'b1;
 	  if(ready == 1 && reading == 0)begin
 		$display("here\n");
