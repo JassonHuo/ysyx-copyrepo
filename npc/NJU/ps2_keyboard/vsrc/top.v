@@ -28,7 +28,7 @@ module top(
   );
 
   bcd bcd0(
-	.data(result),
+	.data({result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]}),
 	.clk(clk),
 	.bcd_low(seg0),
 	.bcd_high(seg1)
