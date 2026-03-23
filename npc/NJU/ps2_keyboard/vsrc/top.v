@@ -35,6 +35,8 @@ module top(
 
   reg [7: 0] result;
   reg reading;
+
+  assign data_out = result;
   
   always@(posedge clk)begin
 	if(~rst)begin
@@ -45,7 +47,6 @@ module top(
 	else begin
 	    nextdata_n <= 1'b1;
 	  if(ready == 1 && reading == 0)begin
-		data_out <= result;
 		nextdata_n <= 1'b0;
 		reading <= 1'b1;
 		case(data)

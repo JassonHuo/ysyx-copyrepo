@@ -21,11 +21,15 @@ int main()
   dut.rst = 0;
   one_cycle();
   dut.rst = 1;
+  int data, last_data;
   while(1)
   {
 	nvboard_update();
 	one_cycle();
-	printf("%x\n", dut.data_out);
+	last_data = data;
+	data = dut.data_out;
+	if(data!= last_data)
+	  printf("%x\n", data);
   }
   return 0;
 }
