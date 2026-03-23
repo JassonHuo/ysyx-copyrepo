@@ -62,7 +62,6 @@ module top(
 	else begin
 	  nextdata_n <= 1'b1;
 	  if(ready == 1 && reading == 0)begin
-		$display("%d\n", result);
 		nextdata_n <= 1'b0;
 		reading <= 1'b1;
 		case(data)
@@ -86,7 +85,7 @@ module top(
 		  8'h3b: result <= "J";
 		  8'h42: result <= "K";
 		  default:begin
-			result <= 8'b0;
+			result <= result;
 			reading <= 1'b0;
 		  end
 		endcase
