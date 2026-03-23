@@ -43,7 +43,6 @@ module top(
 
 
   reg [7: 0] result;
-  reg reading;
 
 
   assign data_out = result;
@@ -55,14 +54,12 @@ module top(
   
   always@(posedge clk)begin
 	if(rst)begin
-	  reading <= 1'b0;
 	  nextdata_n <= 1'b1;
 	end
 	else begin
 	  nextdata_n <= 1'b1;
-	  if(ready == 1 && reading == 0)begin
-		nextdata_n <= 1'b0;
-		reading <= 1'b1;
+	  if(ready == 1)begin
+		nextdata_n <= ~ready;
 		case(data)
 		  8'h15: result <= "Q";
 		  8'h1d: result <= "W";
@@ -103,12 +100,8 @@ module top(
 
 		  default:begin
 			result <= result;
-			reading <= 1'b0;
 		  end
 		endcase
-	  end
-	  else begin
-		reading <= 1'b0;
 	  end
 	end
   end
