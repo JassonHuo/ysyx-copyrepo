@@ -56,7 +56,6 @@ module top(
 	else begin
 	    nextdata_n <= 1'b1;
 	  if(ready == 1 && reading == 0)begin
-		$display("here");
 		nextdata_n <= 1'b0;
 		reading <= 1'b1;
 		case(data)
@@ -86,6 +85,7 @@ module top(
 	  end
 	  else begin
 		reading <= 1'b0;
+		result <= result;
 	  end
 	end
   end
