@@ -82,6 +82,25 @@ module top(
 		  8'h33: result <= "H";
 		  8'h3b: result <= "J";
 		  8'h42: result <= "K";
+		  8'h4b: result <= "L";
+		  8'h1a: result <= "Z";
+		  8'h22: result <= "X";
+		  8'h21: result <= "C";
+		  8'h2a: result <= "V";
+		  8'h32: result <= "B";
+		  8'h31: result <= "N";
+		  8'h3a: result <= "M";
+		  8'h16: result <= "1";
+		  8'h1e: result <= "2";
+		  8'h26: result <= "3";
+		  8'h25: result <= "4";
+		  8'h2e: result <= "5";
+		  8'h36: result <= "6";
+		  8'h3d: result <= "7";
+		  8'h3e: result <= "8";
+		  8'h46: result <= "9";
+		  8'h45: result <= "0";
+
 		  default:begin
 			result <= result;
 			reading <= 1'b0;
