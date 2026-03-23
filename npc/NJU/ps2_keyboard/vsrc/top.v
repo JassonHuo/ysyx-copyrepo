@@ -8,7 +8,9 @@ module top(
   output [6: 0] seg1,
   output [6: 0] seg2,
   output [6: 0] seg3,
-  output reg [7: 0] data_out
+  output reg [7: 0] data_out,
+  output ready_debug,
+  output reading_debug 
 );
 
   reg nextdata_n;
@@ -44,6 +46,9 @@ module top(
 
   reg [7: 0] result;
   reg reading;
+
+  assign ready_debug = ready;
+  assign reading_debug = reading;
 
   assign data_out = data;
   

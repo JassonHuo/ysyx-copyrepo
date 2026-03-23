@@ -29,7 +29,10 @@ int main()
 	last_data = data;
 	data = dut.data_out;
 	if(data!= last_data)
+	{
 	  printf("%x\n", data);
+	  printf("reading: %b, ready: %b\n", dut.reading_debug, dut.ready_debug);
+	}
 	
   }
   return 0;
