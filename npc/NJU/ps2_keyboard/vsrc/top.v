@@ -12,8 +12,9 @@ module top(
 );
 
   reg nextdata_n;
-  wire [7: 0] data;
+  wire [7: 0] data_in;
   wire ready;
+  reg [7: 0] data;
 
   ps2_keyboard pkbd(
 	.clk(clk),
@@ -21,7 +22,7 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data),
+	.data(data_in),
 	.ready(ready),
 	.overflow(overflow)
   );
@@ -46,6 +47,11 @@ module top(
 
 
   assign data_out = data;
+
+  always@(posedge clk)begin
+	if(data_in != 8'h0f)
+	  data <= data_in;
+  end
   
   always@(posedge clk)begin
 	if(rst)begin
