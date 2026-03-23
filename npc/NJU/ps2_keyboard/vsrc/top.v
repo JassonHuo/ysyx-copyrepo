@@ -53,6 +53,7 @@ module top(
   assign data_out = data;
   
   always@(posedge clk)begin
+	result <= 8'h88;
 	data <= (data_in == 8'hf0 ? data: data_in);
 	if(~rst)begin
 	  reading <= 1'b0;
@@ -61,7 +62,6 @@ module top(
 	end
 	else begin
 	  nextdata_n <= 1'b1;
-	  result <= 8'h88;
 	  if(ready == 1 && reading == 0)begin
 		$display("here\n");
 		nextdata_n <= 1'b0;
