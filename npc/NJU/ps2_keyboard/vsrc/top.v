@@ -13,7 +13,7 @@ module top(
   wire [7: 0] data;
   wire ready;
 
-  assign data_out = data;
+  assign data_out = result;
 
   ps2_keyboard pkbd(
 	.clk(clk),
