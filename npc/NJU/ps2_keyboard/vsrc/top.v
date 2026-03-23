@@ -6,14 +6,13 @@ module top(
   output overflow,
   output [6: 0] seg0,
   output [6: 0] seg1,
-  output [7: 0] data_out
+  output reg [7: 0] data_out
 );
 
   reg nextdata_n;
   wire [7: 0] data;
   wire ready;
 
-  assign data_out = result;
 
   ps2_keyboard pkbd(
 	.clk(clk),
@@ -46,6 +45,7 @@ module top(
 	else begin
 	    nextdata_n <= 1'b1;
 	  if(ready == 1 && reading == 0)begin
+		data_out <= result;
 		nextdata_n <= 1'b0;
 		reading <= 1'b1;
 		case(data)
