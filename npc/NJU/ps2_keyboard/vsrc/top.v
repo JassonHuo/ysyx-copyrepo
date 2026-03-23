@@ -46,7 +46,7 @@ module top(
   reg reading;
 
 
-  assign data_out = data;
+  assign data_out = result;
 
   always@(posedge clk)begin
 	if(data_in != 8'h0f)
