@@ -15,7 +15,7 @@ module top(
   output reg [7: 0] data_out
 );
 
-  reg nextdata_n;
+  wire nextdata_n;
   wire [7: 0] data_in;
   wire ready;
   reg [7: 0] data;
@@ -71,6 +71,8 @@ module top(
 
 
   assign data_out = result;
+  assign nextdata_n = ~ready;
+
 
   always@(posedge clk)begin
 	if(data_in != 8'hf0)
@@ -83,14 +85,11 @@ module top(
   
   always@(posedge clk)begin
 	if(rst)begin
-	  nextdata_n <= 1'b1;
 	  counter <= 0;
 	end
 	else begin
-	  nextdata_n <= 1'b1;
 	  if(ready == 1)begin
 		down <= 0;
-		nextdata_n <= ~ready;
 		case(data)
 		  8'h15: result <= "Q";
 		  8'h1d: result <= "W";
