@@ -134,7 +134,10 @@ module top(
 		endcase
 	  end
 	  else 
-		down <= 1;
+		if(data == 8'b0 && data_in == 8'b0)
+		  down <= 1;
+		else
+		  down <= 0;
 	end
   end
 endmodule
