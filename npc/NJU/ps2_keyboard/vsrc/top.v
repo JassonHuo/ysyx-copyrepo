@@ -129,7 +129,7 @@ module top(
 		  8'h45: result <= "0";
 
 		  default:begin
-			result <= 0;
+			result <= result;
 			down <= 1;
 		  end
 		endcase
