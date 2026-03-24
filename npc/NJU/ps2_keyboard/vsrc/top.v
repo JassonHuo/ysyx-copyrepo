@@ -74,7 +74,7 @@ module top(
   assign data_out = result;
 
   always@(posedge clk)begin
-	if(data_in != 8'hf0 || data_in != 8'b0)
+	if(data_in != 8'hf0)
 	  data <= data_in;
 	if(data_in == data)
 	  counter <= counter;
