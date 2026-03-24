@@ -76,7 +76,7 @@ module top(
   always@(posedge clk)begin
 	if(data_in != 8'hf0 || data_in != 8'b0)
 	  data <= data_in;
-	else if(data_in == data)
+	if(data_in == data)
 	  counter <= counter;
 	else
 	  counter <= counter + 1;
