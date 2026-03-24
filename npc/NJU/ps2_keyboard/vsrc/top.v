@@ -15,13 +15,14 @@ module top(
   output reg [7: 0] data_out
 );
 
-  wire nextdata_n;
+  reg nextdata_n;
   wire [7: 0] data_in;
   wire ready;
   reg [7: 0] data;
 
   reg [15: 0] counter;
   reg down;
+  reg ready_prev;
 
   ps2_keyboard pkbd(
 	.clk(clk),
@@ -71,8 +72,6 @@ module top(
 
 
   assign data_out = result;
-  assign nextdata_n = ~ready;
-
 
   always@(posedge clk)begin
 	if(data_in != 8'hf0 || data_in != 8'b0)
@@ -84,6 +83,7 @@ module top(
   end
   
   always@(posedge clk)begin
+	ready_prev <= ready;
 	if(rst)begin
 	  counter <= 0;
 	  result <= 0;
@@ -91,6 +91,7 @@ module top(
 	  data <= 0;
 	end
 	else begin
+	  nextdata_n <= (ready && ~ready_prev) ? 0: 1;
 	  if(ready == 1)begin
 		down <= 0;
 		case(data)
