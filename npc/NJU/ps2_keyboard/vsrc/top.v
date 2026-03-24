@@ -86,6 +86,9 @@ module top(
   always@(posedge clk)begin
 	if(rst)begin
 	  counter <= 0;
+	  result <= 0;
+	  down <= 1;
+	  data <= 0;
 	end
 	else begin
 	  if(ready == 1)begin
