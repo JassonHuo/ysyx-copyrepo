@@ -35,7 +35,7 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) -Wall
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN)) --trace-fst
 
 all: default
 	@echo "Write this Makefile by your self."
