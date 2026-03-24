@@ -13,11 +13,11 @@ void one_cycle()
 {
   dut->clk = 0;
   dut->eval();
-  if(dut->rst != 1)
+  if(dut->rst != 1 && dut->data_out != 0)
 	contextp->timeInc(1);
   dut->clk = 1;
   dut->eval();
-  if(dut->rst != 1)
+  if(dut->rst != 1 && dut->data_out != 0)
 	contextp->timeInc(1);
 }
 
@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   dut->rst = 1;
   int data, last_data;
   data = 0;
-  int cycle = 50000000;
+  int cycle = 500000;
   while(cycle)
   {
 	if(dut->rst != 1)
