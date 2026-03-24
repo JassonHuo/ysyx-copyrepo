@@ -36,8 +36,11 @@ int main(int argc, char **argv)
   dut->rst = 1;
   int data, last_data;
   data = 0;
-  while(1)
+  int cycle = 5000;
+  while(cycle)
   {
+	if(dut->rst != 1)
+	  cycle --;
 	nvboard_update();
 	one_cycle();
 	last_data = data;
