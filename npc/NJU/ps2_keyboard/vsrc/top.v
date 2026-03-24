@@ -54,16 +54,16 @@ module top(
   bcd bcd2(
 	.data({counter[8], counter[9], counter[10], counter[11], counter[12], counter[13], counter[14], counter[15]}),
 	.clk(clk),
-	.bcd_low(seg4),
-	.bcd_high(seg5),
+	.bcd_low(seg6),
+	.bcd_high(seg7),
 	.down(0)
   );
 
   bcd bcd3(
 	.data({counter[0], counter[1], counter[2], counter[3], counter[4], counter[5], counter[6], counter[7]}),
 	.clk(clk),
-	.bcd_low(seg6),
-	.bcd_high(seg7),
+	.bcd_low(seg4),
+	.bcd_high(seg5),
 	.down(0)
   );
 
