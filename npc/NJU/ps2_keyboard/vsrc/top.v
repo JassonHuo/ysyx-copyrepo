@@ -83,6 +83,7 @@ module top(
   end
   
   always@(posedge clk)begin
+	$display("%d\n", counter);
 	ready_prev <= ready;
 	if(rst)begin
 	  counter <= 0;
