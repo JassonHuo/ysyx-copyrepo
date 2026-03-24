@@ -130,10 +130,6 @@ module top(
 
 		  default:begin
 			result <= result;
-			if(data_in == 0)
-			  down <= 1;
-			else
-			  down <= 0;
 		  end
 		endcase
 	  end
