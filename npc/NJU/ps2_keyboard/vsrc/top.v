@@ -33,6 +33,7 @@ module top(
 	  end
 	  else if(ready)begin
 		nextdata_n <= 1'b0;
+		down = 1;
 		case(state)
 		  NONE:begin
 			if(data_in == 8'b0)
@@ -41,6 +42,7 @@ module top(
 			  state <= DOWN;
 		  end
 		  DOWN:begin
+			down = 0;
 			if(data_in == 8'hF0)
 			  state <= WAIT;
 			else
