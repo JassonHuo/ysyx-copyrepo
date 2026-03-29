@@ -28,7 +28,7 @@ module top(
 	case(state)
 	  NONE: next_state = (data_in == 8'b0) ? NONE: DOWN;
 	  DOWN: next_state = (data_in == 8'hF0) ? WAIT: DOWN;
-	  WAIT: next_state = (data_in == 8'hF0) ? WAIT: NONE;
+	  WAIT: next_state = (data_in == 8'h0) ? WAIT: NONE;
 	  default: next_state = NONE;
     endcase
   end
@@ -56,7 +56,7 @@ module top(
 	  end
 	  else if(!ready)begin
 		nextdata_n <= 1'b1;
-		if(state == WAIT && next_state == NONE)
+		if(next_state == WAIT)
 		  data_in <= 8'b0;
 		else
 		  data_in <= data_in;
