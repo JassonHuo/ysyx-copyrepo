@@ -47,6 +47,7 @@ module top(
   always@(posedge clk)begin
 	if(~rstn)begin
 	  nextdata_n <= 1;
+	  data_in <= 8'b0;
 	end	 
 	else begin
 	  if(ready && nextdata_n)begin
