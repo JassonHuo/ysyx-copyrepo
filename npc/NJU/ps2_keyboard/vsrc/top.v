@@ -30,7 +30,7 @@ module top(
 		nextdata_n <= 1'b1;
 		down <= 1;
 	  end
-	  else if(ready)begin
+	  else if(ready && !nextdata_n)begin
 		nextdata_n <= 1'b0;
 		down = 1;
 		use_data <= use_data;
@@ -57,6 +57,8 @@ module top(
 		  end
 		endcase
 	  end
+	  else if(!ready)
+		nextdata_n <= 1'b1;
   end
   
   ps2_keyboard kbd0(
