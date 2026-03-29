@@ -81,6 +81,10 @@ module top(
 	else
 	  counter <= counter + 1;
   end
+
+  always@(*)begin
+	nextdata_n = (ready && ~ready_prev) ? 0: 1;
+  end
   
   always@(posedge clk)begin
 	$display("%d\n", counter);
@@ -92,7 +96,6 @@ module top(
 	  data <= 0;
 	end
 	else begin
-	  nextdata_n <= (ready && ~ready_prev) ? 0: 1;
 	  if(ready == 1)begin
 		down <= 0;
 		case(data)
