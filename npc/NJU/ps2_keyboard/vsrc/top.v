@@ -22,6 +22,7 @@ module top(
   wire [7: 0] data_in;
   reg [7: 0] use_data;
   reg down;
+  reg used;
 
   always@(posedge clk)begin
 	  $display("%d", state);
@@ -29,33 +30,40 @@ module top(
 		state <= NONE;
 		nextdata_n <= 1'b1;
 		down <= 1;
+		used <= 0;
 	  end
-	  else if(ready) begin
-		nextdata_n <= 1'b0;
-		down <= 1;
-		use_data <= use_data;
-		case(state)
-		  NONE:begin
-			if(data_in == 8'b0)
-			  state <= NONE;
-			else
-			  state <= DOWN;
-		  end
-		  DOWN:begin
-			down <= 0;
-			use_data <= data_in;
-			if(data_in == 8'hF0)
-			  state <= WAIT;
-			else
-			  state <= DOWN;
-		  end
-		  WAIT:begin
-			if(data_in == 8'b0)
-			  state <= WAIT;
-			else
-			  state <= NONE;
-		  end
-		endcase
+	  else begin
+		nextdata_n <= 1'b1;
+		if(ready && !used)begin
+		  nextdata_n <= 1'b0;
+		  used <= 1'b1;
+		  down <= 1'b1;
+		  case(state)
+			NONE:begin
+			  if(data_in == 8'b0)
+				state <= NONE;
+			  else
+				state <= DOWN;
+			  end
+			DOWN:begin
+			  down <= 0;
+			  use_data <= data_in;
+			  if(data_in == 8'hF0)
+				state <= WAIT;
+			  else
+				state <= DOWN;
+			end
+			WAIT:begin
+			  if(data_in == 8'b0)
+				state <= WAIT;
+			  else
+				state <= NONE;
+			end
+		  endcase
+		end
+		else if(!ready)begin
+		  used <= 1'b0;
+		end
 	  end
   end
   
