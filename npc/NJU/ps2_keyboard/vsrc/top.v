@@ -82,7 +82,7 @@ module top(
 	endcase
   end
 
-  
+assign use_data = data_in;  
   
   ps2_keyboard kbd0(
 	.clk(clk),
