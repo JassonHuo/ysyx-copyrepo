@@ -19,7 +19,7 @@ module top(
   reg [2: 0] state, next_state;
   wire ready;
   reg nextdata_n;
-  reg [7: 0] data_in;
+  wire [7: 0] data_in;
   reg [7: 0] use_data;
   reg down;
 
