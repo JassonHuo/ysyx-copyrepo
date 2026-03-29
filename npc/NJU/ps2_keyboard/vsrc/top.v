@@ -56,7 +56,10 @@ module top(
 	  end
 	  else if(!ready)begin
 		nextdata_n <= 1'b1;
-		data_in <= data_in;
+		if(state == WAIT && next_state == NONE)
+		  data_in <= 8'b0;
+		else
+		  data_in <= data_in;
 	  end
 	end	  
   end
