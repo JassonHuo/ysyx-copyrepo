@@ -20,69 +20,41 @@ module top(
   wire ready;
   reg nextdata_n;
   reg [7: 0] data_in;
-  wire [7: 0] data_kbd;
   reg [7: 0] use_data;
   reg down;
 
-  always@(*)begin
-	case(state)
-	  NONE: next_state = (data_in == 8'b0) ? NONE: DOWN;
-	  DOWN: next_state = (data_in == 8'hF0) ? WAIT: DOWN;
-	  WAIT: next_state = (ready && ~nextdata_n) ? WAIT: NONE;
-	  default: next_state = NONE;
-    endcase
-  end
+  assign use_data = data_in;  
 
   always@(posedge clk)begin
-//	if(state != next_state)
-	  $display("%x", data_in);
-	if(~rstn)begin
-	  state <= NONE;
-	end
-	else begin
-	  state <= next_state;
-	end
-  end
-
-  always@(posedge clk)begin
-//	if(state != next_state)
-//	  $display("%d", data_in);
-	if(~rstn)begin
-	  nextdata_n <= 1;
-	  data_in <= 8'b0;
-	end	 
-	else begin
-	  if(ready && nextdata_n)begin
-		nextdata_n <= 1'b0;
-		data_in <= data_kbd;
-	  end
-	  else if(!ready)begin
+	  if(!rstn)begin
+		state <= NONE;
 		nextdata_n <= 1'b1;
-		if(state == WAIT && next_state == NONE)
-		  data_in <= 8'b0;
-		else
-		  data_in <= data_in;
+		down <= 1;
 	  end
-	end	  
+	  else if(ready)begin
+		nextdata_n <= 1'b0;
+		case(state)
+		  NONE:begin
+			if(data_in == 8'b0)
+			  state <= NONE;
+			else
+			  state <= DOWN;
+		  end
+		  DOWN:begin
+			if(data_in == 8'hF0)
+			  state <= WAIT;
+			else
+			  state <= DOWN;
+		  end
+		  WAIT:begin
+			if(data_in == 8'b0)
+			  state <= WAIT;
+			else
+			  state <= NONE;
+		  end
+		endcase
+	  end
   end
-
-  always@(*)begin
-	case(state)
-	  NONE:begin
-		down = 1;
-	  end
-	  DOWN:begin
-		down = 0;
-	  end
-	  WAIT:begin
-		down = 1;
-	  end
-	  default:
-		down = 1;
-	endcase
-  end
-
-assign use_data = data_in;  
   
   ps2_keyboard kbd0(
 	.clk(clk),
@@ -90,7 +62,7 @@ assign use_data = data_in;
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data_kbd),
+	.data(data_in),
 	.ready(ready),
 	.overflow(overflow)
   );
