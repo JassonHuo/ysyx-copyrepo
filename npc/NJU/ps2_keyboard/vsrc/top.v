@@ -34,7 +34,7 @@ module top(
   end
 
   always@(posedge clk)begin
-	if(state != next_state)
+//	if(state != next_state)
 	  $display("%d", state);
 	if(~rstn)begin
 	  state <= NONE;
