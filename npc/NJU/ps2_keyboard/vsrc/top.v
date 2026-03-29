@@ -25,6 +25,7 @@ module top(
   reg down;
 
   always@(*)begin
+	$display("%d",state);
 	case(state)
 	  A: next_state = (data_in == 8'b0) ? A: B;
 	  B: next_state = (data_in == 8'b0) ? A: (data_in == prev_data ? C: (data_in == 8'hF0 ? D: B));
