@@ -24,16 +24,12 @@ module top(
   reg down;
 
   always@(*)begin
-	if(~rstn)
-	  next_state = NONE;
-	else begin
-	  case(state)
-		NONE: next_state = (data_in == 8'b0) ? NONE: DOWN;
-		DOWN: next_state = (data_in == 8'hF0) ? WAIT: DOWN;
-		WAIT: next_state = NONE;
-		default: next_state = state;
-	  endcase
-	end
+	case(state)
+	  NONE: next_state = (data_in == 8'b0) ? NONE: DOWN;
+	  DOWN: next_state = (data_in == 8'hF0) ? WAIT: DOWN;
+	  WAIT: next_state = (data_in == 8'b0) ? WAIT: NONE;
+	  default: next_state = NONE;
+    endcase
   end
 
   always@(posedge clk)begin
