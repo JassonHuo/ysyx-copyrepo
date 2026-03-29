@@ -28,7 +28,7 @@ module top(
 	case(state)
 	  NONE: next_state = (data_in == 8'b0) ? NONE: DOWN;
 	  DOWN: next_state = (data_in == 8'hF0) ? WAIT: DOWN;
-	  WAIT: next_state = (data_in == 8'hF0) ? WAIT: NONE;
+	  WAIT: next_state = (ready && ~nextdata_n) ? WAIT: NONE;
 	  default: next_state = NONE;
     endcase
   end
