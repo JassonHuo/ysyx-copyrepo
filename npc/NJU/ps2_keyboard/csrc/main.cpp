@@ -37,7 +37,7 @@ int main(int argc, char **argv)
   int data, last_data;
   data = 0;
   int cycle = 500000;
-  while(cycle)
+  while(1)
   {
 	if(dut->rst != 1)
 	  cycle --;
