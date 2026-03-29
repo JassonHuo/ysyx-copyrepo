@@ -30,9 +30,9 @@ module top(
 		nextdata_n <= 1'b1;
 		down <= 1;
 	  end
-	  else if(ready)begin
+	  else if(ready && !nextdata_n)begin
 		nextdata_n <= 1'b0;
-		down = 1;
+		down <= 1;
 		use_data <= use_data;
 		case(state)
 		  NONE:begin
@@ -42,7 +42,7 @@ module top(
 			  state <= DOWN;
 		  end
 		  DOWN:begin
-			down = 0;
+			down <= 0;
 			use_data <= data_in;
 			if(data_in == 8'hF0)
 			  state <= WAIT;
@@ -57,6 +57,8 @@ module top(
 		  end
 		endcase
 	  end
+	  else if(nextdata_n)
+		nextdata_n <= 1'b0;
   end
   
   ps2_keyboard kbd0(
