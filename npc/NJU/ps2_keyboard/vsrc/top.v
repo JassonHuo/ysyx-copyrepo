@@ -23,9 +23,8 @@ module top(
   reg [7: 0] use_data;
   reg down;
 
-  assign use_data = data_in;  
-
   always@(posedge clk)begin
+	$display("%d", state);
 	  if(!rstn)begin
 		state <= NONE;
 		nextdata_n <= 1'b1;
@@ -34,6 +33,7 @@ module top(
 	  else if(ready)begin
 		nextdata_n <= 1'b0;
 		down = 1;
+		use_data <= use_data;
 		case(state)
 		  NONE:begin
 			if(data_in == 8'b0)
@@ -43,6 +43,7 @@ module top(
 		  end
 		  DOWN:begin
 			down = 0;
+			use_data <= data_in;
 			if(data_in == 8'hF0)
 			  state <= WAIT;
 			else
