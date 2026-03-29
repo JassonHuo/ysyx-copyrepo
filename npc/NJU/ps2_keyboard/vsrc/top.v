@@ -20,7 +20,6 @@ module top(
   wire ready;
   reg nextdata_n;
   reg [7: 0] data_in;
-  wire [7: 0] data_kbd;
   reg [7: 0] use_data;
   reg down;
 
@@ -51,16 +50,13 @@ module top(
   always@(posedge clk)begin
 	if(~rstn)begin
 	  nextdata_n <= 1;
-	  data_in <= 0;
 	end	 
 	else begin
 	  if(ready && nextdata_n)begin
 		nextdata_n <= 1'b0;
-		data_in <= data_kbd;
 	  end
 	  else begin
 		nextdata_n <= 1'b1;
-		data_in <= data_in;
 	  end
 	end	  
   end
@@ -89,7 +85,7 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data_kbd),
+	.data(data_in),
 	.ready(ready),
 	.overflow(overflow)
   );
