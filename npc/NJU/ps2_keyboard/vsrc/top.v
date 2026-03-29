@@ -45,16 +45,17 @@ module top(
   end
 
   always@(posedge clk)begin
-	data_in <= data_kbd;
 	if(~rstn)begin
 	  nextdata_n <= 1;
 	end	 
 	else begin
 	  if(ready && nextdata_n)begin
 		nextdata_n <= 1'b0;
+		data_in <= data_kbd;
 	  end
 	  else begin
 		nextdata_n <= 1'b1;
+		data_in <= 8'b0;
 	  end
 	end	  
   end
