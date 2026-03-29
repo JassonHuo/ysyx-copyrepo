@@ -19,7 +19,6 @@ module top(
   reg [2: 0] state, next_state;
   wire ready;
   reg nextdata_n;
-  wire [7: 0] data_kbd;
   reg [7: 0] data_in;
   reg [7: 0] prev_data;
   reg [7: 0] use_data;
@@ -87,7 +86,7 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data_kbd),
+	.data(data_in),
 	.ready(ready),
 	.overflow(overflow)
   );
