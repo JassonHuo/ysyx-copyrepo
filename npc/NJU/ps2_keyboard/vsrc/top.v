@@ -35,7 +35,7 @@ module top(
 
   always@(posedge clk)begin
 	if(state != next_state)
-	  $display("%d", next_state);
+	  $display("%d", state);
 	if(~rstn)begin
 	  state <= NONE;
 	end
@@ -45,6 +45,8 @@ module top(
   end
 
   always@(posedge clk)begin
+	if(state != next_state)
+	  $display("%d", data_in);
 	if(~rstn)begin
 	  nextdata_n <= 1;
 	  data_in <= 8'b0;
