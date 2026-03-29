@@ -25,17 +25,13 @@ module top(
   reg down;
 
   always@(*)begin
-	if(~rstn)
-	  next_state = A;
-	else begin
-	  case(state)
-		A: next_state = (data_in == 8'b0) ? A: (data_in == 8'hF0 ? D: B);
-		B: next_state = (data_in == 8'b0) ? A: (data_in == prev_data ? C: (data_in == 8'hF0 ? D: B));
-		C: next_state = (data_in == 8'b0) ? A: (data_in == prev_data ? C: (data_in == 8'hF0 ? D: C));
-		D: next_state = A;
-		default: next_state = A;
-	  endcase
-	end
+	case(state)
+  	A: next_state = (data_in == 8'b0) ? A: (data_in == 8'hF0 ? D: B);
+  	B: next_state = (data_in == 8'b0) ? A: (data_in == prev_data ? C: (data_in == 8'hF0 ? D: B));
+  	C: next_state = (data_in == 8'b0) ? A: (data_in == prev_data ? C: (data_in == 8'hF0 ? D: C));
+	D: next_state = A;
+  	default: next_state = A;
+	endcase
   end
 
   always@(posedge clk)begin
