@@ -71,7 +71,7 @@ module top(
   );
 
   bcd bcd0(
-	.data(data_in),
+	.data(use_data),
 	.clk(clk),
 	.down(down),
 	.bcd_low(seg0),
