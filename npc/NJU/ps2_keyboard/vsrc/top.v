@@ -2,7 +2,7 @@ module top(
   input clk,
   input ps2_clk,
   input ps2_data,
-  input rst,
+  input rstn,
   output overflow,
   output [6: 0] seg0,
   output [6: 0] seg1,
@@ -11,141 +11,93 @@ module top(
   output [6: 0] seg4,
   output [6: 0] seg5,
   output [6: 0] seg6,
-  output [6: 0] seg7,
-  output reg [7: 0] data_out
+  output [6: 0] seg7
 );
 
-  reg nextdata_n;
-  wire [7: 0] data_in;
+  parameter A = 0, B = 1, C = 2, D = 3;
+
+  reg [2: 0] state, next_state;
   wire ready;
-  reg [7: 0] data;
-
-  reg [15: 0] counter;
+  reg nextdata_n;
+  wire [7: 0] data_kbd;
+  reg [7: 0] data_in;
+  reg [7: 0] prev_data;
+  reg [7: 0] use_data;
   reg down;
-  reg ready_prev;
 
-  ps2_keyboard pkbd(
+  always@(*)begin
+	case(state)
+	  A: next_state = (data_in == 8'b0) ? A: B;
+	  B: next_state = (data_in == 8'b0) ? A: (data_in == prev_data ? C: (data_in == 8'hF0 ? D: B));
+	  C: next_state = (data_in == 8'b0) ? A: (data_in == prev_data ? C: (data_in == 8'hF0 ? D: C));
+	  D: next_state = A;
+	  default: next_state = A;
+	endcase
+  end
+
+  always@(posedge clk)begin
+	if(~rstn)begin
+	  state <= A;
+	  prev_data <= 8'b0;
+	end
+	else begin
+	  state <= next_state;
+	  prev_data <= data_in;
+	end
+  end
+
+  always@(posedge clk)begin
+	if(~rstn)begin
+	  nextdata_n <= 1;
+	end	 
+	else begin
+	  if(ready && nextdata_n)
+		nextdata_n <= 1'b0;
+	  else
+		nextdata_n <= 1'b1;
+	end	  
+  end
+
+  always@(*)begin
+	case(state)
+	  A:begin
+		down = 1;
+		use_data = 8'b0;
+	  end
+	  B:begin
+		use_data = data_in;
+		down = 0;
+	  end
+	  C:begin
+		use_data = data_in;
+		down = 0;
+	  end
+	  default:begin
+		use_data = 8'b0;
+		down = 1;
+	  end
+	endcase
+  end
+
+  
+  
+  ps2_keyboard kbd0(
 	.clk(clk),
-	.clrn(~rst),
+	.clrn(rstn),
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data_in),
+	.data(data_kbd),
 	.ready(ready),
 	.overflow(overflow)
   );
 
   bcd bcd0(
-	.data({result[0], result[1], result[2], result[3], result[4], result[5], result[6], result[7]}),
+	.data({use_data[0], use_data[1], use_data[2], use_data[3], use_data[4], use_data[5], use_data[6], use_data[7]}),
 	.clk(clk),
+	.down(down),
 	.bcd_low(seg0),
-	.bcd_high(seg1),
-	.down(down)
+	.bcd_high(seg1)
   );
 
-  bcd bcd1(
-	.data({data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]}),
-	.clk(clk),
-	.bcd_low(seg2),
-	.bcd_high(seg3),
-	.down(down)
-  );
-
-  bcd bcd2(
-	.data({counter[8], counter[9], counter[10], counter[11], counter[12], counter[13], counter[14], counter[15]}),
-	.clk(clk),
-	.bcd_low(seg6),
-	.bcd_high(seg7),
-	.down(0)
-  );
-
-  bcd bcd3(
-	.data({counter[0], counter[1], counter[2], counter[3], counter[4], counter[5], counter[6], counter[7]}),
-	.clk(clk),
-	.bcd_low(seg4),
-	.bcd_high(seg5),
-	.down(0)
-  );
-
-
-  reg [7: 0] result;
-
-
-  assign data_out = result;
-
-  always@(posedge clk)begin
-	if(data_in != 8'hf0)
-	  data <= data_in;
-	if(data_in == data)
-	  counter <= counter;
-	else
-	  counter <= counter + 1;
-  end
-
-  always@(*)begin
-	nextdata_n = (ready && ~ready_prev) ? 0: 1;
-  end
-  
-  always@(posedge clk)begin
-	$display("%d\n", counter);
-	ready_prev <= ready;
-	if(rst)begin
-	  counter <= 0;
-	  result <= 0;
-	  down <= 1;
-	  data <= 0;
-	end
-	else begin
-	  if(ready == 1)begin
-		down <= 0;
-		case(data)
-		  8'h15: result <= "Q";
-		  8'h1d: result <= "W";
-		  8'h24: result <= "E";
-		  8'h2d: result <= "R";
-		  8'h2c: result <= "T";
-		  8'h35: result <= "Y";
-		  8'h3c: result <= "U";
-		  8'h43: result <= "I";
-		  8'h44: result <= "O";
-		  8'h4d: result <= "P";
-		  8'h1c: result <= "A";
-		  8'h1b: result <= "S";
-		  8'h23: result <= "D";
-		  8'h2b: result <= "F";
-		  8'h34: result <= "G";
-		  8'h33: result <= "H";
-		  8'h3b: result <= "J";
-		  8'h42: result <= "K";
-		  8'h4b: result <= "L";
-		  8'h1a: result <= "Z";
-		  8'h22: result <= "X";
-		  8'h21: result <= "C";
-		  8'h2a: result <= "V";
-		  8'h32: result <= "B";
-		  8'h31: result <= "N";
-		  8'h3a: result <= "M";
-		  8'h16: result <= "1";
-		  8'h1e: result <= "2";
-		  8'h26: result <= "3";
-		  8'h25: result <= "4";
-		  8'h2e: result <= "5";
-		  8'h36: result <= "6";
-		  8'h3d: result <= "7";
-		  8'h3e: result <= "8";
-		  8'h46: result <= "9";
-		  8'h45: result <= "0";
-
-		  default:begin
-			result <= result;
-		  end
-		endcase
-	  end
-	  else 
-		if(data == 8'b0 && data_in == 8'b0)
-		  down <= 1;
-		else
-		  down <= 0;
-	end
-  end
 endmodule
