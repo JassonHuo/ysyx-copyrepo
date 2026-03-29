@@ -24,7 +24,7 @@ module top(
   reg down;
 
   always@(posedge clk)begin
-	$display("%d", state);
+	  $display("%d", state);
 	  if(!rstn)begin
 		state <= NONE;
 		nextdata_n <= 1'b1;
