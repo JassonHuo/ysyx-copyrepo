@@ -57,8 +57,6 @@ module top(
 		  end
 		endcase
 	  end
-	  else
-		nextdata_n <= 1'b1;
   end
   
   ps2_keyboard kbd0(
