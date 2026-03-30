@@ -20,7 +20,7 @@ module top(
   wire ready;
   reg nextdata_n;
   wire [7: 0] data_kbd;
-  reg [7: 0] use_data;
+//  reg [7: 0] use_data;
   reg down;
   reg used;
   reg [7: 0] data_in;
@@ -49,7 +49,6 @@ module top(
 			  end
 			DOWN:begin
 			  down <= 0;
-			  use_data <= data_in;
 			  if(data_in == 8'hF0)
 				state <= WAIT;
 			  else
@@ -81,7 +80,7 @@ module top(
   );
 
   bcd bcd0(
-	.data(use_data),
+	.data(data_in),
 	.clk(clk),
 	.down(down),
 	.bcd_low(seg0),
