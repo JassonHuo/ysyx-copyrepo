@@ -19,10 +19,11 @@ module top(
   reg [2: 0] state, next_state;
   wire ready;
   reg nextdata_n;
-  wire [7: 0] data_in;
+  wire [7: 0] data_kbd;
   reg [7: 0] use_data;
   reg down;
   reg used;
+  reg [7: 0] data_in;
 
   always@(posedge clk)begin
 	  $display("%d", state);
@@ -33,6 +34,7 @@ module top(
 		used <= 0;
 	  end
 	  else begin
+		data_in <= data_kbd;
 		nextdata_n <= 1'b1;
 		if(ready && !used)begin
 		  nextdata_n <= 1'b0;
@@ -73,7 +75,7 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data_in),
+	.data(data_kbd),
 	.ready(ready),
 	.overflow(overflow)
   );
