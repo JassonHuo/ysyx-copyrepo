@@ -24,6 +24,7 @@ module top(
   reg down;
   reg used;
   reg [7: 0] data_in;
+  reg ready_prev;
 
   always@(posedge clk)begin
 	  $display("%d", state);
@@ -34,8 +35,8 @@ module top(
 		used <= 0;
 	  end
 	  else begin
-		nextdata_n <= 1'b0;
-		if(ready)begin
+		nextdata_n <= 1'b1;
+		if(ready && !ready_prev)begin
 		  data_in <= data_kbd;
 		  used <= 1'b1;
 		  down <= 1'b0;
