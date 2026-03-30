@@ -46,6 +46,10 @@ module top(
 				state <= NONE;
 				down <= 1'b1;
 			  end
+			  else if(data_kbd == 8'hF0)begin
+				state <= WAIT;
+				down <= 1'b1;
+			  end
 			  else begin
 				state <= DOWN;
 				down <= 1'b0;
