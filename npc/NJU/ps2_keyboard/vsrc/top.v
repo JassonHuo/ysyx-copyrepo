@@ -35,9 +35,11 @@ module top(
 		used <= 0;
 	  end
 	  else begin
-		nextdata_n <= 1'b1;
+		ready_prev <= ready;
+		nextdata_n <= 1'b0;
 		if(ready && !ready_prev)begin
 		  data_in <= data_kbd;
+		  nextdata_n <= 1'b1;
 		  used <= 1'b1;
 		  down <= 1'b0;
 		  case(state)
