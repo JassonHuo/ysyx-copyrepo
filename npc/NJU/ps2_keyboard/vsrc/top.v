@@ -35,7 +35,7 @@ module top(
 	  end
 	  else begin
 		nextdata_n <= 1'b1;
-		if(ready && nextdata_n)begin
+//		if(ready && nextdata_n)begin
 		  data_in <= data_kbd;
 		  nextdata_n <= 1'b0;
 		  used <= 1'b1;
@@ -82,15 +82,15 @@ module top(
 			end
 		  endcase
 		end
-		else if(!ready)begin
+/*		else if(!ready)begin
 		  used <= 1'b0;
 		  nextdata_n <= 1'b1;
 		end
 		else begin
 		  nextdata_n <= 1'b1;
 		end
+		*/
 	  end
-  end
   
   ps2_keyboard kbd0(
 	.clk(clk),
