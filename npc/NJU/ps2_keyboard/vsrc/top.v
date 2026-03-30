@@ -42,7 +42,7 @@ module top(
 		  down <= 1'b0;
 		  case(state)
 			NONE:begin
-			  if(data_in == 8'b0)begin
+			  if(data_kbd == 8'b0)begin
 				state <= NONE;
 				down <= 1'b1;
 			  end
@@ -53,7 +53,7 @@ module top(
 			end
 			DOWN:begin
 			  down <= 0;
-			  if(data_in == 8'hF0)begin
+			  if(data_kbd == 8'hF0)begin
 				state <= WAIT;
 				down <= 1'b1;
 			  end
@@ -63,7 +63,7 @@ module top(
 			  end
 			end
 			WAIT:begin
-			  if(data_in == 8'b0)begin
+			  if(data_kbd == 8'b0)begin
 				state <= WAIT;
 				down <= 1'b1;
 			  end
