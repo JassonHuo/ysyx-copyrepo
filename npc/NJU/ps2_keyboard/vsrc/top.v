@@ -39,26 +39,42 @@ module top(
 		if(ready && !used)begin
 		  nextdata_n <= 1'b0;
 		  used <= 1'b1;
-		  down <= 1'b1;
+		  down <= 1'b0;
 		  case(state)
 			NONE:begin
-			  if(data_in == 8'b0)
+			  if(data_in == 8'b0)begin
 				state <= NONE;
-			  else
-				state <= DOWN;
+				down <= 1'b1;
 			  end
+			  else begin
+				state <= DOWN;
+				down <= 1'b0;
+			  end
+			end
 			DOWN:begin
 			  down <= 0;
-			  if(data_in == 8'hF0)
+			  if(data_in == 8'hF0)begin
 				state <= WAIT;
-			  else
+				down <= 1'b1;
+			  end
+			  else begin
 				state <= DOWN;
+				down <= 1'b0;
+			  end
 			end
 			WAIT:begin
-			  if(data_in == 8'b0)
+			  if(data_in == 8'b0)begin
 				state <= WAIT;
-			  else
+				down <= 1'b1;
+			  end
+			  else begin
 				state <= NONE;
+				down <= 1'b1;
+			  end
+			end
+			default:begin
+			  state <= NONE;
+			  down <= 1'b1;
 			end
 		  endcase
 		end
