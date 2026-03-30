@@ -34,10 +34,9 @@ module top(
 		used <= 0;
 	  end
 	  else begin
-		nextdata_n <= 1'b1;
-//		if(ready && nextdata_n)begin
+		nextdata_n <= 1'b0;
+		if(ready)begin
 		  data_in <= data_kbd;
-		  nextdata_n <= 1'b0;
 		  used <= 1'b1;
 		  down <= 1'b0;
 		  case(state)
@@ -82,6 +81,7 @@ module top(
 			end
 		  endcase
 		end
+	  end
 /*		else if(!ready)begin
 		  used <= 1'b0;
 		  nextdata_n <= 1'b1;
