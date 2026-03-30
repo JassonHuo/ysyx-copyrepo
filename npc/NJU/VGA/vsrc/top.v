@@ -30,17 +30,17 @@ module top(
   
   parameter length = 3072;
 
-  reg [23: 0] pic [0: 3071];
+  reg [23: 0] pic [0: 4096];
 
-  reg [11: 0] ptr;
+  reg [12: 0] ptr;
 
   initial begin
-	$readmemh("./pic_hex/picture.txt", pic);
+	$readmemh("~/ysyx/ysyx-workbench/npc/NJU/VGA/vsrc/hex_pic/test_picture.txt", pic);
   end
 
   always@(posedge clk)begin
 	if(rst)begin
-	  ptr <= 12'b0;
+	  ptr <= 13'b0;
 	end
 	else begin
 	  if(valid)begin
