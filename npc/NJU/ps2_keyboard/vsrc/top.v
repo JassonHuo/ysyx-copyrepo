@@ -35,7 +35,7 @@ module top(
 	  end
 	  else begin
 		nextdata_n <= 1'b1;
-		if(ready && nextdata_n)begin
+		if(ready && !used)begin
 		  data_in <= data_kbd;
 		  nextdata_n <= 1'b0;
 		  used <= 1'b1;
@@ -84,6 +84,10 @@ module top(
 		end
 		else if(!ready)begin
 		  used <= 1'b0;
+		  nextdata_n <= 1'b1;
+		end
+		else begin
+		  nextdata_n <= 1'b1;
 		end
 	  end
   end
