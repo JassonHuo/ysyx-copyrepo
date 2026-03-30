@@ -45,6 +45,7 @@ module top(
 	else begin
 	  if(valid)begin
 		vga_data <= pic[ptr];
+		$display("%x", pic[ptr]);
 		ptr <= ptr + 1;
 	  end	
 	end
