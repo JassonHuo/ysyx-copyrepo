@@ -6,7 +6,8 @@ module top(
   output [7: 0] vga_b,
   output hsync,
   output vsync,
-  output black
+  output black,
+  output valid_out
 );
 
   assign black = 1'b1;
@@ -27,6 +28,7 @@ module top(
   reg [23: 0] vga_data;
   wire [9: 0] h_addr, v_addr;
   wire valid;
+  assign valid_out = valid;
   
   parameter length = 307200;
 
