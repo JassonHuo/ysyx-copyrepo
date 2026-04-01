@@ -44,9 +44,10 @@ module top(
   assign pixaddr = {9'b0, v_addr} * 640 + {9'b0, h_addr};
 
   initial begin
-	$readmemh("./test_picture", pic);
+	$readmemh("./test_picture.txt", pic);
   end
 
+  
   assign vga_data = pic[pixaddr];
 
  // always@(*)begin
