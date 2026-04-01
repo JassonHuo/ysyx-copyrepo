@@ -28,24 +28,24 @@ module top(
   wire [9: 0] h_addr, v_addr;
   wire valid;
   
-  parameter length = 3072;
+  parameter length = 307200;
 
-  reg [23: 0] pic [0: 4096];
+  reg [23: 0] pic [0: 307200];
 
-  reg [12: 0] ptr;
+  reg [18: 0] ptr;
 
   initial begin
-	$readmemh("~/ysyx/ysyx-workbench/npc/NJU/VGA/vsrc/hex_pic/test_picture.txt", pic);
+	$readmemh("./test_picture.txt", pic);
   end
 
   always@(posedge clk)begin
 	if(rst)begin
-	  ptr <= 13'b0;
+	  ptr <= 19'b0;
 	end
 	else begin
 	  if(valid)begin
 		vga_data <= pic[ptr];
-		$display("%x", pic[ptr]);
+//		$display("%x", pic[ptr]);
 		ptr <= ptr + 1;
 	  end	
 	end
