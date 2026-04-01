@@ -38,6 +38,8 @@ int main(int argc, char **argv)
 
   while(1)
   {
+	extern void vga_update();
+	vga_update();
 	nvboard_update();
 	  cycle --;
 	one_cycle();
