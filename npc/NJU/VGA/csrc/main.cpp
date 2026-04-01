@@ -25,7 +25,7 @@ void one_cycle()
 
 int main(int argc, char **argv)
 {
-  nvboard_init(1);
+  nvboard_init();
   nvboard_bind_all_pins(dut);
   dut->rst = 0;
   int cnt = 0;
