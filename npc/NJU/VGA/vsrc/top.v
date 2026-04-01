@@ -6,11 +6,11 @@ module top(
   output [7: 0] vga_b,
   output hsync,
   output vsync,
-//  output black,
+  output black,
   output valid_out
 );
 
- // assign black = 1'b1;
+  assign black = 1'b1;
   vga_ctrl vc1(
 	.pclk(vga_clk),
 	.reset(rst),
