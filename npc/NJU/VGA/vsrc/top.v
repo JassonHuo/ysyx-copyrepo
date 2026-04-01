@@ -47,10 +47,10 @@ module top(
 	$readmemh("./white_test.txt", pic);
   end
 
-  assign vga_data = 24'hFFFFFF;
-//  always@(*)begin
+  always@(*)begin
 //	vga_data = valid ? pic[pixaddr]: 0;
 //	vga_data = valid ? 24'hFFFFFF: 0;
- // end	
+	vga_data = valid ? 0: 24'hFFFFFF;
+  end	
 
 endmodule
