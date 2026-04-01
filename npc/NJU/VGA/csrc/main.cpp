@@ -34,15 +34,17 @@ int main(int argc, char **argv)
   contextp->traceEverOn(true);
   contextp->trace(tfp, 99);
   tfp->open("./wave.fst");
-  int cycle = 500000;
 
   while(1)
   {
 	extern void vga_update();
 	vga_update();
 	nvboard_update();
-	  cycle --;
-	one_cycle();
+	if(cnt == 0)
+	{
+	  one_cycle();
+	}
+	  cnt = (cnt == 100000 ? 0: cnt ++);
 	if(dut->valid_out == 1)
 	{
 //	  printf("%d", dut->black);
