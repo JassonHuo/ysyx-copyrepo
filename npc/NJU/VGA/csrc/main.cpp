@@ -19,6 +19,7 @@ int main()
 {
   nvboard_init();
   nvboard_bind_all_pins(&dut);
+  dut.rst = 0;
   int cnt = 0;
   int cotl = 0;
 
