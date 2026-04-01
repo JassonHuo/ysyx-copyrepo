@@ -10,7 +10,7 @@ module top(
   output valid_out
 );
 
-  assign black = 1'b1;
+  assign black = 1'b0;
   vga_ctrl vc1(
 	.pclk(vga_clk),
 	.reset(rst),
