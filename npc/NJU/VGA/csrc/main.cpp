@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   contextp->commandArgs(argc, argv);
   contextp->traceEverOn(true);
   contextp->trace(tfp, 99);
-  tfp->open("wave.fst");
+  tfp->open("./wave.fst");
   int cycle = 500000;
 
   while(cycle)
