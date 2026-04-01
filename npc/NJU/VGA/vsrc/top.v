@@ -45,11 +45,11 @@ module top(
 	  ptr <= 19'b0;
 	end
 	else begin
-	  if(valid)begin
+//	  if(valid)begin
 		vga_data <= pic[pixaddr];
 //		$display("%x", pic[ptr]);
 		ptr <= ptr + 1;
-	  end	
+//	  end	
 	end
   end	
 
