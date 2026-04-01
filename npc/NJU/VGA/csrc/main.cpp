@@ -29,25 +29,20 @@ int main(int argc, char **argv)
   nvboard_bind_all_pins(dut);
   dut->rst = 0;
   int cnt = 0;
-  int cotl = 0;
 
   contextp->commandArgs(argc, argv);
   contextp->traceEverOn(true);
   contextp->trace(tfp, 99);
-  tfp->open("wave->fst");
+  tfp->open("wave.fst");
   int cycle = 500000;
 
   while(cycle)
   {
 	nvboard_update();
-	cotl = (cotl >= 10000 ? 0: cotl + 1);
-	if(cotl == 0)
-	{
 	  cycle --;
 	one_cycle();
 	if(dut->valid_out == 1)
 	printf("pixel[%d], valid[%d]: r = %d, g = %d, b = %d, hsync = %d, vsynv = %d\n", cnt, dut->valid_out, dut->vga_r, dut->vga_g, dut->vga_b, dut->hsync, dut->vsync);
 	cnt ++;
-	}
   }
 }
