@@ -12,7 +12,7 @@ module top(
 
   assign black = 1'b1;
   vga_ctrl vc1(
-	.pclk(clk),
+	.pclk(vga_clk),
 	.reset(rst),
 	.vga_data(vga_data),
 	.h_addr(h_addr),
@@ -25,6 +25,8 @@ module top(
 	.vga_b(vga_b)
   );
 
+  wire vga_clk;
+  clkgen #(25000000) my_vgaclk(clk,rst,1'b1,vga_clk);
   reg [23: 0] vga_data;
   wire [9: 0] h_addr, v_addr;
   wire valid;
