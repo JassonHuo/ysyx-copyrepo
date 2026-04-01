@@ -48,8 +48,8 @@ module top(
   end
 
   always@(*)begin
-//	vga_data = valid ? pic[pixaddr]: 0;
-	vga_data = valid ? 24'hFFFFFF: 0;
+	vga_data = valid ? pic[pixaddr]: 0;
+//	vga_data = valid ? 24'hFFFFFF: 0;
   end	
 
 endmodule
