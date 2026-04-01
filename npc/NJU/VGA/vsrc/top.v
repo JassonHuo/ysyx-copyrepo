@@ -33,6 +33,8 @@ module top(
   reg [23: 0] pic [0: 307200];
 
   reg [18: 0] ptr;
+  wire [18: 0] pixaddr;
+  assign pixaddr = {9'b0, v_addr} * 640 + {9'b0, h_addr};
 
   initial begin
 	$readmemh("./test_picture.txt", pic);
@@ -44,7 +46,7 @@ module top(
 	end
 	else begin
 	  if(valid)begin
-		vga_data <= pic[ptr];
+		vga_data <= pic[pixaddr];
 //		$display("%x", pic[ptr]);
 		ptr <= ptr + 1;
 	  end	
