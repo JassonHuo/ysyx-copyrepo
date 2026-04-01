@@ -41,7 +41,10 @@ module top(
   end
 
   always@(*)begin
+	if(valid)
 		vga_data = pic[pixaddr];
+	  else
+		vga_data = 0;
   end	
 
 endmodule
