@@ -30,7 +30,8 @@ module top(
   assign vsync = ~vsync_in; 
 
   wire vga_clk;
-  clkgen #(25000000) my_vgaclk(clk,rst,1'b1,vga_clk);
+//  clkgen #(25000000) my_vgaclk(clk,rst,1'b1,vga_clk);
+  assign vga_clk = clk;
   reg [23: 0] vga_data;
   wire [9: 0] h_addr, v_addr;
   wire valid;
