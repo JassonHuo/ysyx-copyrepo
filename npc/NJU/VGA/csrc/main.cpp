@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   tfp->open("./wave.fst");
   int cycle = 500000;
 
-  while(cycle)
+  while(1)
   {
 	nvboard_update();
 	  cycle --;
