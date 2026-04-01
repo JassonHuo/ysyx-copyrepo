@@ -35,7 +35,7 @@ int main(int argc, char **argv)
   contextp->trace(tfp, 99);
   tfp->open("./wave.fst");
 
-  while(1)
+  for(int i = 0; i < 307200; i ++)
   {
 	extern void vga_update();
 	vga_update();
@@ -47,6 +47,10 @@ int main(int argc, char **argv)
 //	printf("pixel[%d], valid[%d]: r = %d, g = %d, b = %d, hsync = %d, vsynv = %d\n", cnt, dut->valid_out, dut->vga_r, dut->vga_g, dut->vga_b, dut->hsync, dut->vsync);
 	cnt ++;
 	}
+  }
+  while(1)
+  {
+	nvboard_update();
   }
   tfp->close();
   dut->final();
