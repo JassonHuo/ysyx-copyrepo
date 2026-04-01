@@ -28,7 +28,7 @@ module top(
   reg [23: 0] vga_data;
   wire [9: 0] h_addr, v_addr;
   wire valid;
-  assign valid_out = valid;
+  assign valid_out = !valid;
   
   parameter length = 307200;
 
