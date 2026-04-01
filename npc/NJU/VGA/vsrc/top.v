@@ -31,8 +31,6 @@ module top(
   parameter length = 307200;
 
   reg [23: 0] pic [0: 307200];
-
-  reg [18: 0] ptr;
   wire [18: 0] pixaddr;
   assign pixaddr = {9'b0, v_addr} * 640 + {9'b0, h_addr};
 
@@ -40,17 +38,8 @@ module top(
 	$readmemh("./test_picture.txt", pic);
   end
 
-  always@(posedge clk)begin
-	if(rst)begin
-	  ptr <= 19'b0;
-	end
-	else begin
-//	  if(valid)begin
-		vga_data <= pic[pixaddr];
-//		$display("%x", pic[ptr]);
-		ptr <= ptr + 1;
-//	  end	
-	end
+  always@(*)begin
+		vga_data = pic[pixaddr];
   end	
 
 endmodule
