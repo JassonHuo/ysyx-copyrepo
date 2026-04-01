@@ -29,6 +29,7 @@ int main()
 	if(cotl == 0)
 	{
 	one_cycle();
+	if(dut.valid_out == 1)
 	printf("pixel[%d], valid[%d]: r = %d, g = %d, b = %d, hsync = %d, vsynv = %d\n", cnt, dut.valid_out, dut.vga_r, dut.vga_g, dut.vga_b, dut.hsync, dut.vsync);
 	cnt ++;
 	}
