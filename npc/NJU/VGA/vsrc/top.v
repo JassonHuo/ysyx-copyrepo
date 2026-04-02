@@ -10,7 +10,7 @@ module top(
   output valid_out
 );
 
-  assign blank = 1'b1;
+  assign blank = valid;
   vga_ctrl vc1(
 	.pclk(vga_clk),
 	.reset(rst),
@@ -48,12 +48,12 @@ module top(
   end
 
   
-  assign vga_data = pic[pixaddr];
+//  assign vga_data = pic[pixaddr];
 
- // always@(*)begin
-//	vga_data = valid ? pic[pixaddr]: 0;
+  always@(*)begin
+	vga_data = valid ? pic[pixaddr]: 0;
 //	vga_data = valid ? 24'hFFFFFF: 0;
 //	vga_data = valid ? 0: 24'hFFFFFF;
-//  end	
+  end	
 
 endmodule
