@@ -36,7 +36,7 @@ module top(
   reg [23: 0] pic [524287: 0];
 
   initial begin
-	$readmemh("./test_picture.txt", pic);
+	$readmemh("/home/jasonhuo/ysyx/ysyx-workbench/nvboard/example/resource/picture.hex", pic);
   end
 
   assign vga_data = pic[{h_addr, v_addr[8: 0]}];
