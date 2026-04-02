@@ -7,7 +7,6 @@ module bcd(
 );
 
   wire [7: 0] data_rev;
-  assign data_rev = {data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]};
   
   always@(posedge clk)begin
 	if(down)begin
@@ -15,7 +14,7 @@ module bcd(
 	  bcd_high <= 7'b1111111;
 	end
 	else begin
-	case(data_rev[3: 0])
+	case(data[3: 0])
 	  0: bcd_low <= 7'b0000001;
 	  1: bcd_low <= 7'b1001111;
 	  2: bcd_low <= 7'b0010010;
@@ -34,7 +33,7 @@ module bcd(
 	  15: bcd_low <= 7'b0111000;
 	  default: bcd_low <= 7'b0000001;
 	endcase
-	case(data_rev[7: 4])
+	case(data[7: 4])
 	  0: bcd_high <= 7'b0000001;
 	  1: bcd_high <= 7'b1001111;
 	  2: bcd_high <= 7'b0010010;
