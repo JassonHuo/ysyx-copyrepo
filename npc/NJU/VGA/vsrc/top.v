@@ -48,7 +48,8 @@ module top(
   end
 
   
-  assign vga_data = pic[pixaddr];
+//  assign vga_data = pic[pixaddr];
+  assign vga_data = 24'hFFFFFF;
 
 //  always@(*)begin
 //	vga_data = valid ? pic[pixaddr]: 0;
