@@ -37,18 +37,17 @@ module top(
   wire valid;
   assign valid_out = valid;
   
-  parameter length = 307200;
 
-  reg [23: 0] pic [0: 307200];
-  wire [18: 0] pixaddr;
-  assign pixaddr = {9'b0, v_addr} * 640 + {9'b0, h_addr};
+  reg [23: 0] pic [0: 524288];
+//  assign pixaddr = {9'b0, v_addr} * 640 + {9'b0, h_addr};
 
   initial begin
 	$readmemh("./test_picture.txt", pic);
   end
 
+  assign vga_data = pic[{h_addr, v_addr}];
   
-  assign vga_data = pic[pixaddr];
+ // assign vga_data = pic[pixaddr];
 //  assign vga_data = 24'hFFFFFF;
 
 //  always@(*)begin
