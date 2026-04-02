@@ -39,7 +39,7 @@ module top(
 	$readmemh("./test_picture.txt", pic);
   end
 
-  assign vga_data = pic[{h_addr, v_addr}];
+  assign vga_data = pic[{v_addr, h_addr}];
   
 
 endmodule
