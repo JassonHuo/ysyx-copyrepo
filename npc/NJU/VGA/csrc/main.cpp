@@ -35,17 +35,18 @@ int main(int argc, char **argv)
   contextp->trace(tfp, 99);
   tfp->open("./wave.fst");
 
-  for(int i = 0; i < 307200; i ++)
+  while(1)
   {
 //	extern void vga_update();
 //	vga_update();
 	nvboard_update();
+	if(cnt == 0)
 	one_cycle();
+	cnt = (cnt == 10000000 ? 0: cnt + 1);
 	if(dut->valid_out == 1)
 	{
 //	  printf("%d", dut->black);
 //	printf("pixel[%d], valid[%d]: r = %d, g = %d, b = %d, hsync = %d, vsynv = %d\n", cnt, dut->valid_out, dut->vga_r, dut->vga_g, dut->vga_b, dut->hsync, dut->vsync);
-	cnt ++;
 	}
   }
   while(1)
