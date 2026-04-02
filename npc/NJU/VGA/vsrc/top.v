@@ -10,24 +10,20 @@ module top(
   output valid_out
 );
 
-  assign blank = valid;
   vga_ctrl vc1(
 	.pclk(vga_clk),
 	.reset(rst),
 	.vga_data(vga_data),
 	.h_addr(h_addr),
 	.v_addr(v_addr),
-	.hsync(hsync_in),
-	.vsync(vsync_in),
-	.valid(valid),
+	.hsync(hsync),
+	.vsync(vsync),
+	.valid(blank),
 	.vga_r(vga_r),
 	.vga_g(vga_g),
 	.vga_b(vga_b)
   );
 
-  wire hsync_in, vsync_in;
-  assign hsync = hsync_in;
-  assign vsync = vsync_in; 
 
   wire vga_clk;
   assign vga_clk = clk;
