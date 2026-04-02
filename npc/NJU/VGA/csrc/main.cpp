@@ -37,8 +37,8 @@ int main(int argc, char **argv)
 
   for(int i = 0; i < 307200; i ++)
   {
-	extern void vga_update();
-	vga_update();
+//	extern void vga_update();
+//	vga_update();
 	nvboard_update();
 	one_cycle();
 	if(dut->valid_out == 1)
