@@ -41,9 +41,7 @@ int main(int argc, char **argv)
 //	extern void vga_update();
 //	vga_update();
 	nvboard_update();
-	if(cnt == 0)
 	one_cycle();
-	cnt = (cnt == 10000000 ? 0: cnt + 1);
 	if(dut->valid_out == 1)
 	{
 //	  printf("%d", dut->black);
