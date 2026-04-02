@@ -10,7 +10,7 @@ module top(
   output valid_out
 );
 
-  assign blank = valid;
+  assign blank = 1'b1;
   vga_ctrl vc1(
 	.pclk(vga_clk),
 	.reset(rst),
