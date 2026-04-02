@@ -30,7 +30,6 @@ module top(
   assign vsync = vsync_in; 
 
   wire vga_clk;
-//  clkgen #(25000000) my_vgaclk(clk,rst,1'b1,vga_clk);
   assign vga_clk = clk;
   reg [23: 0] vga_data;
   wire [9: 0] h_addr, v_addr;
@@ -38,8 +37,7 @@ module top(
   assign valid_out = valid;
   
 
-  reg [23: 0] pic [0: 524288];
-//  assign pixaddr = {9'b0, v_addr} * 640 + {9'b0, h_addr};
+  reg [23: 0] pic [524288: 0];
 
   initial begin
 	$readmemh("./test_picture.txt", pic);
@@ -47,13 +45,5 @@ module top(
 
   assign vga_data = pic[{h_addr, v_addr}];
   
- // assign vga_data = pic[pixaddr];
-//  assign vga_data = 24'hFFFFFF;
-
-//  always@(*)begin
-//	vga_data = valid ? pic[pixaddr]: 0;
-//	vga_data = valid ? 24'hFFFFFF: 0;
-//	vga_data = valid ? 0: 24'hFFFFFF;
-  //end	
 
 endmodule
