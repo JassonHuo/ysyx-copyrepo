@@ -40,6 +40,6 @@ module top(
   end
 
 //  assign vga_data = pic[{h_addr, v_addr[8: 0]}];
-  assign vga_data = pic[v_addr * 640 + h_addr];
+  assign vga_data = pic[h_addr * 640 + v_addr];
 
 endmodule
