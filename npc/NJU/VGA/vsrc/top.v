@@ -48,7 +48,7 @@ module top(
   end
 
   
-//  assign vga_data = pic[pixaddr];
+  assign vga_data = pic[pixaddr];
 
  // always@(*)begin
 //	vga_data = valid ? pic[pixaddr]: 0;
