@@ -26,8 +26,8 @@ module top(
   );
 
   wire hsync_in, vsync_in;
-  assign hsync = ~hsync_in;
-  assign vsync = ~vsync_in; 
+  assign hsync = hsync_in;
+  assign vsync = vsync_in; 
 
   wire vga_clk;
 //  clkgen #(25000000) my_vgaclk(clk,rst,1'b1,vga_clk);
@@ -48,7 +48,7 @@ module top(
   end
 
   
-  assign vga_data = pic[pixaddr];
+//  assign vga_data = pic[pixaddr];
 
  // always@(*)begin
 //	vga_data = valid ? pic[pixaddr]: 0;
