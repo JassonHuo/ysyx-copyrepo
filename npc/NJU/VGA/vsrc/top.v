@@ -33,13 +33,13 @@ module top(
   assign valid_out = valid;
   
 
-  reg [23: 0] pic [524288: 0];
+  reg [23: 0] pic [524287: 0];
 
   initial begin
 	$readmemh("./test_picture.txt", pic);
   end
 
-  assign vga_data = pic[{v_addr, h_addr}];
+  assign vga_data = pic[{h_addr, v_addr[8: 0]}];
   
 
 endmodule
