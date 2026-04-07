@@ -98,7 +98,7 @@ static int cmd_help(char *args) {
 static int cmd_si(char *args)
 {
   int n = args ? atoi(args): 1;
-  if(atoi(args) < 0)
+  if(args && atoi(args) < 0)
   {
 	printf("The number of instruction must be positive\n");
 	return 0;
