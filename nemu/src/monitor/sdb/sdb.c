@@ -23,6 +23,7 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+void execute();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -53,6 +54,7 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
+static int cmd_si(char *args);
 
 static struct {
   const char *name;
@@ -62,6 +64,7 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "si", "Execute by steps you want", cmd_si },
 
   /* TODO: Add more commands */
 
@@ -90,6 +93,22 @@ static int cmd_help(char *args) {
     printf("Unknown command '%s'\n", arg);
   }
   return 0;
+}
+
+static int cmd_si(char *args)
+{
+  char *arg = strtok(NULL, " ");
+  int n = arg ? atoi(arg): 1;
+  if(atoi(arg) < 0)
+  {
+	printf("The number of instruction must be positive\n");
+	return 0;
+  }
+  else
+  {
+	cpu_exec(n);	
+	return 0;
+  }
 }
 
 void sdb_set_batch_mode() {
