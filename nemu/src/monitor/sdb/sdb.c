@@ -121,6 +121,7 @@ static int cmd_info(char *args)
   if (arg && strcmp(arg, "r") == 0) 
   {
 	isa_reg_display();
+	printf("test");
 	return 0;
   }
   else return 0;
