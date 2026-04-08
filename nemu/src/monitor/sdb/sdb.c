@@ -133,7 +133,7 @@ static int cmd_x(char *args)
   int n = atoi(strtok(NULL, " "));
   uint32_t beg_addr;
   sscanf(strtok(NULL, " "), "%x", &beg_addr);
-  printf("%d, %d", n, beg_addr);
+  printf("%d, %08x", n, beg_addr);
   return 0;
 }
 
