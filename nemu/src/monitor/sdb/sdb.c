@@ -25,7 +25,7 @@ void init_regex();
 void init_wp_pool();
 void execute();
 void isa_reg_display();
-word_t pmem_read();
+word_t pmem_read(paddr_t addr, int len);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -130,10 +130,14 @@ static int cmd_info(char *args)
 static int cmd_x(char *args)
 {
   if(!args) return 0;
-  int n = atoi(strtok(NULL, " "));
+  int n = atoi(strtok(args, " "));
+  char *addr = strtok(NULL, " ");
+  if(!n || !addr) return 0;
   uint32_t beg_addr;
-  sscanf(strtok(NULL, " "), "%x", &beg_addr);
-  printf("%d, %08x", n, beg_addr);
+  sscanf(addr, "%x", &beg_addr);
+  printf("%d, %08x\n", n, beg_addr);
+  word_t pmem = pmem_read((paddr_t)beg_addr, 4);
+  printf("%x\n", (uint32_t)(pmem));
   return 0;
 }
 
