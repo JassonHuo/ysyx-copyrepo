@@ -142,7 +142,7 @@ static int cmd_x(char *args)
   for (int i = 0; i < n; i ++)
   {
 	uint32_t pmem = host_read(guest_to_host(beg_addr), 4);
-	printf("%08x\n", pmem);
+	printf("%08x: %08x\n", beg_addr, pmem);
 	beg_addr += 4;
   }
   return 0;
