@@ -18,6 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
+#include <memory/host.h>
 
 static int is_batch_mode = false;
 
@@ -26,6 +27,7 @@ void init_wp_pool();
 void execute();
 void isa_reg_display();
 word_t pmem_read(paddr_t addr, int len);
+uint8_t* guest_to_host();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -136,7 +138,8 @@ static int cmd_x(char *args)
   uint32_t beg_addr;
   sscanf(addr, "%x", &beg_addr);
   printf("%d, %08x\n", n, beg_addr);
-  uint32_t pmem = pmem_read((paddr_t)beg_addr, 4);
+//  uint32_t pmem = pmem_read((paddr_t)beg_addr, 4);
+  uint32_t pmem = host_read(guest_to_host(beg_addr), 4);
   printf("%08x\n", pmem);
   return 0;
 }
