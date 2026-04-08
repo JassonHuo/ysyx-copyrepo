@@ -136,8 +136,8 @@ static int cmd_x(char *args)
   uint32_t beg_addr;
   sscanf(addr, "%x", &beg_addr);
   printf("%d, %08x\n", n, beg_addr);
-  word_t pmem = pmem_read((paddr_t)beg_addr, 4);
-  printf("%x\n", (uint32_t)(pmem));
+  uint32_t pmem = pmem_read((paddr_t)beg_addr, 4);
+  printf("%x\n", pmem);
   return 0;
 }
 
