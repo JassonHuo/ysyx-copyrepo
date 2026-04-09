@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 #endif
 
   /* Start engine. */
-  make_token("4 +3*(2- 1)");
+  make_token("45 +       36*(241235- 11435         )              ");
   engine_start();
 
   return is_exit_status_bad();
