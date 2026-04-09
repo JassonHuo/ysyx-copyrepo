@@ -28,7 +28,7 @@ void isa_reg_display() {
   printf("----------------------------------------\n");
   for(int i = 0; i < 32; i ++)
   {
-	if(regs[i] == 0)
+	if(cpu.gpr[i] == 0)
 	  printf("gpr[%d]\t%3s: \t0x%08x| %012d\n", i, regs[i], cpu.gpr[i], cpu.gpr[i]);
 	else
 	  printf("gpr[%d]\t%3s: \t\033[34m0x%08x\033[0m| \033[34m%012d\033[0m\n", i, regs[i], cpu.gpr[i], cpu.gpr[i]);
