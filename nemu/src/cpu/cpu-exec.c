@@ -45,7 +45,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   //printf("%d, %d, %d\n", pc, snpc, ilen);
   isa_exec_once(s);
-  printf("%08x, %08x\n", s->pc, s->snpc);
+//  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -54,10 +54,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
   int i;
   uint8_t *inst = (uint8_t *)&s->isa.inst;
 #ifdef CONFIG_ISA_x86
-  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
+//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   for (i = 0; i < ilen; i ++) {
 #else
-  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
+//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   for (i = ilen - 1; i >= 0; i --) {
 #endif
     p += snprintf(p, 4, " %02x", inst[i]);
@@ -73,7 +73,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
 //  printf("inst: %x\n", *(uint8_t *)&s->isa.inst);
-  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
+//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
 #endif
 }
 
