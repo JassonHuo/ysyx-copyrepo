@@ -121,8 +121,8 @@ bool make_token(char *e){
 		  case '(':
 		  case ')':
 		  case TK_NUM:
-			char temp_str[2];
-			temp_str[0] = rules[i].token_type;		
+//			char temp_str[2];
+//			temp_str[0] = rules[i].token_type;		
 			int substr_pos;
 			tokens[nr_token].type = rules[i].token_type;
 			for (substr_pos = 0; substr_pos < substr_len; substr_pos ++)
@@ -131,9 +131,10 @@ bool make_token(char *e){
 //			  printf("%c, %c\n", tokens[nr_token].str[substr_pos], *(substr_start + substr_pos));
 			}
 			tokens[nr_token].str[substr_pos] = '\0';
-			printf("type: %s, str: \"%s\"\n", rules[i].token_type == TK_NOTYPE ? "TK_NOTYPE":
+/*			printf("type: %s, str: \"%s\"\n", rules[i].token_type == TK_NOTYPE ? "TK_NOTYPE":
 				(rules[i].token_type == TK_NUM ? "TK_NUM":
 				 temp_str), tokens[nr_token].str);
+				 */
 			nr_token += 1;
 			break;
           default: 
