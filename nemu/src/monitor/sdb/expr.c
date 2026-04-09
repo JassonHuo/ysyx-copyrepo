@@ -128,13 +128,13 @@ bool make_token(char *e){
 			for (substr_pos = 0; substr_pos < substr_len; substr_pos ++)
 			{
 			  tokens[nr_token].str[substr_pos] = *(substr_start + substr_pos);
-			  printf("%c, %c\n", tokens[nr_token].str[substr_pos], *(substr_start + substr_pos));
+//			  printf("%c, %c\n", tokens[nr_token].str[substr_pos], *(substr_start + substr_pos));
 			}
 			tokens[nr_token].str[substr_pos] = '\0';
-			nr_token += 1;
 			printf("type: %s, str: %s\n", rules[i].token_type == TK_NOTYPE ? "TK_NOTYPE":
 				(rules[i].token_type == TK_NUM ? "TK_NUM":
 				 temp_str), tokens[nr_token].str);
+			nr_token += 1;
 			break;
           default: 
 			TODO();
