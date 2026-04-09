@@ -22,7 +22,6 @@ int is_exit_status_bad();
 bool make_token();
 
 int main(int argc, char *argv[]) {
-  make_token("4 +3*(2- 1)");
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
@@ -31,6 +30,7 @@ int main(int argc, char *argv[]) {
 #endif
 
   /* Start engine. */
+  make_token("4 +3*(2- 1)");
   engine_start();
 
   return is_exit_status_bad();
