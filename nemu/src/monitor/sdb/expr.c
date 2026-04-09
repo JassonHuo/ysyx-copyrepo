@@ -128,6 +128,7 @@ bool make_token(char *e){
 			for (substr_pos = 0; substr_pos < substr_len; substr_pos ++)
 			{
 			  tokens[nr_token].str[substr_pos] = *(substr_start + substr_pos);
+			  printf("%c, %c\n", tokens[nr_token].str[substr_pos], *(substr_start + substr_pos));
 			}
 			tokens[nr_token].str[substr_pos] = '\0';
 			nr_token += 1;
