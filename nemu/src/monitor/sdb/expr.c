@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256, TK_EQ, TK_NUM,
 
   /* TODO: Add more token types */
 
@@ -39,6 +39,12 @@ static struct rule {
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ},        // equal
+  {"\\-", '-'},			// sub
+  {"\\*", '*'},			// mux
+  {"\\/", '/'},			// div
+  {"\\(", '('},			// left parenthesis
+  {"\\)", ')'},			// right parenthesis
+  {"[0-9]+", TK_NUM},		// num
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -55,6 +61,7 @@ void init_regex() {
 
   for (i = 0; i < NR_REGEX; i ++) {
     ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
+//	printf("ret in expr: %d\n", ret);
     if (ret != 0) {
       regerror(ret, &re[i], error_msg, 128);
       panic("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
@@ -70,12 +77,23 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-static bool make_token(char *e) {
+//static bool make_token(char *e) {
+bool make_token(char *e){
   int position = 0;
   int i;
   regmatch_t pmatch;
 
   nr_token = 0;
+
+/*  for(i = 0; i < NR_REGEX; i ++)
+  {
+	char temp_char[2];
+	temp_char[0] = rules[i].token_type;
+	printf("%s: %d\n", (rules[i].token_type == TK_NOTYPE ? "TK_NOTYPE": 
+		(rules[i].token_type == TK_NUM ? "TK_NUM": 
+		temp_char)), rules[i].token_type);
+  }
+  */
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
@@ -95,7 +113,32 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+		  case TK_NOTYPE: 
+		  case '+':
+		  case '-':
+		  case '*':
+		  case '/':
+		  case '(':
+		  case ')':
+		  case TK_NUM:
+//			char temp_str[2];
+//			temp_str[0] = rules[i].token_type;		
+			int substr_pos;
+			tokens[nr_token].type = rules[i].token_type;
+			for (substr_pos = 0; substr_pos < substr_len; substr_pos ++)
+			{
+			  tokens[nr_token].str[substr_pos] = *(substr_start + substr_pos);
+//			  printf("%c, %c\n", tokens[nr_token].str[substr_pos], *(substr_start + substr_pos));
+			}
+			tokens[nr_token].str[substr_pos] = '\0';
+/*			printf("type: %s, str: \"%s\"\n", rules[i].token_type == TK_NOTYPE ? "TK_NOTYPE":
+				(rules[i].token_type == TK_NUM ? "TK_NUM":
+				 temp_str), tokens[nr_token].str);
+				 */
+			nr_token += 1;
+			break;
+          default: 
+			TODO();
         }
 
         break;

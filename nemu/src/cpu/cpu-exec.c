@@ -43,7 +43,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
+  //printf("%d, %d, %d\n", pc, snpc, ilen);
   isa_exec_once(s);
+//  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -52,8 +54,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
   int i;
   uint8_t *inst = (uint8_t *)&s->isa.inst;
 #ifdef CONFIG_ISA_x86
+//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   for (i = 0; i < ilen; i ++) {
 #else
+//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   for (i = ilen - 1; i >= 0; i --) {
 #endif
     p += snprintf(p, 4, " %02x", inst[i]);
@@ -68,6 +72,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
+//  printf("inst: %x\n", *(uint8_t *)&s->isa.inst);
+//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
 #endif
 }
 
@@ -99,6 +105,7 @@ void assert_fail_msg() {
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
+//  printf("%d\n", nemu_state.state);
   switch (nemu_state.state) {
     case NEMU_END: case NEMU_ABORT: case NEMU_QUIT:
       printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
