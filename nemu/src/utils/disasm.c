@@ -71,6 +71,7 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte) {
 //  printf("str: %s, size: %d, pc: %lx, code: %x, nbyte: %d\n", str, size, pc, *code, nbyte);
 	cs_insn *insn;
 	size_t count = cs_disasm_dl(handle, code, nbyte, pc, 0, &insn);
+  printf("%ld\n", count);
 //	printf("insn: %s\n", insn);
   assert(count == 1);
   printf("%ld\n", count);
