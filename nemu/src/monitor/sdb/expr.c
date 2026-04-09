@@ -85,7 +85,7 @@ bool make_token(char *e){
 
   nr_token = 0;
 
-  for(i = 0; i < NR_REGEX; i ++)
+/*  for(i = 0; i < NR_REGEX; i ++)
   {
 	char temp_char[2];
 	temp_char[0] = rules[i].token_type;
@@ -93,6 +93,7 @@ bool make_token(char *e){
 		(rules[i].token_type == TK_NUM ? "TK_NUM": 
 		temp_char)), rules[i].token_type);
   }
+  */
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
