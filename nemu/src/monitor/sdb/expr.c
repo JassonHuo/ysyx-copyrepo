@@ -77,8 +77,8 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-//static bool make_token(char *e) {
-bool make_token(char *e){
+static bool make_token(char *e) {
+//bool make_token(char *e){
   int position = 0;
   int i;
   regmatch_t pmatch;
@@ -113,7 +113,8 @@ bool make_token(char *e){
          */
 
         switch (rules[i].token_type) {
-		  case TK_NOTYPE: 
+		  case TK_NOTYPE:
+			break;
 		  case '+':
 		  case '-':
 		  case '*':
@@ -131,7 +132,7 @@ bool make_token(char *e){
 //			  printf("%c, %c\n", tokens[nr_token].str[substr_pos], *(substr_start + substr_pos));
 			}
 			tokens[nr_token].str[substr_pos] = '\0';
-			assert(tokens[nr_token].str == NULL);
+			assert(tokens[nr_token].str != NULL);
 /*			printf("type: %s, str: \"%s\"\n", rules[i].token_type == TK_NOTYPE ? "TK_NOTYPE":
 				(rules[i].token_type == TK_NUM ? "TK_NUM":
 				 temp_str), tokens[nr_token].str);
@@ -155,6 +156,155 @@ bool make_token(char *e){
   return true;
 }
 
+bool check_parentheses(int p, int q)
+{
+  /*
+  int stack_size = 32;
+//  Token token_stack[32] = {};
+  Token *token_stack = (Token*)malloc(stack_size * sizeof(Token));
+  Assert(token_stack, "%s %d in function:%s\nMemory allocation failed", __FILE__, __LINE__, __func__);
+  int stack_top = 0;
+  for (int i = p; i <= q; i ++)
+  {
+	if (tokens[i].type == '(')
+	{
+	  token_stack[stack_top] = tokens[i];
+	  stack_top += 1;
+	  if(stack_top >= stack_size && i != q)
+	  {
+		Token* new_stack = (Token*)malloc((stack_size + 5)* sizeof(Token));
+		assert(new_stack != NULL);
+		for(int j = 0; j < stack_top; j ++)
+		{
+		  new_stack[j] = token_stack[j]; 
+		}
+		free(token_stack);
+		token_stack = new_stack;
+		stack_size += 5;
+	  }
+	}else if(tokens[i].type == ')')
+	{
+	  if (stack_top == 0)
+	  {
+		free(token_stack);
+		return false;
+	  }
+	  stack_top -= 1;
+	}
+  }
+  free(token_stack);
+  return stack_top == 0 && tokens[p].type == '(' && tokens[q].type == ')';
+  */
+  int pos;
+  if (tokens[p].type != '(' || tokens[q].type != ')')
+	return false;
+  int stack_size = 32;
+  Token *token_stack = (Token*)malloc(stack_size * sizeof(Token));
+  Assert(token_stack, "%s %d in function:%s\nMemory allocation failed", __FILE__, __LINE__, __func__);
+  int stack_top = 0;
+  for(pos = p + 1; pos < q; pos ++)
+  {
+	if(tokens[pos].type == '(')
+	{
+	  token_stack[stack_top] = tokens[pos];
+	  stack_top += 1;
+	}
+	else if(tokens[pos].type == ')')
+	{
+	  if(stack_top == 0)
+	  {
+		free(token_stack);
+		return false;
+	  }
+	  stack_top -= 1;
+	}
+  }
+  free(token_stack);
+  return stack_top == 0;
+}
+
+bool valid_result = true;
+
+static uint32_t eval(int p, int q) {
+  //printf("%d, %d\n", p, q);
+  if (p > q) {
+//	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
+//	exit(1);
+	printf("Expression Error\n");
+	valid_result = false;
+	return 0;
+  }
+  else if (p == q) {
+    /* Single token.
+     * For now this token should be a number.
+     * Return the value of the number.
+     */
+	if(tokens[p].type == TK_NUM)
+	  return atoi(tokens[p].str);
+	//printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
+	//exit(1);
+	  printf("Expression Error\n");
+	  valid_result = false;	
+	  return 0;
+  }
+  else if (check_parentheses(p, q) == true) {
+    /* The expression is surrounded by a matched pair of parentheses.
+     * If that is the case, just throw away the parentheses.
+     */
+    return eval(p + 1, q - 1);
+  }
+  else {
+	int op = -1;
+	int last_op = -1;
+	int in_parentheses = 0;
+	for(int pos = q; pos >= p; pos --)
+	{
+	  if(!in_parentheses && 
+		  (tokens[pos].type == '+' || 
+		   tokens[pos].type == '-'))
+	  {
+		op = pos;
+		break;
+	  }
+	  else if(!in_parentheses && (tokens[pos].type == '*' ||
+		  tokens[pos].type == '/') &&
+		  last_op < 0)
+		last_op = pos;
+	  else if(tokens[pos].type == ')')
+		in_parentheses += 1;
+	  else if(tokens[pos].type == '(')
+		in_parentheses -= 1;
+	}
+	if (op < 0)
+	{
+	  if(last_op < 0)
+	  {
+		printf("Expression error\n");
+		valid_result = false;
+		return 0;
+	  }
+
+	  op = last_op;	
+	}
+    uint32_t val1 = eval(p, op - 1);
+    uint32_t val2 = eval(op + 1, q);
+
+    switch (tokens[op].type) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 * val2; 
+      case '/':	return val1 / val2; 
+      default: assert(0);
+    }
+  }
+}
+
+/*
+uint32_t do_compression()
+{
+  return eval(0, nr_token);
+}
+*/
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -163,7 +313,11 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
+//  TODO();
+  uint32_t expr_result = eval(0, nr_token - 1);
+  *success = true;
+  if(valid_result)
+	printf("%d\n", expr_result);
+  valid_result = true;
   return 0;
 }

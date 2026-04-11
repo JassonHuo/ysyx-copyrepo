@@ -28,6 +28,9 @@ void execute();
 void isa_reg_display();
 word_t pmem_read(paddr_t addr, int len);
 uint8_t* guest_to_host();
+//bool make_token();
+//uint32_t do_compression();
+word_t expr();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -61,6 +64,7 @@ static int cmd_help(char *args);
 static int cmd_si(char *args);
 static int cmd_info(char *args);
 static int cmd_x(char *args);
+static int cmd_p(char *args);
 
 static struct {
   const char *name;
@@ -73,6 +77,7 @@ static struct {
   { "si", "Execute by steps you want", cmd_si },
   { "info", "Display the status of register", cmd_info },
   { "x", "Scanf the memory", cmd_x },
+  { "p", "Solve the math expression", cmd_p },
 
   /* TODO: Add more commands */
 
@@ -145,6 +150,17 @@ static int cmd_x(char *args)
 	printf("%08x: %08x\n", beg_addr, pmem);
 	beg_addr += 4;
   }
+  return 0;
+}
+
+static int cmd_p(char *args)
+{
+//  bool token_complite = make_token(args);
+  bool success;
+  expr(args, &success);
+  if(!success)
+	printf("Expression Error\n");
+//	printf("%s is not a right compresstion\n", args);
   return 0;
 }
 
