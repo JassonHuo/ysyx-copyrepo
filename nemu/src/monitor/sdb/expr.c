@@ -223,6 +223,8 @@ bool check_parentheses(int p, int q)
   return stack_top == 0;
 }
 
+bool valid_result = true;
+
 static uint32_t eval(int p, int q) {
   //printf("%d, %d\n", p, q);
   if (p > q) {
@@ -236,8 +238,11 @@ static uint32_t eval(int p, int q) {
      */
 	if(tokens[p].type == TK_NUM)
 	  return atoi(tokens[p].str);
-	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
-	exit(1);
+	//printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
+	//exit(1);
+	  printf("Expression error\n");
+	  valid_result = false;	
+	  return 0;
   }
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
@@ -272,6 +277,7 @@ static uint32_t eval(int p, int q) {
 	  if(last_op < 0)
 	  {
 		printf("Expression error\n");
+		valid_result = false;
 		return 0;
 	  }
 
@@ -307,7 +313,8 @@ word_t expr(char *e, bool *success) {
 //  TODO();
   uint32_t expr_result = eval(0, nr_token - 1);
   *success = true;
-  if(*success)
+  if(valid_result)
 	printf("%d\n", expr_result);
+  valid_result = true;
   return 0;
 }
