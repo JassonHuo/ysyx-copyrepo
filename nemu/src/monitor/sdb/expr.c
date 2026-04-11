@@ -222,7 +222,7 @@ bool check_parentheses(int p, int q)
   return stack_top == 0;
 }
 
-int eval(int p, int q) {
+static uint32_t eval(int p, int q) {
   if (p > q) {
 	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
 	exit(1);
@@ -281,6 +281,11 @@ int eval(int p, int q) {
       default: assert(0);
     }
   }
+}
+
+uint32_t do_compression()
+{
+  return eval(0, nr_token);
 }
 
 word_t expr(char *e, bool *success) {
