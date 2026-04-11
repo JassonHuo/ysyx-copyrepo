@@ -225,8 +225,8 @@ int eval(int p, int q) {
 		op = pos;
 		break;
 	  }
-	  else if(tokens[pos].type == '*' &&
-		  tokens[pos].type == '/' &&
+	  else if((tokens[pos].type == '*' ||
+		  tokens[pos].type == '/') &&
 		  last_op < 0)
 		last_op = pos;
 	}
