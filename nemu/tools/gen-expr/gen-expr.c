@@ -101,7 +101,7 @@ static void gen_blank()
 static void gen_rand_expr() {
 //  buf[0] = '\0';
   int op = choose(3);
-  if(cur_token >= 22)
+  if(cur_token >= 15)
   {
 	gen_blank();
 	gen_num();
