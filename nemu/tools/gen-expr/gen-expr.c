@@ -98,9 +98,10 @@ static void gen_blank()
   //return " ";
 }
 
-static void gen_rand_expr() {
+static void gen_rand_expr(int depth) {
 //  buf[0] = '\0';
   int op = choose(3);
+  /*
   if(cur_token >= 15)
   {
 	gen_blank();
@@ -110,11 +111,14 @@ static void gen_rand_expr() {
   }
   if(op <= 5 && choose(2))
 	op += 1;
+	*/
+  if(depth >= 20)
+	op = 0;
   switch (op) {
     case 0: gen_blank(); gen_num(); gen_blank(); break;
-    case 1: gen_blank(); gen('('); gen_blank(); gen_rand_expr(); gen_blank(); gen(')'); gen_blank(); break;
+    case 1: gen_blank(); gen('('); gen_blank(); gen_rand_expr(depth + 1); gen_blank(); gen(')'); gen_blank(); break;
 //	case 2: gen_blank(); break;
-    default: gen_rand_expr(); gen_blank(); gen_rand_op(); gen_blank(); gen_rand_expr(); break;
+    default: gen_rand_expr(depth + 1); gen_blank(); gen_rand_op(); gen_blank(); gen_rand_expr(depth + 1); break;
   }
 }
 
@@ -128,7 +132,7 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
-    gen_rand_expr();
+    gen_rand_expr(0);
 	buf[buf_top] = '\0';
 
     sprintf(code_buf, code_format, buf);
