@@ -155,6 +155,45 @@ bool make_token(char *e){
   return true;
 }
 
+bool check_parentheses(int p, int q)
+{
+  int stack_size = 32;
+//  Token token_stack[32] = {};
+  Token *token_stack = (Token*)malloc(stack_size * sizeof(Token));
+  Assert(token_stack, "%s %d in function:%s\nMemory allocation failed", __FILE__, __LINE__, __func__);
+  int stack_top = 0;
+  for (int i = p; i <= q; i ++)
+  {
+	if (tokens[i].type == '(')
+	{
+	  token_stack[stack_top] = tokens[i];
+	  stack_top += 1;
+	  if(stack_top >= stack_size && i != q)
+	  {
+		Token* new_stack = (Token*)malloc((stack_size + 5)* sizeof(Token));
+		assert(new_stack != NULL);
+		for(int j = 0; j < stack_top; j ++)
+		{
+		  new_stack[j] = token_stack[j]; 
+		}
+		free(token_stack);
+		token_stack = new_stack;
+		stack_size += 5;
+	  }
+	}else if(tokens[i].type == ')')
+	{
+	  if (stack_top == 0)
+	  {
+		free(token_stack);
+		return false;
+	  }
+	  stack_top -= 1;
+	}
+  }
+  free(token_stack);
+  return stack_top == 0;
+}
+
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
