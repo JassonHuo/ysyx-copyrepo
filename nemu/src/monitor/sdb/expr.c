@@ -157,6 +157,7 @@ bool make_token(char *e){
 
 bool check_parentheses(int p, int q)
 {
+  /*
   int stack_size = 32;
 //  Token token_stack[32] = {};
   Token *token_stack = (Token*)malloc(stack_size * sizeof(Token));
@@ -192,6 +193,33 @@ bool check_parentheses(int p, int q)
   }
   free(token_stack);
   return stack_top == 0 && tokens[p].type == '(' && tokens[q].type == ')';
+  */
+  int pos;
+  if (tokens[p].type != '(' || tokens[q].type != ')')
+	return false;
+  int stack_size = 32;
+  Token *token_stack = (Token*)malloc(stack_size * sizeof(Token));
+  Assert(token_stack, "%s %d in function:%s\nMemory allocation failed", __FILE__, __LINE__, __func__);
+  int stack_top = 0;
+  for(pos = p + 1; pos < q; pos ++)
+  {
+	if(tokens[pos].type == '(')
+	{
+	  token_stack[stack_top] = tokens[pos];
+	  stack_top += 1;
+	}
+	else if(tokens[pos].type == ')')
+	{
+	  if(stack_top == 0)
+	  {
+		free(token_stack);
+		return false;
+	  }
+	  stack_top -= 1;
+	}
+  }
+  free(token_stack);
+  return stack_top == 0;
 }
 
 int eval(int p, int q) {
