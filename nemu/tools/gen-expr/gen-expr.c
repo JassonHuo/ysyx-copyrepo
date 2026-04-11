@@ -112,8 +112,10 @@ static void gen_rand_expr(int depth) {
   if(op <= 5 && choose(2))
 	op += 1;
 	*/
-  if(depth >= 20)
+  if(depth >= 15)
 	op = 0;
+  else if(depth <= 3 && choose(2))
+	op += 1;
   switch (op) {
     case 0: gen_blank(); gen_num(); gen_blank(); break;
     case 1: gen_blank(); gen('('); gen_blank(); gen_rand_expr(depth + 1); gen_blank(); gen(')'); gen_blank(); break;
