@@ -37,8 +37,8 @@ int main(int argc, char *argv[]) {
 	printf("expression: %s \n", buffer);
 	printf("perfect result %u\n", result);
 	expr(buffer, &success);
-	char buffer_real[1000];
-	Assert(fgets(buffer_real, 1000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+	char buffer_real[70000];
+	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
 	uint32_t real_result = atoi(buffer_real);
 	printf("result: %u\n", real_result);
 	if(!success || result != real_result)
