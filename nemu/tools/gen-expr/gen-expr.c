@@ -47,14 +47,15 @@ static int choose(int n)
   return rand() % n;
 }
 
+
 static void gen_num()
 {
-  int num;
+  uint32_t num;
   if(buf[buf_top - 1] == '/')
 	while((num = rand() % 100) == 0);
   char *str_num = (char*)malloc(15 * sizeof(char));
   Assert(str_num, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
-  sprintf(str_num, "%d", num);
+  sprintf(str_num, "%u", num);
   int length = strlen(str_num);
   for (int pos = 0; pos < length; pos ++)
   {
@@ -105,6 +106,7 @@ static void gen_rand_expr() {
 }
 
 int main(int argc, char *argv[]) {
+  srand((unsigned int)time(NULL));
   int seed = time(0);
   srand(seed);
   int loop = 1;
