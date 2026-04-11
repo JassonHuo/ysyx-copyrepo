@@ -223,6 +223,7 @@ bool check_parentheses(int p, int q)
 }
 
 static uint32_t eval(int p, int q) {
+  printf("%d, %d\n", p, q);
   if (p > q) {
 	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
 	exit(1);
