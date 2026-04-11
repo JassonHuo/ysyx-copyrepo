@@ -194,6 +194,59 @@ bool check_parentheses(int p, int q)
   return stack_top == 0;
 }
 
+int eval(int p, int q) {
+  if (p > q) {
+	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
+	exit(1);
+  }
+  else if (p == q) {
+    /* Single token.
+     * For now this token should be a number.
+     * Return the value of the number.
+     */
+	if(tokens[p].type == TK_NUM)
+	  return atoi(tokens[p].str);
+	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
+	exit(1);
+  }
+  else if (check_parentheses(p, q) == true) {
+    /* The expression is surrounded by a matched pair of parentheses.
+     * If that is the case, just throw away the parentheses.
+     */
+    return eval(p + 1, q - 1);
+  }
+  else {
+	int op = -1;
+	int last_op = -1;
+	for(int pos = q; pos >= p; pos --)
+	{
+	  if(tokens[pos].type == '+' || tokens[pos].type == '-')
+	  {
+		op = pos;
+		break;
+	  }
+	  else if(tokens[pos].type == '*' &&
+		  tokens[pos].type == '/' &&
+		  last_op < 0)
+		last_op = pos;
+	}
+	if (op < 0)
+	{
+	  Assert((last_op > 0), "Expression Error");
+	  op = last_op;	
+	}
+    int val1 = eval(p, op - 1);
+    int val2 = eval(op + 1, q);
+
+    switch (tokens[op].type) {
+      case '+': return val1 + val2;
+      case '-': return val1 - val2;
+      case '*': return val1 * val2; 
+      case '/':	return val1 / val2; 
+      default: assert(0);
+    }
+  }
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
