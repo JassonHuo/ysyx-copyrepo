@@ -77,8 +77,8 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
-//static bool make_token(char *e) {
-bool make_token(char *e){
+static bool make_token(char *e) {
+//bool make_token(char *e){
   int position = 0;
   int i;
   regmatch_t pmatch;
@@ -113,7 +113,8 @@ bool make_token(char *e){
          */
 
         switch (rules[i].token_type) {
-		  case TK_NOTYPE: 
+		  case TK_NOTYPE:
+			break;
 		  case '+':
 		  case '-':
 		  case '*':
@@ -289,10 +290,12 @@ static uint32_t eval(int p, int q) {
   }
 }
 
+/*
 uint32_t do_compression()
 {
   return eval(0, nr_token);
 }
+*/
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -301,7 +304,9 @@ word_t expr(char *e, bool *success) {
   }
 
   /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
+//  TODO();
+  uint32_t result = eval(0, nr_token);
+  *success = true;
+  printf("%d\n", result);
   return 0;
 }

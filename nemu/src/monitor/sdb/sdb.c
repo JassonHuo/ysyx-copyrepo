@@ -28,8 +28,9 @@ void execute();
 void isa_reg_display();
 word_t pmem_read(paddr_t addr, int len);
 uint8_t* guest_to_host();
-bool make_token();
-uint32_t do_compression();
+//bool make_token();
+//uint32_t do_compression();
+word_t expr();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -154,11 +155,12 @@ static int cmd_x(char *args)
 
 static int cmd_p(char *args)
 {
-  bool token_complite = make_token(args);
-  if(!token_complite)
+//  bool token_complite = make_token(args);
+  bool success;
+  expr(args, &success);
+  if(!success)
 	printf("%s is not a right compresstion\n", args);
-  return do_compression();
-
+  return 0;
 }
 
 void sdb_set_batch_mode() {
