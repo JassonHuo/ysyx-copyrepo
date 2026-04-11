@@ -31,6 +31,7 @@
 
 // this should be enough
 static char buf[65536] = {};
+static int cur_token = 0;
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
@@ -61,6 +62,7 @@ static void gen_num()
   {
 	buf[buf_top++] = str_num[pos];
   }
+  cur_token += 1;
 //  return str_num;
 }
 
@@ -71,8 +73,8 @@ static void gen(char ch)
 //  li[0] = ch;
 //  li[1] = '\0';
   buf[buf_top++] = ch;
+  cur_token += 1;
 //  return li;
-  return;
 }
 
 static void gen_rand_op()
@@ -84,6 +86,7 @@ static void gen_rand_op()
 //  op[0] = ops[idx];
   //op[1] = '\0';
   buf[buf_top ++] = ops[idx];
+  cur_token += 1;
 //  return op;
 }
 
@@ -97,7 +100,15 @@ static void gen_blank()
 
 static void gen_rand_expr() {
 //  buf[0] = '\0';
-  switch (choose(3)) {
+  int op = choose(3);
+  if(cur_token >= 25)
+  {
+	gen_num();
+	return;
+  }
+  if(op <= 5 && choose(2))
+	op += 1;
+  switch (op) {
     case 0: gen_blank(); gen_num(); gen_blank(); break;
     case 1: gen_blank(); gen('('); gen_blank(); gen_rand_expr(); gen_blank(); gen(')'); gen_blank(); break;
 //	case 2: gen_blank(); break;
