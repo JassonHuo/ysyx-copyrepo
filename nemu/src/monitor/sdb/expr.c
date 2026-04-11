@@ -191,7 +191,7 @@ bool check_parentheses(int p, int q)
 	}
   }
   free(token_stack);
-  return stack_top == 0;
+  return stack_top == 0 && tokens[p].type == '(' && tokens[q].type == ')';
 }
 
 int eval(int p, int q) {
