@@ -20,6 +20,15 @@
 #include <assert.h>
 #include <string.h>
 
+#define Assert(cond, fmt, ...)\
+  do{\
+  if(!(cond))\
+  {\
+	fprintf(stderr, fmt, ##__VA_ARGS__);\
+	abort();\
+  }\
+}while(0)
+
 // this should be enough
 static char buf[65536] = {};
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
@@ -32,12 +41,66 @@ static char *code_format =
 "}";
 
 static int buf_top = 0;
+
+static int choose(int n)
+{
+  return rand() % n;
+}
+
+static void gen_num()
+{
+  int num;
+  if(buf[buf_top - 1] == '/')
+	while((num = rand() % 100) == 0);
+  char *str_num = (char*)malloc(15 * sizeof(char));
+  Assert(str_num, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
+  sprintf(str_num, "%d", num);
+  int length = strlen(str_num);
+  for (int pos = 0; pos < length; pos ++)
+  {
+	buf[buf_top++] = str_num[pos];
+  }
+//  return str_num;
+}
+
+static void gen(char ch)
+{
+//  char *li = (char*)malloc(2 * sizeof(char));
+ // Assert(li, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
+//  li[0] = ch;
+//  li[1] = '\0';
+  buf[buf_top++] = ch;
+//  return li;
+  return;
+}
+
+static void gen_rand_op()
+{
+  char ops[] = "+-*/";
+//  char *op = (char*)malloc(2 * sizeof(char));
+//  Assert(op, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
+  int idx = choose(4);
+//  op[0] = ops[idx];
+  //op[1] = '\0';
+  buf[buf_top ++] = ops[idx];
+//  return op;
+}
+
+static void gen_blank()
+{
+  while(choose(2))
+	if(choose(2))
+	  buf[buf_top ++] = ' ';
+  //return " ";
+}
+
 static void gen_rand_expr() {
 //  buf[0] = '\0';
   switch (choose(3)) {
-    case 0: gen_num(); break;
-    case 1: gen('('); gen_rand_expr(); gen(')'); break;
-    default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
+    case 0: gen_blank(); gen_num(); gen_blank(); break;
+    case 1: gen_blank(); gen('('); gen_blank(); gen_rand_expr(); gen_blank(); gen(')'); gen_blank(); break;
+//	case 2: gen_blank(); break;
+    default: gen_rand_expr(); gen_blank(); gen_rand_op(); gen_blank(); gen_rand_expr(); break;
   }
 }
 
@@ -51,6 +114,7 @@ int main(int argc, char *argv[]) {
   int i;
   for (i = 0; i < loop; i ++) {
     gen_rand_expr();
+	buf[buf_top] = '\0';
 
     sprintf(code_buf, code_format, buf);
 
