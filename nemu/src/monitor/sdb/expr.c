@@ -230,7 +230,7 @@ static uint32_t eval(int p, int q) {
   if (p > q) {
 //	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
 //	exit(1);
-	printf("Expressiong error\n");
+	printf("Expression Error\n");
 	valid_result = false;
 	return 0;
   }
@@ -243,7 +243,7 @@ static uint32_t eval(int p, int q) {
 	  return atoi(tokens[p].str);
 	//printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
 	//exit(1);
-	  printf("Expression error\n");
+	  printf("Expression Error\n");
 	  valid_result = false;	
 	  return 0;
   }
