@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 	Assert(fgets(buffer, 70000, fp) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
 	printf("expression: %s \n", buffer);
 	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
-	printf("real result %u\n", result);
+	printf("perfect result %u\n", result);
 	expr(buffer, &success);
 	char buffer_real[70000];
 	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
