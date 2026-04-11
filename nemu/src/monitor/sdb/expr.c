@@ -267,7 +267,12 @@ static uint32_t eval(int p, int q) {
 	}
 	if (op < 0)
 	{
-	  Assert((last_op > 0), "Expression Error");
+	  if(last_op < 0)
+	  {
+		printf("Expression error\n");
+		return 0;
+	  }
+
 	  op = last_op;	
 	}
     uint32_t val1 = eval(p, op - 1);
