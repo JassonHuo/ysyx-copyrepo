@@ -112,7 +112,7 @@ static void gen_rand_expr(int depth) {
   if(op <= 5 && choose(2))
 	op += 1;
 	*/
-  if(depth >= 15)
+  if(depth >= 8)
 	op = 0;
   else if(depth <= 3 && choose(2))
 	op += 1;
