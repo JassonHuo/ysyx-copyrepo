@@ -246,25 +246,32 @@ int eval(int p, int q) {
   else {
 	int op = -1;
 	int last_op = -1;
+	int in_parentheses = 0;
 	for(int pos = q; pos >= p; pos --)
 	{
-	  if(tokens[pos].type == '+' || tokens[pos].type == '-')
+	  if(!in_parentheses && 
+		  (tokens[pos].type == '+' || 
+		   tokens[pos].type == '-'))
 	  {
 		op = pos;
 		break;
 	  }
-	  else if((tokens[pos].type == '*' ||
+	  else if(!in_parentheses && (tokens[pos].type == '*' ||
 		  tokens[pos].type == '/') &&
 		  last_op < 0)
 		last_op = pos;
+	  else if(tokens[pos].type == ')')
+		in_parentheses += 1;
+	  else if(tokens[pos].type == '(')
+		in_parentheses -= 1;
 	}
 	if (op < 0)
 	{
 	  Assert((last_op > 0), "Expression Error");
 	  op = last_op;	
 	}
-    int val1 = eval(p, op - 1);
-    int val2 = eval(op + 1, q);
+    uint32_t val1 = eval(p, op - 1);
+    uint32_t val2 = eval(op + 1, q);
 
     switch (tokens[op].type) {
       case '+': return val1 + val2;
