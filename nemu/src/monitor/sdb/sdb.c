@@ -159,7 +159,8 @@ static int cmd_p(char *args)
   bool success;
   expr(args, &success);
   if(!success)
-	printf("%s is not a right compresstion\n", args);
+	printf("Expression Error\n");
+//	printf("%s is not a right compresstion\n", args);
   return 0;
 }
 
