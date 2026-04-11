@@ -19,10 +19,32 @@ void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
+word_t expr();
 //bool make_token();
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
+  bool success;
+  for (int i = 0; i < 10000; i ++)
+  {
+	FILE *fp;
+	FILE *out = stdout;
+	fp = popen("/home/jasonhuo/ysyx/ysyx-workbench/nemu/tools/gen-expr/build/gen-expr 2>/dev/null", "r");
+	char buffer[70000];
+	Assert(fp, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
+	Assert(fgets(buffer, 70000, fp) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
+	expr(buffer, &success);
+	char buffer_real[70000];
+	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+	uint32_t real_result = atoi(buffer_real);
+	if(!success || result != real_result)
+	{
+	  printf("Error\n");
+	  return 1;
+	}
+  }
+  printf("Pass\n");
 #ifdef CONFIG_TARGET_AM
   am_init_monitor();
 #else
