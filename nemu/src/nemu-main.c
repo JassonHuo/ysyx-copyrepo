@@ -33,10 +33,12 @@ int main(int argc, char *argv[]) {
 	char buffer[70000];
 	Assert(fp, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
 	Assert(fgets(buffer, 70000, fp) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+	printf("%s ", buffer);
 	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
 	expr(buffer, &success);
 	char buffer_real[70000];
 	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+	printf("%s\n", buffer_real);
 	uint32_t real_result = atoi(buffer_real);
 	if(!success || result != real_result)
 	{
