@@ -24,6 +24,39 @@ word_t expr();
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
+  /*bool success;
+  for (int i = 0; i < 10000; i ++)
+  {
+	FILE *fp;
+//	FILE *out = stdout;
+	fp = popen("/home/jasonhuo/ysyx/ysyx-workbench/nemu/tools/gen-expr/build/gen-expr 2>/dev/null", "r");
+	char buffer[70000];
+	Assert(fp, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
+	Assert(fgets(buffer, 60000, fp) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
+	printf("expression: %s \n", buffer);
+	printf("perfect result %u\n", result);
+	uint32_t real_result = expr(buffer, &success);
+//	char buffer_real[70000];
+//	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+//	uint32_t real_result = atoi(buffer_real);
+	printf("result: %u\n", real_result);
+	if(!success || result != real_result)
+	{
+	  printf("Error\n");
+	  return 1;
+	}
+  }
+  printf("Pass\n");
+  */
+#ifdef CONFIG_TARGET_AM
+  am_init_monitor();
+#else
+  init_monitor(argc, argv);
+#endif
+
+  /* Start engine. */
+//  make_token("45 +       36*(241235- 11435         )              ");
   bool success;
   for (int i = 0; i < 10000; i ++)
   {
@@ -37,7 +70,6 @@ int main(int argc, char *argv[]) {
 	printf("expression: %s \n", buffer);
 	printf("perfect result %u\n", result);
 	uint32_t real_result = expr(buffer, &success);
-	printf("test\n");
 //	char buffer_real[70000];
 //	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
 //	uint32_t real_result = atoi(buffer_real);
@@ -49,14 +81,6 @@ int main(int argc, char *argv[]) {
 	}
   }
   printf("Pass\n");
-#ifdef CONFIG_TARGET_AM
-  am_init_monitor();
-#else
-  init_monitor(argc, argv);
-#endif
-
-  /* Start engine. */
-//  make_token("45 +       36*(241235- 11435         )              ");
   engine_start();
 
   return is_exit_status_bad();
