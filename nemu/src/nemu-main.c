@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < 10000; i ++)
   {
 	FILE *fp;
-	FILE *out = stdout;
+//	FILE *out = stdout;
 	fp = popen("/home/jasonhuo/ysyx/ysyx-workbench/nemu/tools/gen-expr/build/gen-expr 2>/dev/null", "r");
 	char buffer[70000];
 	Assert(fp, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
@@ -36,11 +36,11 @@ int main(int argc, char *argv[]) {
 	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
 	printf("expression: %s \n", buffer);
 	printf("perfect result %u\n", result);
-	expr(buffer, &success);
+	uint32_t real_result = expr(buffer, &success);
 	fflush(stdout);
-	char buffer_real[70000];
-	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
-	uint32_t real_result = atoi(buffer_real);
+//	char buffer_real[70000];
+//	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+//	uint32_t real_result = atoi(buffer_real);
 	printf("result: %u\n", real_result);
 	if(!success || result != real_result)
 	{

@@ -319,5 +319,6 @@ word_t expr(char *e, bool *success) {
   if(valid_result)
 	printf("%u\n", expr_result);
   valid_result = true;
-  return 0;
+//  return 0;
+  return expr_result;
 }
