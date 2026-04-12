@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
     ret = fscanf(fp, "%d", &result);
     pclose(fp);
 
-    printf("%u %s\n", result, buf);
+    printf("%u,%s\n", result, buf);
 	fflush(stdout);
   }
   return 0;
