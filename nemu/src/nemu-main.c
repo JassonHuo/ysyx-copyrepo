@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
 
   /* Start engine. */
 //  make_token("45 +       36*(241235- 11435         )              ");
+  /*
   bool success;
   for (int i = 0; i < 10000; i ++)
   {
@@ -60,6 +61,7 @@ int main(int argc, char *argv[]) {
 	}
   }
   printf("Pass\n");
+  */
   engine_start();
 
   return is_exit_status_bad();
