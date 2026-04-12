@@ -41,16 +41,19 @@ int main(int argc, char *argv[]) {
 	char buffer[70000];
 	Assert(fp, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
 	Assert(fgets(buffer, 60000, fp) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
-	printf("%s\n", buffer);
-	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
-	printf("expression: %s \n", buffer);
-	printf("perfect result %u\n", result);
+//	printf("%s\n", buffer);
+//	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
+	char result[10];
+	char expression[70000];
+	Assert(fscanf(fp, "%s,%s", result, expression), "%s %s %d: Memory Allocation Error", __FILE__, __func__, __LINE__);
+	printf("expression: %s \n", expression);
+	printf("perfect result %u\n", atoi(result));
 	uint32_t real_result = expr(buffer, &success);
 //	char buffer_real[70000];
 //	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
 //	uint32_t real_result = atoi(buffer_real);
 	printf("result: %u\n", real_result);
-	if(!success || result != real_result)
+	if(!success || atoi(result) != real_result)
 	{
 	  printf("Error\n");
 	  return 1;
