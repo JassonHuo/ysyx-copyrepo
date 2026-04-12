@@ -95,7 +95,7 @@ static bool make_token(char *e) {
   }
   */
 
-  while (e[position] != '\0') {
+  while (e[position] != '\0' && e[position] != '\n') {
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
@@ -317,7 +317,8 @@ word_t expr(char *e, bool *success) {
   uint32_t expr_result = eval(0, nr_token - 1);
   *success = true;
   if(valid_result)
-	printf("%d\n", expr_result);
+	printf("%u\n", expr_result);
   valid_result = true;
-  return 0;
+//  return 0;
+  return expr_result;
 }
