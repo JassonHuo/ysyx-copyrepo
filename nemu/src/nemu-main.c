@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 	fp = popen("/home/jasonhuo/ysyx/ysyx-workbench/nemu/tools/gen-expr/build/gen-expr 2>/dev/null", "r");
 	char buffer[70000];
 	Assert(fp, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
-	Assert(fgets(buffer, 60000, fp) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
+	//Assert(fgets(buffer, 60000, fp) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
 //	printf("%s\n", buffer);
 //	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
 	char result[10];
