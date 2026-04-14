@@ -53,7 +53,13 @@ static void gen_num()
 {
   uint32_t num;
   if(buf[buf_top - 1] == '/')
-	while((num = rand() % 100) == 0);
+	//while((num = rand() % 100) && num == 0);
+	while(1)
+	{
+	  num = rand() % 100;
+	  if (num != 0)
+		break;
+	}
   char *str_num = (char*)malloc(15 * sizeof(char));
   Assert(str_num, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
   sprintf(str_num, "%u", num);
