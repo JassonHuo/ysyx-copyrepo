@@ -66,12 +66,13 @@ int main(int argc, char *argv[]) {
 	  printf("Error\n");
 	  return 1;
 	}
-	  pclose(fp);
-	  fp = NULL;
-	  printf("%d/10000\n", i);
+	pclose(fp);
+	fp = NULL;
+	printf("%d/10000\n", i);
   }
   printf("Pass\n");
   engine_start();
 
   return is_exit_status_bad();
 }
+
