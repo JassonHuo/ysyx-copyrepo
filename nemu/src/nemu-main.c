@@ -45,7 +45,8 @@ int main(int argc, char *argv[]) {
 //	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
 	char result[10];
 	char expression[700];
-	Assert(fscanf(fp, "%s,%s", result, expression) == 2, "%s %s %d: Memory Allocation Error", __FILE__, __func__, __LINE__);
+	printf("%d\n", fscanf(fp, "%s,%s", result, expression));
+//	Assert(fscanf(fp, "%s,%s", result, expression) == 2, "%s %s %d: Memory Allocation Error", __FILE__, __func__, __LINE__);
 	printf("expression: %s \n", expression);
 	printf("perfect result %u\n", atoi(result));
 	uint32_t real_result = expr(expression, &success);
