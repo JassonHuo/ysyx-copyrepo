@@ -58,7 +58,7 @@ static void gen_num()
   Assert(str_num, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
   sprintf(str_num, "%u", num);
   int length = strlen(str_num);
-  for (int pos = 0; pos < length; pos ++)
+  for (int pos = 0; pos < length && str_num[pos] != '\0'; pos ++)
   {
 	buf[buf_top++] = str_num[pos];
   }
