@@ -48,11 +48,14 @@ static int choose(int n)
   return rand() % n;
 }
 
+static int last_valid_pos = -1;
+
 
 static void gen_num()
 {
   uint32_t num;
-  if(buf[buf_top - 1] == '/')
+  last_valid_pos = buf_top;
+  if(last_valid_pos >= 0 && buf[last_valid_pos] == '/')
 	//while((num = rand() % 100) && num == 0);
 	while(1)
 	{
@@ -60,6 +63,8 @@ static void gen_num()
 	  if (num != 0)
 		break;
 	}
+  else
+	num = rand() % 100;
   char *str_num = (char*)malloc(15 * sizeof(char));
   Assert(str_num, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
   sprintf(str_num, "%u", num);
@@ -67,6 +72,7 @@ static void gen_num()
   for (int pos = 0; pos < length && str_num[pos] != '\0'; pos ++)
   {
 	buf[buf_top++] = str_num[pos];
+	last_valid_pos ++;
   }
   cur_token += 1;
 //  return str_num;
@@ -79,6 +85,7 @@ static void gen(char ch)
 //  li[0] = ch;
 //  li[1] = '\0';
   buf[buf_top++] = ch;
+  last_valid_pos = buf_top - 1;
   cur_token += 1;
 //  return li;
 }
@@ -91,6 +98,7 @@ static void gen_rand_op()
   int idx = choose(4);
 //  op[0] = ops[idx];
   //op[1] = '\0';
+  last_valid_pos = buf_top;
   buf[buf_top ++] = ops[idx];
   cur_token += 1;
 //  return op;
