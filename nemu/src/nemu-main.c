@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
-  /* Start engine. */
+#ifdef CHECK_EVAL
 //  make_token("45 +       36*(241235- 11435         )              ");
   bool success;
   for (int i = 0; i < 10000; i ++)
@@ -80,6 +80,8 @@ int main(int argc, char *argv[]) {
 	printf("%d/10000\n", i);
   }
   printf("Pass\n");
+#endif
+  /* Start engine. */
   engine_start();
 
   return is_exit_status_bad();
