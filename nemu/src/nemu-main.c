@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 	if(div_by_zero)
 	{
 	  printf("div_by_zero: %d\n", div_by_zero);
-	  div_by_zero = false;
+//	  div_by_zero = false;
 	  i --;
 	  pclose(fp);
 	  continue;
