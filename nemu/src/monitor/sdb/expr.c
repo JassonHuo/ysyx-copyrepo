@@ -231,7 +231,7 @@ bool check_parentheses(int p, int q)
 bool valid_result = true;
 bool div_by_zero = false;
 
-static int32_t eval(int p, int q) {
+static uint32_t eval(int p, int q) {
   //printf("%d, %d\n", p, q);
   if (p > q) {
 //	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
@@ -245,8 +245,21 @@ static int32_t eval(int p, int q) {
      * For now this token should be a number.
      * Return the value of the number.
      */
+	uint32_t num;
 	if(tokens[p].type == TK_NUM)
 	  return atoi(tokens[p].str);
+	else if(tokens[p].type == TK_HEX)
+	{
+	  sscanf(tokens[p].str, "%x", &num);
+	  return num;
+	}
+	else if(tokens[p].type == TK_REG)
+	{
+	  bool success;
+	  num = isa_reg_str2val(tokens[p].str, &success);
+	  Assert(success, "%s %s %d: GPR Name Error", __FILE__, __func__, __LINE__);
+	  return num;
+	}
 	//printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
 	//exit(1);
 	  printf("Expression Error\n");
