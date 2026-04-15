@@ -228,7 +228,7 @@ bool check_parentheses(int p, int q)
 bool valid_result = true;
 bool div_by_zero = false;
 
-static uint32_t eval(int p, int q) {
+static int32_t eval(int p, int q) {
   div_by_zero = false;
   //printf("%d, %d\n", p, q);
   if (p > q) {
