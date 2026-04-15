@@ -71,7 +71,8 @@ int main(int argc, char *argv[]) {
 //	printf("result: %u\n", real_result);
 	if(!success || atoi(result) != real_result)
 	{
-	  printf("Error\n");
+	  printf("Result Error\n");
+	  printf("success: %d,\nresult = %d,\nperfect_result = %d\n", success, real_result, atoi(result));
 	  return 1;
 	}
 	pclose(fp);
