@@ -31,7 +31,7 @@ void isa_reg_display() {
 	if(cpu.gpr[i] == 0)
 	  printf("gpr[%d]\t%3s: \t0x%08x| %012d\n", i, regs[i], cpu.gpr[i], cpu.gpr[i]);
 	else
-	  printf("gpr[%d]\t%3s: \t\033[33m0x%08x\033[0m| \033[33m%012x\033[0m\n", i, regs[i], cpu.gpr[i], cpu.gpr[i]);
+	  printf("gpr[%d]\t%3s: \t\033[33m0x%08x\033[0m| \033[33m%012u\033[0m\n", i, regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }
 
