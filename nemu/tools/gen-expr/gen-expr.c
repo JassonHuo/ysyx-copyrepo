@@ -19,6 +19,8 @@
 #include <time.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 #define Assert(cond, fmt, ...)\
   do{\
@@ -30,7 +32,11 @@
 }while(0)
 
 // this should be enough
-static char buf[65536] = {};
+#ifndef TEST_DIV_BY_ZERO
+  static char buf[65536] = {};
+#else
+  static char buf[65536] = "( 14  )    /(21  / (((  65*(    39    )  ) )   *   64)/  75    )";
+#endif
 static int cur_token = 0;
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
@@ -139,6 +145,7 @@ static void gen_rand_expr(int depth) {
 }
 
 int main(int argc, char *argv[]) {
+RETRY:
   srand((unsigned int)time(NULL));
   int seed = time(0);
   srand(seed);
@@ -148,8 +155,10 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
+#ifndef TEST_DIV_BY_ZERO
     gen_rand_expr(0);
 	buf[buf_top] = '\0';
+#endif
 
     sprintf(code_buf, code_format, buf);
 
@@ -162,13 +171,18 @@ int main(int argc, char *argv[]) {
     if (ret != 0) continue;
 
     fp = popen("/tmp/.expr", "r");
-	printf("test1\n");
+	//printf("test1\n");
     assert(fp != NULL);
 
     int result;
     ret = fscanf(fp, "%d", &result);
-    pclose(fp);
-	printf("test2\n");
+    int status = pclose(fp);
+//	printf("test2\n");
+	if(WIFSIGNALED(status) && WTERMSIG(status) == SIGFPE)
+	{
+	  printf("div by zero, i: %d\n", i);
+	  goto RETRY;
+	}
 
     printf("%u,%s\n", result, buf);
 	fflush(stdout);
