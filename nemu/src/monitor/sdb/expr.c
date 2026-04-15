@@ -79,6 +79,18 @@ typedef struct token {
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
+static void add_token(int i, int substr_len, char* substr_start)
+{
+  int substr_pos;
+  tokens[nr_token].type = rules[i].token_type;
+  for (substr_pos = 0; substr_pos < substr_len; substr_pos ++)
+  {
+    tokens[nr_token].str[substr_pos] = *(substr_start + substr_pos);
+  }
+  tokens[nr_token].str[substr_pos] = '\0';
+  assert(tokens[nr_token].str != NULL);
+  nr_token += 1;                                                                    
+}
 static bool make_token(char *e) {
 //bool make_token(char *e){
   int position = 0;
@@ -126,6 +138,7 @@ static bool make_token(char *e) {
 		  case TK_NUM:
 		  case TK_HEX:
 		  case TK_REG:
+			/*
 //			char temp_str[2];
 //			temp_str[0] = rules[i].token_type;		
 			int substr_pos;
@@ -137,11 +150,9 @@ static bool make_token(char *e) {
 			}
 			tokens[nr_token].str[substr_pos] = '\0';
 			assert(tokens[nr_token].str != NULL);
-/*			printf("type: %s, str: \"%s\"\n", rules[i].token_type == TK_NOTYPE ? "TK_NOTYPE":
-				(rules[i].token_type == TK_NUM ? "TK_NUM":
-				 temp_str), tokens[nr_token].str);
-				 */
-			nr_token += 1;
+			nr_token ++;
+			*/
+			add_token(i, substr_len, substr_start);
 			break;
           default: 
 			TODO();
