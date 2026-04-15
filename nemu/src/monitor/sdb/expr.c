@@ -127,6 +127,9 @@ static bool make_token(char *e) {
 		  case '(':
 		  case ')':
 		  case TK_NUM:
+		  case TK_HEX:
+		  case TK_DERE:
+		  case TK_REG:
 //			char temp_str[2];
 //			temp_str[0] = rules[i].token_type;		
 			int substr_pos;
