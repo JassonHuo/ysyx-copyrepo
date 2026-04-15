@@ -19,6 +19,9 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <memory/host.h>
+
+uint8_t* guest_to_host();
 
 enum {
   TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_REG, TK_HEX, TK_NEQ, TK_AND, TK_DERE, 
@@ -286,6 +289,11 @@ static uint32_t eval(int p, int q) {
 	  printf("Expression Error\n");
 	  valid_result = false;	
 	  return 0;
+  }
+  else if(tokens[p].type == TK_DERE)
+  {
+	uint32_t tar = eval(p + 1, q);
+	return host_read(guest_to_host(tar), 4);
   }
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
