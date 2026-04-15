@@ -54,7 +54,7 @@ static int last_valid_pos = -1;
 static void gen_num()
 {
   uint32_t num;
-  last_valid_pos = buf_top;
+//  last_valid_pos = buf_top;
   if(last_valid_pos >= 0 && buf[last_valid_pos] == '/')
 	//while((num = rand() % 100) && num == 0);
 	while(1)
@@ -162,11 +162,13 @@ int main(int argc, char *argv[]) {
     if (ret != 0) continue;
 
     fp = popen("/tmp/.expr", "r");
+	printf("test1\n");
     assert(fp != NULL);
 
     int result;
     ret = fscanf(fp, "%d", &result);
     pclose(fp);
+	printf("test2\n");
 
     printf("%u,%s\n", result, buf);
 	fflush(stdout);
