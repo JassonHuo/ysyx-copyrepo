@@ -32,11 +32,12 @@
 }while(0)
 
 // this should be enough
-#ifndef TEST_DIV_BY_ZERO
+//#ifndef TEST_DIV_BY_ZERO
   static char buf[65536] = {};
-#else
+/*#else
   static char buf[65536] = "( 14  )    /(21  / (((  65*(    39    )  ) )   *   64)/  75    )";
 #endif
+*/
 static int cur_token = 0;
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
@@ -155,10 +156,10 @@ RETRY:
   }
   int i;
   for (i = 0; i < loop; i ++) {
-#ifndef TEST_DIV_BY_ZERO
+//#ifndef TEST_DIV_BY_ZERO
     gen_rand_expr(0);
 	buf[buf_top] = '\0';
-#endif
+//#endif
 
     sprintf(code_buf, code_format, buf);
 
