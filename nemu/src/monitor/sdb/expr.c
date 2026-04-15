@@ -44,10 +44,10 @@ static struct rule {
   {"\\/", '/'},			// div
   {"\\(", '('},			// left parenthesis
   {"\\)", ')'},			// right parenthesis
-  {"[^x][0-9]+", TK_NUM},		// num
+  {"0x[0-9]+", TK_HEX},
+  {"[0-9]+", TK_NUM},		// num
   {"$ +", TK_REG},      // gpr
   {"[^0-9]+ +\\*", TK_DERE},   //dereference
-  {"0x[0-9]+", TK_HEX}							   
 };
 
 #define NR_REGEX ARRLEN(rules)
