@@ -20,6 +20,8 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 word_t expr();
+
+extern bool div_by_zero;
 //bool make_token();
 
 int main(int argc, char *argv[]) {
@@ -57,6 +59,12 @@ int main(int argc, char *argv[]) {
 //	printf("expression: %s \n", expression);
 //	printf("perfect result %u\n", atoi(result));
 	uint32_t real_result = expr(expression, &success);
+	if(div_by_zero)
+	{
+	  div_by_zero = false;
+	  i --;
+	  continue;
+	}
 //	char buffer_real[70000];
 //	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
 //	uint32_t real_result = atoi(buffer_real);

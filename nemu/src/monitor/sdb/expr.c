@@ -224,7 +224,7 @@ bool check_parentheses(int p, int q)
 }
 
 bool valid_result = true;
-bool div_by_zero = 0;
+bool div_by_zero = false;
 
 static uint32_t eval(int p, int q) {
   //printf("%d, %d\n", p, q);
@@ -299,7 +299,7 @@ static uint32_t eval(int p, int q) {
 				  return val1 / val2; 
 				else
 				{
-				  div_by_zero = 1;
+				  div_by_zero = true;
 				  return 0;
 				}
       default: assert(0);
