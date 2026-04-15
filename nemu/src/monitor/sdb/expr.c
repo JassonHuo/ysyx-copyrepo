@@ -47,7 +47,7 @@ static struct rule {
   {"0x[0-9]+", TK_HEX},
   {"[0-9]+", TK_NUM},		// num
   {"$ +", TK_REG},      // gpr
-  {"[^0-9]+ +\\*", TK_DERE},   //dereference
+  {"[^0-9a-f]+ +\\*", TK_DERE},   //dereference
 };
 
 #define NR_REGEX ARRLEN(rules)
