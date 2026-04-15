@@ -146,7 +146,7 @@ static void gen_rand_expr(int depth) {
 }
 
 int main(int argc, char *argv[]) {
-RETRY:
+//RETRY:
   srand((unsigned int)time(NULL));
   int seed = time(0);
   srand(seed);
@@ -177,14 +177,17 @@ RETRY:
 
     int result;
     ret = fscanf(fp, "%d", &result);
-    int status = pclose(fp);
+//    int status = pclose(fp);
+	pclose(fp);
 //	printf("%d\n", status);
 //	printf("test2\n");
+/*
 	if(WIFSIGNALED(status)) 
 	{
 	  printf("div by zero, i: %d\n", i);
 	  goto RETRY;
 	}
+	*/
 
     printf("%u,%s\n", result, buf);
 	fflush(stdout);
