@@ -19,6 +19,8 @@
 #include <time.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 #define Assert(cond, fmt, ...)\
   do{\
@@ -30,7 +32,12 @@
 }while(0)
 
 // this should be enough
-static char buf[65536] = {};
+//#ifndef TEST_DIV_BY_ZERO
+  static char buf[65536] = {};
+/*#else
+  static char buf[65536] = "( 14  )    /(21  / (((  65*(    39    )  ) )   *   64)/  75    )";
+#endif
+*/
 static int cur_token = 0;
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
@@ -48,19 +55,31 @@ static int choose(int n)
   return rand() % n;
 }
 
+static int last_valid_pos = -1;
+
 
 static void gen_num()
 {
   uint32_t num;
-  if(buf[buf_top - 1] == '/')
-	while((num = rand() % 100) == 0);
+//  last_valid_pos = buf_top;
+  if(last_valid_pos >= 0 && buf[last_valid_pos] == '/')
+	//while((num = rand() % 100) && num == 0);
+	while(1)
+	{
+	  num = rand() % 100;
+	  if (num != 0)
+		break;
+	}
+  else
+	num = rand() % 100;
   char *str_num = (char*)malloc(15 * sizeof(char));
   Assert(str_num, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
   sprintf(str_num, "%u", num);
   int length = strlen(str_num);
-  for (int pos = 0; pos < length; pos ++)
+  for (int pos = 0; pos < length && str_num[pos] != '\0'; pos ++)
   {
 	buf[buf_top++] = str_num[pos];
+	last_valid_pos ++;
   }
   cur_token += 1;
 //  return str_num;
@@ -73,6 +92,7 @@ static void gen(char ch)
 //  li[0] = ch;
 //  li[1] = '\0';
   buf[buf_top++] = ch;
+  last_valid_pos = buf_top - 1;
   cur_token += 1;
 //  return li;
 }
@@ -85,6 +105,7 @@ static void gen_rand_op()
   int idx = choose(4);
 //  op[0] = ops[idx];
   //op[1] = '\0';
+  last_valid_pos = buf_top;
   buf[buf_top ++] = ops[idx];
   cur_token += 1;
 //  return op;
@@ -125,6 +146,7 @@ static void gen_rand_expr(int depth) {
 }
 
 int main(int argc, char *argv[]) {
+//RETRY:
   srand((unsigned int)time(NULL));
   int seed = time(0);
   srand(seed);
@@ -134,8 +156,10 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
+//#ifndef TEST_DIV_BY_ZERO
     gen_rand_expr(0);
 	buf[buf_top] = '\0';
+//#endif
 
     sprintf(code_buf, code_format, buf);
 
@@ -148,11 +172,22 @@ int main(int argc, char *argv[]) {
     if (ret != 0) continue;
 
     fp = popen("/tmp/.expr", "r");
+	//printf("test1\n");
     assert(fp != NULL);
 
     int result;
     ret = fscanf(fp, "%d", &result);
-    pclose(fp);
+//    int status = pclose(fp);
+	pclose(fp);
+//	printf("%d\n", status);
+//	printf("test2\n");
+/*
+	if(WIFSIGNALED(status)) 
+	{
+	  printf("div by zero, i: %d\n", i);
+	  goto RETRY;
+	}
+	*/
 
     printf("%u,%s\n", result, buf);
 	fflush(stdout);

@@ -102,8 +102,10 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
+		/*
         Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
             i, rules[i].regex, position, substr_len, substr_len, substr_start);
+			*/
 
         position += substr_len;
 
@@ -224,8 +226,9 @@ bool check_parentheses(int p, int q)
 }
 
 bool valid_result = true;
+bool div_by_zero = false;
 
-static uint32_t eval(int p, int q) {
+static int32_t eval(int p, int q) {
   //printf("%d, %d\n", p, q);
   if (p > q) {
 //	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
@@ -286,14 +289,20 @@ static uint32_t eval(int p, int q) {
 
 	  op = last_op;	
 	}
-    uint32_t val1 = eval(p, op - 1);
-    uint32_t val2 = eval(op + 1, q);
+    int32_t val1 = eval(p, op - 1);
+    int32_t val2 = eval(op + 1, q);
 
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
       case '*': return val1 * val2; 
-      case '/':	return val1 / val2; 
+      case '/':	
+				if(val2 == 0)
+				{
+				  div_by_zero = true;
+				  return 0;
+				}
+				return val1 / val2; 
       default: assert(0);
     }
   }
@@ -307,6 +316,7 @@ uint32_t do_compression()
 */
 
 word_t expr(char *e, bool *success) {
+  div_by_zero = false;
   if (!make_token(e)) {
     *success = false;
     return 0;
@@ -317,7 +327,7 @@ word_t expr(char *e, bool *success) {
   uint32_t expr_result = eval(0, nr_token - 1);
   *success = true;
   if(valid_result)
-	printf("%u\n", expr_result);
+//	printf("%u\n", expr_result);
   valid_result = true;
 //  return 0;
   return expr_result;
