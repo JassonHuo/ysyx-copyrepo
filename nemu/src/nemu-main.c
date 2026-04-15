@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 //	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
 //	uint32_t real_result = atoi(buffer_real);
 //	printf("result: %u\n", real_result);
-	if(!success || atoi(result) != real_result)
+	if(!success || (uint32_t)atoi(result) != real_result)
 	{
 	  printf("Result Error\n");
 	  printf("success: %d,\nresult = %d,\nperfect_result = %d\n", success, real_result, atoi(result));
