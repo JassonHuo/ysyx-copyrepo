@@ -178,7 +178,7 @@ RETRY:
     int result;
     ret = fscanf(fp, "%d", &result);
     int status = pclose(fp);
-	printf("%d\n", status);
+//	printf("%d\n", status);
 //	printf("test2\n");
 	if(WIFSIGNALED(status)) 
 	{
