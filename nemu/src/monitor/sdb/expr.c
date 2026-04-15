@@ -44,7 +44,7 @@ static struct rule {
   {"\\/", '/'},			// div
   {"\\(", '('},			// left parenthesis
   {"\\)", ')'},			// right parenthesis
-  {"[0-9]+", TK_NUM},		// num
+  {"[^x][0-9]+", TK_NUM},		// num
   {"$ +", TK_REG},      // gpr
   {"[^0-9]+ +\\*", TK_DERE},   //dereference
   {"0x[0-9]+", TK_HEX}							   
