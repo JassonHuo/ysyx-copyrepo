@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 	char *expression = comma + 1;
 //	printf("expression: %s \n", expression);
 //	printf("perfect result %u\n", atoi(result));
-	uint32_t real_result = expr(expression, &success);
+	unsigned int real_result = expr(expression, &success);
 	if(div_by_zero)
 	{
 	  div_by_zero = false;
