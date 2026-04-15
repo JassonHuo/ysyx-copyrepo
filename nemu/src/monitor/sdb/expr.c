@@ -297,16 +297,12 @@ static int32_t eval(int p, int q) {
       case '-': return val1 - val2;
       case '*': return val1 * val2; 
       case '/':	
-				if(val2 != 0)
-				{
-				  div_by_zero = false;
-				  return val1 / val2; 
-				}
-				else
+				if(val2 == 0)
 				{
 				  div_by_zero = true;
 				  return 0;
 				}
+				return val1 / val2; 
       default: assert(0);
     }
   }
@@ -320,6 +316,7 @@ uint32_t do_compression()
 */
 
 word_t expr(char *e, bool *success) {
+  div_by_zero = false;
   if (!make_token(e)) {
     *success = false;
     return 0;
