@@ -63,6 +63,7 @@ int main(int argc, char *argv[]) {
 	{
 	  div_by_zero = false;
 	  i --;
+	  pclose(fp);
 	  continue;
 	}
 //	char buffer_real[70000];
