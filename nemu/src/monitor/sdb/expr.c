@@ -46,7 +46,7 @@ static struct rule {
   {"\\)", ')'},			// right parenthesis
   {"0x[0-9a-f]+", TK_HEX},
   {"[0-9]+", TK_NUM},		// num
-  {"$[0-9a-z]+", TK_REG},      // gpr
+  {"\\$[0-9a-z]+", TK_REG},      // gpr
   {"[^0-9a-f]+ +\\*", TK_DERE},   //dereference
 };
 
