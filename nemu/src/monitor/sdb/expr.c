@@ -131,7 +131,7 @@ static bool make_token(char *e) {
 			break;
 		  case '+':
 		  case '-':
-		  case '*':
+//		  case '*':
 		  case '/':
 		  case '(':
 		  case ')':
@@ -154,6 +154,17 @@ static bool make_token(char *e) {
 			*/
 			add_token(i, substr_len, substr_start);
 			break;
+		  case '*':
+			if(nr_token == 0 || (tokens[nr_token].type != TK_NUM &&
+				tokens[nr_token].type != TK_HEX &&
+				tokens[nr_token].type != TK_REG &&
+				tokens[nr_token].type != ')'))
+			{
+			  add_token(i, substr_len, substr_start);
+			  tokens[nr_token].type = TK_DERE;
+			}
+			break;
+
           default: 
 			TODO();
         }
