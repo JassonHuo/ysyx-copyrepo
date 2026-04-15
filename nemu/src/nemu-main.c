@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 //	Assert(fscanf(fp, "%s,%s", result, expression) == 2, "%s %s %d: Memory Allocation Error", __FILE__, __func__, __LINE__);
 	char line[4096];
 	Assert(fgets(line, sizeof(line), fp), "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
-	line[strcspn(line, "n")] = '\0';
+	line[strcspn(line, "\n")] = '\0';
 	char *comma = strchr(line, ',');
 	Assert(comma, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
 	*comma = '\0';
