@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 	if(!success || (uint32_t)atoi(result) != real_result)
 	{
 	  printf("Result Error\n");
-	  printf("success: %d,\nexpression:%s\nresult = %d,\nperfect_result = %d\n", success, expression, real_result, atoi(result));
+	  printf("success: %d,\nexpression:%s\nresult = %u,\nperfect_result = %u\n", success, expression, real_result, atoi(result));
 	  return 1;
 	}
 	pclose(fp);
