@@ -229,7 +229,6 @@ bool valid_result = true;
 bool div_by_zero = false;
 
 static int32_t eval(int p, int q) {
-  div_by_zero = false;
   //printf("%d, %d\n", p, q);
   if (p > q) {
 //	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
@@ -299,7 +298,10 @@ static int32_t eval(int p, int q) {
       case '*': return val1 * val2; 
       case '/':	
 				if(val2 != 0)
+				{
+				  div_by_zero = false;
 				  return val1 / val2; 
+				}
 				else
 				{
 				  div_by_zero = true;

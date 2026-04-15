@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 //	printf("expression: %s \n", expression);
 //	printf("perfect result %u\n", atoi(result));
 	unsigned int real_result = expr(expression, &success);
-	if(div_by_zero)
+	if(div_by_zero == true)
 	{
 	  printf("div_by_zero: %d\n", div_by_zero);
 //	  div_by_zero = false;
