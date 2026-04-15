@@ -42,7 +42,7 @@ static char code_buf[65536 + 128] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
-"  unsigned result = %s; "
+"  volatile unsigned result = %s; "
 "  printf(\"%%u\", result); "
 "  return 0; "
 "}";
@@ -177,8 +177,9 @@ RETRY:
     int result;
     ret = fscanf(fp, "%d", &result);
     int status = pclose(fp);
+	printf("%d\n", status);
 //	printf("test2\n");
-	if(WIFSIGNALED(status) && WTERMSIG(status) == SIGFPE)
+	if(WIFSIGNALED(status)) 
 	{
 	  printf("div by zero, i: %d\n", i);
 	  goto RETRY;
