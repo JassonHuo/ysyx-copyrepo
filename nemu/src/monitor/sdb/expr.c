@@ -325,11 +325,13 @@ static uint32_t eval(int p, int q) {
      */
     return eval(p + 1, q - 1);
   }
+  /*
   else if(tokens[p].type == TK_DERE)
   {
 	uint32_t addr = eval(p + 1, q); 
 	return host_read(guest_to_host(addr), 4);
   }
+  */
   else {
 	int op = -1;
 	int last_op = -1;
@@ -379,6 +381,11 @@ static uint32_t eval(int p, int q) {
 				return val1 / val2; 
       default: assert(0);
     }
+  }
+  if(tokens[p].type == TK_DERE)
+  {
+	uint32_t addr = eval(p + 1, q); 
+	return host_read(guest_to_host(addr), 4);
   }
 }
 
