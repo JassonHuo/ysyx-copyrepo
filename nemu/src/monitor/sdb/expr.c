@@ -315,18 +315,16 @@ static uint32_t eval(int p, int q) {
 	  valid_result = false;	
 	  return 0;
   }
-  /*
-  else if(tokens[p].type == TK_DERE)
-  {
-	uint32_t tar = eval(p + 1, q);
-	return host_read(guest_to_host(tar), 4);
-  }
-  */
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
      * If that is the case, just throw away the parentheses.
      */
     return eval(p + 1, q - 1);
+  }
+  else if(tokens[p].type == TK_DERE)
+  {
+	uint32_t addr = eval(p + 1, q); 
+	return host_read(guest_to_host(addr), 4);
   }
   else {
 	int op = -1;
