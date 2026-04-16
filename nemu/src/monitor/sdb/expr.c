@@ -282,7 +282,7 @@ bool div_by_zero = false;
 
 static uint32_t eval(int p, int q) {
   printf("p: %d, q: %d\n", p, q);
-  for (int i = p; i <= 1; i ++)
+  for (int i = p; i <= q + 1; i ++)
 	printf("%s ", tokens[i].str);
   printf("\n");
   //printf("%d, %d\n", p, q);
@@ -398,8 +398,6 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 //  TODO();
-  for(int i = 0; i < nr_token; i ++)
-	printf("%s ", tokens[i].str);
   uint32_t expr_result = eval(0, nr_token - 1);
   *success = true;
   if(valid_result)
