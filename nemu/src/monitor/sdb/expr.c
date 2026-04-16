@@ -282,6 +282,9 @@ bool div_by_zero = false;
 
 static uint32_t eval(int p, int q) {
   printf("p: %d, q: %d\n", p, q);
+  for (int i = p; i <= 1; i ++)
+	printf("%s ", tokens[i].str);
+  printf("\n");
   //printf("%d, %d\n", p, q);
   if (p > q) {
 //	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
