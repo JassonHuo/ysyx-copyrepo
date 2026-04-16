@@ -398,6 +398,8 @@ word_t expr(char *e, bool *success) {
 
   /* TODO: Insert codes to evaluate the expression. */
 //  TODO();
+  for(int i = 0; i < nr_token; i ++)
+	printf("%s ", tokens[i].str);
   uint32_t expr_result = eval(0, nr_token - 1);
   *success = true;
   if(valid_result)
