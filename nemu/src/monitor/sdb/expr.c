@@ -353,6 +353,10 @@ static uint32_t eval(int p, int q) {
 		in_parentheses += 1;
 	  else if(tokens[pos].type == '(')
 		in_parentheses -= 1;
+	  else if(tokens[pos].type == TK_DERE && !in_parentheses && last_op < 0)
+	  {
+		last_op = pos;
+	  }
 	}
 	if (op < 0)
 	{
@@ -365,9 +369,12 @@ static uint32_t eval(int p, int q) {
 
 	  op = last_op;	
 	}
-    int32_t val1 = eval(p, op - 1);
-    int32_t val2 = eval(op + 1, q);
-
+	int32_t val1, val2;
+//	if(tokens[op].type != TK_DERE)
+//	{
+	  val1 = eval(p, op - 1);
+	  val2 = eval(op + 1, q);
+//	}
     switch (tokens[op].type) {
       case '+': return val1 + val2;
       case '-': return val1 - val2;
