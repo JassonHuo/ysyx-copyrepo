@@ -281,6 +281,7 @@ bool valid_result = true;
 bool div_by_zero = false;
 
 static uint32_t eval(int p, int q) {
+  printf("p: %d, q: %d\n", p, q);
   //printf("%d, %d\n", p, q);
   if (p > q) {
 //	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
