@@ -167,7 +167,6 @@ static bool make_token(char *e) {
 			  tokens[nr_token].type = TK_DERE;
 			}
 			break;
-
           default: 
 			TODO();
         }
@@ -252,6 +251,32 @@ bool check_parentheses(int p, int q)
   return stack_top == 0;
 }
 
+/*
+static int find_unary_range(int p, int q)
+{
+  if(tokens[p].type == '(')
+  {
+	Token token_stack[32] = {tokens[p]};
+	int stack_top = 1;
+	for(int i = p; i <= q; i ++)
+	{
+	  if (tokens[i].type == '(')
+	  {
+		token_stack[stack_top] = tokens[i];
+		stack_top ++;
+	  }
+	  else if(tokens[i].type == ')')
+	  {
+		stack_top --;
+		if(stack_top == 0)
+		  return i;
+	  }
+	}
+  }
+	return p;
+}
+*/
+
 bool valid_result = true;
 bool div_by_zero = false;
 
@@ -290,11 +315,13 @@ static uint32_t eval(int p, int q) {
 	  valid_result = false;	
 	  return 0;
   }
+  /*
   else if(tokens[p].type == TK_DERE)
   {
 	uint32_t tar = eval(p + 1, q);
 	return host_read(guest_to_host(tar), 4);
   }
+  */
   else if (check_parentheses(p, q) == true) {
     /* The expression is surrounded by a matched pair of parentheses.
      * If that is the case, just throw away the parentheses.
