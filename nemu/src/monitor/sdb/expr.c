@@ -177,6 +177,8 @@ static bool make_token(char *e) {
 			  add_token(i, substr_len, substr_start);
 			  tokens[nr_token - 1].type = TK_DERE;
 			}
+			else
+			  add_token(i, substr_len, substr_start);
 			break;
           default: 
 			TODO();
