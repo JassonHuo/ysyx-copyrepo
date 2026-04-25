@@ -94,6 +94,15 @@ static void add_token(int i, int substr_len, char* substr_start)
   assert(tokens[nr_token].str != NULL);
   nr_token += 1;                                                                    
 }
+
+void check()
+{
+  for (int i = 0; i < nr_token; i ++)
+  {
+	printf("number:%d, type: %d, str: %s\n", i,tokens[i].type , tokens[i].str);
+  }
+}
+
 static bool make_token(char *e) {
 //bool make_token(char *e){
   int position = 0;
