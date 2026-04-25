@@ -24,7 +24,7 @@
 uint8_t* guest_to_host();
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_REG, TK_HEX, TK_NEQ, TK_AND, TK_DERE, 
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_REG, TK_HEX, TK_NEQ, TK_DERE, TK_LAND, 
 
   /* TODO: Add more token types */
 
@@ -50,6 +50,8 @@ static struct rule {
   {"0x[0-9a-f]+", TK_HEX},
   {"[0-9]+", TK_NUM},		// num
   {"\\$\\$*[0-9a-zA-Z]+", TK_REG},      // gpr
+  {"!=", TK_NEQ},		// not equal
+  {"&&", TK_LAND},		//logical and
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -151,6 +153,8 @@ static bool make_token(char *e) {
 		  case TK_HEX:
 		  case TK_REG:
 		  case TK_EQ:
+		  case TK_NEQ:
+		  case TK_LAND:
 			/*
 //			char temp_str[2];
 //			temp_str[0] = rules[i].token_type;		
@@ -350,6 +354,7 @@ static uint32_t eval(int p, int q) {
 	int mul_op = -1;
 	int eq_op = -1;
 	int in_parentheses = 0;
+	int land_op = -1;
 	for(int pos = q; pos >= p; pos --)
 	{
 	  if(!in_parentheses && 
@@ -367,8 +372,10 @@ static uint32_t eval(int p, int q) {
 		in_parentheses += 1;
 	  else if(tokens[pos].type == '(')
 		in_parentheses -= 1;
-	  else if(!in_parentheses && (tokens[pos].type == TK_EQ && eq_op < 0))
+	  else if(!in_parentheses && ((tokens[pos].type == TK_EQ || tokens[pos].type == TK_NEQ) && eq_op < 0))
 		eq_op = pos;
+	  else if(!in_parentheses && tokens[pos].type == TK_LAND && land_op < 0)
+		land_op = pos;
 	  /*
 	  else if(tokens[pos].type == TK_DERE && !in_parentheses && last_op < 0)
 	  {
@@ -378,7 +385,9 @@ static uint32_t eval(int p, int q) {
 	}
 	if (op < 0)
 	{
-	  if(eq_op > 0)
+	  if(land_op > 0)
+		op = land_op;
+	  else if(eq_op > 0)
 		op = eq_op;
 	  else if(mul_op > 0)
 		op = mul_op;
