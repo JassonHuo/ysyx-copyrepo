@@ -173,6 +173,7 @@ static bool make_token(char *e) {
 				tokens[nr_token].type != TK_REG &&
 				tokens[nr_token].type != ')'))
 			{
+			  printf("trans\n");
 			  add_token(i, substr_len, substr_start);
 			  tokens[nr_token - 1].type = TK_DERE;
 			}
