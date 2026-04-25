@@ -335,7 +335,8 @@ static uint32_t eval(int p, int q) {
   */
   else{ 
 	int op = -1;
-	int last_op = -1;
+	int mul_op = -1;
+	int eq_op = -1;
 	int in_parentheses = 0;
 	for(int pos = q; pos >= p; pos --)
 	{
@@ -348,27 +349,35 @@ static uint32_t eval(int p, int q) {
 	  }
 	  else if(!in_parentheses && (tokens[pos].type == '*' ||
 		  tokens[pos].type == '/') &&
-		  last_op < 0)
-		last_op = pos;
+		  mul_op < 0)
+		mul_op = pos;
 	  else if(tokens[pos].type == ')')
 		in_parentheses += 1;
 	  else if(tokens[pos].type == '(')
 		in_parentheses -= 1;
+	  else if(!in_parentheses && (tokens[pos].type == TK_EQ && eq_op < 0))
+		eq_op = pos;
+	  /*
 	  else if(tokens[pos].type == TK_DERE && !in_parentheses && last_op < 0)
 	  {
 		last_op = pos;
 	  }
+	  */
 	}
 	if (op < 0)
 	{
-	  if(last_op < 0)
+	  if(mul_op < 0)
 	  {
-		printf("Expression error\n");
-		valid_result = false;
-		return 0;
+		if(eq_op < 0)
+		{
+		  printf("Expression error\n");
+		  valid_result = false;
+		  return 0;
+		}
+		op = eq_op;
 	  }
-
-	  op = last_op;	
+	  else
+		op = mul_op;	
 	}
 	int32_t val1, val2;
 //	if(tokens[op].type != TK_DERE)
