@@ -383,21 +383,20 @@ static uint32_t eval(int p, int q) {
 	  }
 	  */
 	}
-	if (op < 0)
-	{
-	  if(land_op > 0)
+	if(land_op > 0)
 		op = land_op;
 	  else if(eq_op > 0)
 		op = eq_op;
 	  else if(mul_op > 0)
 		op = mul_op;
+	  else if(op > 0)
+		op = op;
 	  else
 	  {
 		printf("Expression error\n");
         valid_result = false;
         return 0;
 	  }
-	}
 	int32_t val1, val2;
 //	if(tokens[op].type != TK_DERE)
 //	{
