@@ -378,10 +378,10 @@ static uint32_t eval(int p, int q) {
 	}
 	if (op < 0)
 	{
-	  if(mul_op > 0)
-		op = mul_op;
-	  else if(eq_op > 0)
+	  if(eq_op > 0)
 		op = eq_op;
+	  else if(mul_op > 0)
+		op = mul_op;
 	  else
 	  {
 		printf("Expression error\n");
