@@ -50,7 +50,6 @@ static struct rule {
   {"0x[0-9a-f]+", TK_HEX},
   {"[0-9]+", TK_NUM},		// num
   {"\\$\\$*[0-9a-zA-Z]+", TK_REG},      // gpr
-  {"==", TK_EQ},		//equal
 };
 
 #define NR_REGEX ARRLEN(rules)
