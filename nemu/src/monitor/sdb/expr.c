@@ -50,6 +50,7 @@ static struct rule {
   {"0x[0-9a-f]+", TK_HEX},
   {"[0-9]+", TK_NUM},		// num
   {"\\$\\$*[0-9a-zA-Z]+", TK_REG},      // gpr
+  {"==", TK_EQ},		//equal
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -141,6 +142,7 @@ static bool make_token(char *e) {
 		  case TK_NUM:
 		  case TK_HEX:
 		  case TK_REG:
+		  case TK_EQ:
 			/*
 //			char temp_str[2];
 //			temp_str[0] = rules[i].token_type;		
