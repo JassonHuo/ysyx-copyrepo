@@ -181,8 +181,10 @@ static bool make_token(char *e) {
 //			  printf("trans\n");
 			  add_token(i, substr_len, substr_start);
 			  tokens[nr_token - 1].type = TK_DERE;
-			  printf("%d\n", nr_token);
 			}
+			else
+			  add_token(i, substr_len, substr_start);
+			break;
 		  case '-':
 			if(nr_token == 0 || (tokens[nr_token - 1].type != TK_NUM &&
 				  tokens[nr_token - 1].type != TK_HEX &&
