@@ -383,6 +383,8 @@ static uint32_t eval(int p, int q) {
 		last_op = pos;
 	  }
 	  */
+	  if(tokens[pos].type == TK_DERE)
+		dere_op = pos;
 	}
 	if(land_op > 0)
 		op = land_op;
