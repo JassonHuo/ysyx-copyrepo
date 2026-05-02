@@ -24,7 +24,7 @@
 uint8_t* guest_to_host();
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_REG, TK_HEX, TK_NEQ, TK_DERE, TK_LAND, 
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_REG, TK_HEX, TK_NEQ, TK_DERE, TK_LAND, TK_NEGA, 
 
   /* TODO: Add more token types */
 
@@ -144,7 +144,7 @@ static bool make_token(char *e) {
 		  case TK_NOTYPE:
 			break;
 		  case '+':
-		  case '-':
+//		  case '-':
 //		  case '*':
 		  case '/':
 		  case '(':
@@ -177,9 +177,18 @@ static bool make_token(char *e) {
 				tokens[nr_token - 1].type != TK_REG &&
 				tokens[nr_token - 1].type != ')'))
 			{
-			  printf("trans\n");
+//			  printf("trans\n");
 			  add_token(i, substr_len, substr_start);
 			  tokens[nr_token - 1].type = TK_DERE;
+			}
+		  case '-':
+			if(nr_token == 0 || (tokens[nr_token - 1].type != TK_NUM &&
+				  tokens[nr_token - 1].type != TK_HEX &&
+				  tokens[nr_token - 1].type != TK_REG &&
+				  tokens[nr_token - 1].type != ')'))
+			{
+			  add_token(i, substr_len, substr_start);
+			  tokens[nr_token - 1].type = TK_NEGA;
 			}
 			else
 			  add_token(i, substr_len, substr_start);
@@ -356,6 +365,7 @@ static uint32_t eval(int p, int q) {
 	int in_parentheses = 0;
 	int land_op = -1;
 	int dere_op = -1;
+	int nega_op = -1;
 	for(int pos = q; pos >= p; pos --)
 	{
 	  if(!in_parentheses && 
@@ -383,8 +393,10 @@ static uint32_t eval(int p, int q) {
 		last_op = pos;
 	  }
 	  */
-	  if(tokens[pos].type == TK_DERE)
+	  else if(tokens[pos].type == TK_DERE && !in_parentheses)
 		dere_op = pos;
+	  else if(tokens[pos].type == TK_NEGA && !in_parentheses)
+		nega_op = pos;
 	}
 	if(land_op > 0)
 		op = land_op;
@@ -399,6 +411,8 @@ static uint32_t eval(int p, int q) {
 		uint32_t addr = eval(p + 1, q); 
 		return host_read(guest_to_host(addr), 4);
 	  }
+	else if(nega_op == p)
+	  return -eval(p + 1, q);
 	  else
 	  {
 		printf("Expression error\n");
