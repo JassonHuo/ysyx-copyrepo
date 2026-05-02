@@ -124,7 +124,7 @@ static bool make_token(char *e) {
   */
 
   while (e[position] != '\0' && e[position] != '\n') {
-		  printf("%d\n", nr_token);
+//		  printf("%d\n", nr_token);
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
@@ -181,6 +181,7 @@ static bool make_token(char *e) {
 //			  printf("trans\n");
 			  add_token(i, substr_len, substr_start);
 			  tokens[nr_token - 1].type = TK_DERE;
+			  printf("%d\n", nr_token);
 			}
 		  case '-':
 			if(nr_token == 0 || (tokens[nr_token - 1].type != TK_NUM &&
