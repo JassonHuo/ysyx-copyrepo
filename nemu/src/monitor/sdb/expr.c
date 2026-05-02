@@ -342,17 +342,20 @@ static uint32_t eval(int p, int q) {
      */
     return eval(p + 1, q - 1);
   }
+  /*
   else if(tokens[p].type == TK_DERE)
   {
 	uint32_t addr = eval(p + 1, q); 
 	return host_read(guest_to_host(addr), 4);
   }
+  */
   else{ 
 	int op = -1;
 	int mul_op = -1;
 	int eq_op = -1;
 	int in_parentheses = 0;
 	int land_op = -1;
+	int dere_op = -1;
 	for(int pos = q; pos >= p; pos --)
 	{
 	  if(!in_parentheses && 
@@ -389,6 +392,11 @@ static uint32_t eval(int p, int q) {
 		op = mul_op;
 	  else if(op > 0)
 		op = op;
+	  else if(dere_op == p)
+	  {
+		uint32_t addr = eval(p + 1, q); 
+		return host_read(guest_to_host(addr), 4);
+	  }
 	  else
 	  {
 		printf("Expression error\n");
