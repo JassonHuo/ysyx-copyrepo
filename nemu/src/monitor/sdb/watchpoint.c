@@ -65,4 +65,20 @@ WP* new_wp(uint32_t addr)
 void free_wp(WP* wp)
 {
   Assert(head != NULL, "%s %s %d Memory Error: Watch Point Pool Overflow", __FILE__, __func__, __LINE__);
+  if(wp == head)
+  {
+	head = head->next;
+	wp->next = NULL;
+	wp->prev = NULL;
+	if(free_ == NULL)
+	{
+	  free_ = wp;
+	}
+	else
+	{
+	  free_->prev = wp;
+	  wp->next = free_;
+	  free_ = wp;
+	}
+  }
 }
