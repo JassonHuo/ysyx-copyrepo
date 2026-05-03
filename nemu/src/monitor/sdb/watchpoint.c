@@ -27,7 +27,7 @@ typedef struct watchpoint {
 } WP;
 
 static WP wp_pool[NR_WP] = {};
-static WP *head = NULL, *free_ = NULL, *tail = NULL;
+static WP *head = NULL, *free_ = NULL;
 
 void init_wp_pool() {
   int i;
@@ -38,7 +38,6 @@ void init_wp_pool() {
   }
 
   head = NULL;
-  tail = head;
   free_ = wp_pool;
 }
 
@@ -46,23 +45,24 @@ void init_wp_pool() {
 WP* new_wp(uint32_t addr)
 {
   Assert(free_ != NULL,  "%s %s %d Memory Error: Watch Point Pool Overflow", __FILE__, __func__, __LINE__);
-  WP * tmp = free_;
+  WP *wp = free_;
   free_ = free_->next;
   free_->prev = NULL;
-  tail->next = tmp;
-  tmp->prev = tail;
-  tmp->next = NULL;
-  tail = tmp;
-  tmp->point_addr = addr;
-  return tail;
+  wp->next = NULL;
+  wp->prev = NULL;
+  wp->point_addr = addr;
+  if(!head)
+	head = wp;
+  else
+  {
+	head->prev = wp;
+	wp->next = head;
+	head = wp;
+  }
+  return wp;
 }
 
 void free_wp(WP* wp)
 {
   Assert(head != NULL, "%s %s %d Memory Error: Watch Point Pool Overflow", __FILE__, __func__, __LINE__);
-  wp->prev->next = wp->next;
-  wp->next->prev = wp->prev;
-  free_->prev = wp;
-  wp->next = free_;
-  free_ = wp; 
 }
