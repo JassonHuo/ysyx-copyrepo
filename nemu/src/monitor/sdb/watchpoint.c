@@ -44,6 +44,7 @@ void init_wp_pool() {
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
 	wp_pool[i].prev = (i == 0 ? NULL: &wp_pool[i - 1]);
 	wp_pool[i].expr_result = 0;
+	wp_pool[i].expr = "";
   }
 
   head = NULL;
@@ -62,7 +63,6 @@ WP* new_wp(char *expr, word_t result)
 //  wp->point_addr = addr;
   wp->expr = expr;
   wp->expr_result = result;
-  printf("%s\n", wp->expr);
 //  printf("%s\n", wp->expr);
   if(!head)
 	head = wp;
