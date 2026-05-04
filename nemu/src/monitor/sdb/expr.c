@@ -332,8 +332,11 @@ static uint32_t eval(int p, int q) {
 	{
 	  bool success;
 	  num = isa_reg_str2val(tokens[p].str + 1, &success);
-	  Assert(success, "%s %s %d: GPR Name Error", __FILE__, __func__, __LINE__);
-	  return num;
+	  if(success)
+	  //Assert(success, "%s %s %d: GPR Name Error", __FILE__, __func__, __LINE__);
+		return num;
+	  printf("GPR Name Error\n");
+	  return 0;
 	}
 	//printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
 	//exit(1);
