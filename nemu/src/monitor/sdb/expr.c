@@ -466,8 +466,8 @@ word_t expr(char *e, bool *success) {
 //  TODO();
   uint32_t expr_result = eval(0, nr_token - 1);
   *success = true;
-  if(valid_result)
-	printf("%u\n", expr_result);
+  //if(valid_result)
+//	printf("%u\n", expr_result);
   valid_result = true;
 //  return 0;
   return expr_result;
