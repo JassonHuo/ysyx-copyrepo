@@ -130,13 +130,15 @@ void delete_wp(int num)
 void display_wp()
 {
   WP *p = head;
+  printf("%s\n", p->expr);
+  printf("%s\n", head->expr);
   if(head == NULL)
   {
 	printf("No watch point have be set\n");
 	return;
   }
   printf("Num\tType\t\tDisp\tEnb\tAddress\tWhat\n");
-  printf("%s\n", p->expr);
+//  printf("%s\n", p->expr);
   while(p)
   {
 	int num = p->NO;
