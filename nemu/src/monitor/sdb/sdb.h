@@ -29,6 +29,11 @@ typedef struct watchpoint {
   char *expr;
   struct watchpoint *prev;
   uint32_t expr_result;
+  char *type;
+  char *disp;
+  char *enb;
+  char *address;
+  char *what;
 } WP;
 
 #endif

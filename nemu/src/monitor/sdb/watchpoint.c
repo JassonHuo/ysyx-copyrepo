@@ -33,6 +33,10 @@ typedef struct watchpoint {
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
+enum {
+  HW_WP = 255, SW_WP, READ_WP, ACC_WP, DISP_KEEP, DISP_DEL, DISP_DIS, ENB_Y, ENB_N, 
+};
+
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i ++) {
@@ -123,6 +127,17 @@ void delete_wp(int num)
 
 void display_wp()
 {
+  WP *p = head;
+  if(head == NULL)
+  {
+	printf("No watch point have be set\n");
+	return;
+  }
   printf("Num\tType\tDisp\tEnb\tAddress\tWhat\n");
-
+  while(p)
+  {
+	int num = p->NO;
+//	char *type, *disp, *enb, *address, *what;
+	printf("%d\t%s\t%s\t%s\t%s\t%s\n", num, "watchpoint", "keep", "y", "", p->expr);
+  }
 }
