@@ -162,3 +162,20 @@ void display_wp()
 	p = p->next;
   }
 }
+
+uint32_t trace_wp()
+{
+  WP *p = head;
+  uint32_t flag = 0;
+  bool success;
+  while(p)
+  {
+	uint32_t result = expr(p->expr, &success);
+	if(result != p->expr_result)
+	{
+	  flag = 1;
+	  p->expr_result= result; 
+	}
+  }
+  return flag;
+}
