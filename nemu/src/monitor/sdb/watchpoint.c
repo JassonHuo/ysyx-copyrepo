@@ -22,7 +22,8 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
-  uint32_t point_addr;
+  //uint32_t point_addr;
+  char *expr;
   struct watchpoint *prev;
 } WP;
 
@@ -42,7 +43,7 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
-WP* new_wp(uint32_t addr)
+WP* new_wp(char *expr)
 {
   Assert(free_ != NULL,  "%s %s %d Memory Error: Watch Point Pool Overflow", __FILE__, __func__, __LINE__);
   WP *wp = free_;
@@ -50,7 +51,8 @@ WP* new_wp(uint32_t addr)
   if(free_ != NULL) free_->prev = NULL;
   wp->next = NULL;
   wp->prev = NULL;
-  wp->point_addr = addr;
+//  wp->point_addr = addr;
+  wp->expr = expr;
   if(!head)
 	head = wp;
   else
