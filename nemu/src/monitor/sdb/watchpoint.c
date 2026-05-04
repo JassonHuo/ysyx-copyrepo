@@ -134,6 +134,10 @@ void delete_wp(int num)
 
 void display_wp()
 {
+  for(int i = 0; i < 32; i ++)
+  {
+	printf("%d %s\n", i, wp_pool[i].expr);
+  }
   WP *p = head;
   printf("%s\n", p->expr);
   printf("%s\n", head->expr);
