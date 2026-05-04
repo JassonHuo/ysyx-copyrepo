@@ -62,7 +62,7 @@ WP* new_wp(char *expr, word_t result)
 //  wp->point_addr = addr;
   wp->expr = expr;
   wp->expr_result = result;
-  printf("%s\n", wp->expr);
+//  printf("%s\n", wp->expr);
   if(!head)
 	head = wp;
   else
@@ -135,6 +135,7 @@ void display_wp()
 	return;
   }
   printf("Num\tType\t\tDisp\tEnb\tAddress\tWhat\n");
+  printf("%s\n", p->expr);
   while(p)
   {
 	int num = p->NO;
