@@ -176,6 +176,7 @@ uint32_t trace_wp()
 	  flag = 1;
 	  p->expr_result= result; 
 	}
+	p = p->next;
   }
   return flag;
 }
