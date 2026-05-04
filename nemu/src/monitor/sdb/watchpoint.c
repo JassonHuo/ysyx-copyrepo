@@ -120,3 +120,7 @@ void delete_wp(int num)
   }
   printf("Don't have watch point NO%d\n", num);
 }
+
+void display_wp()
+{
+}
