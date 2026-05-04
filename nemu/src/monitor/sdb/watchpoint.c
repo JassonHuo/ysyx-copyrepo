@@ -133,7 +133,7 @@ void display_wp()
 	printf("No watch point have be set\n");
 	return;
   }
-  printf("Num\tType\tDisp\tEnb\tAddress\tWhat\n");
+  printf("Num\tType\t\tDisp\t\tEnb\tAddress\tWhat\n");
   while(p)
   {
 	int num = p->NO;
