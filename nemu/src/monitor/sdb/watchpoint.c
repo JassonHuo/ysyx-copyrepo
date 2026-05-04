@@ -72,7 +72,7 @@ WP* new_wp(char *expr, word_t result)
 	wp->next = head;
 	head = wp;
   }
-  printf("%s\n", wp->expr);
+//  printf("%s\n", wp->expr);
   return wp;
 }
 
@@ -80,6 +80,7 @@ void free_wp(WP* wp)
 {
   Assert(wp != NULL, "%s %s %d: wp is NULL", __FILE__, __func__, __LINE__);
   Assert(head != NULL, "%s %s %d Memory Error: Watch Point Pool Overflow", __FILE__, __func__, __LINE__);
+  printf("%s\n", wp->expr);
   if(wp == head)
   {
 	head = head->next;
