@@ -97,14 +97,6 @@ static void add_token(int i, int substr_len, char* substr_start)
   nr_token += 1;                                                                    
 }
 
-void check()
-{
-  for (int i = 0; i < nr_token; i ++)
-  {
-	printf("number:%d, type: %d, str: %s\n", i,tokens[i].type , tokens[i].str);
-  }
-}
-
 static bool make_token(char *e) {
 //bool make_token(char *e){
   int position = 0;
@@ -311,9 +303,9 @@ bool valid_result = true;
 bool div_by_zero = false;
 
 static uint32_t eval(int p, int q) {
-  printf("p: %d, q: %d\n", p, q);
+  //printf("p: %d, q: %d\n", p, q);
   for (int i = p; i <= q; i ++)
-	printf("%s ", tokens[i].str);
+//	printf("%s ", tokens[i].str);
   printf("\n");
   //printf("%d, %d\n", p, q);
   if (p > q) {
