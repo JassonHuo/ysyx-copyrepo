@@ -61,7 +61,9 @@ WP* new_wp(char *expr, word_t result)
   wp->next = NULL;
   wp->prev = NULL;
 //  wp->point_addr = addr;
-  wp->expr = expr;
+  char *expr_str = (char*)malloc(strlen(expr) * sizeof(char));
+  strcpy(expr_str, expr);
+  wp->expr = expr_str;
   wp->expr_result = result;
 //  printf("%s\n", wp->expr);
   if(!head)
