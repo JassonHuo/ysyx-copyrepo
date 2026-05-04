@@ -62,6 +62,7 @@ WP* new_wp(char *expr, word_t result)
 //  wp->point_addr = addr;
   wp->expr = expr;
   wp->expr_result = result;
+  printf("%s\n", wp->expr);
   if(!head)
 	head = wp;
   else
