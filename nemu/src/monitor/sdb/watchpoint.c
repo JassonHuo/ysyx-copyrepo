@@ -123,4 +123,6 @@ void delete_wp(int num)
 
 void display_wp()
 {
+  printf("Num\tType\tDisp\tEnb\tAddress\tWhat\n");
+
 }

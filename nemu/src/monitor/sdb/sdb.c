@@ -34,6 +34,7 @@ word_t expr();
 WP* new_wp(char *expr, word_t result);
 void free_wp(WP *wp);
 void delete_wp(int num);
+void display_wp();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -140,6 +141,7 @@ static int cmd_info(char *args)
   }
   else if(arg && strcmp(arg, "w") == 0)
   {
+	display_wp();
 	return 0;
   }
   else return 0;
