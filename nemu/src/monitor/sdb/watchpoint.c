@@ -139,5 +139,6 @@ void display_wp()
 	int num = p->NO;
 //	char *type, *disp, *enb, *address, *what;
 	printf("%d\t%s\t%s\t%s\t%s\t%s\n", num, "watchpoint", "keep", "y", "", p->expr);
+	p = p->next;
   }
 }
