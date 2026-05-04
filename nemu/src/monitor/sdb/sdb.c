@@ -31,6 +31,10 @@ uint8_t* guest_to_host();
 //bool make_token();
 //uint32_t do_compression();
 word_t expr();
+WP* new_wp(char *expr, word_t result);
+void free_wp(WP *wp);
+void delete_wp(int num);
+void display_wp();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -65,6 +69,8 @@ static int cmd_si(char *args);
 static int cmd_info(char *args);
 static int cmd_x(char *args);
 static int cmd_p(char *args);
+static int cmd_w(char *args);
+static int cmd_d(char *args);
 
 static struct {
   const char *name;
@@ -78,6 +84,8 @@ static struct {
   { "info", "Display the status of register", cmd_info },
   { "x", "Scanf the memory", cmd_x },
   { "p", "Solve the math expression", cmd_p },
+  { "w", "Set the watch point", cmd_w }, 
+  { "d", "Delete the watch point", cmd_d }, 
 
   /* TODO: Add more commands */
 
@@ -131,6 +139,11 @@ static int cmd_info(char *args)
 	isa_reg_display();
 	return 0;
   }
+  else if(arg && strcmp(arg, "w") == 0)
+  {
+	display_wp();
+	return 0;
+  }
   else return 0;
 }
 
@@ -157,10 +170,32 @@ static int cmd_p(char *args)
 {
 //  bool token_complite = make_token(args);
   bool success;
-  expr(args, &success);
+  uint32_t result = expr(strtok(NULL, " "), &success);
   if(!success)
 	printf("Expression Error\n");
 //	printf("%s is not a right compresstion\n", args);
+  else
+	printf("%u\n", result);
+  return 0;
+}
+
+static int cmd_w(char *args)
+{
+  if(!args) return 0;
+  bool success;
+  uint32_t result = expr(args, &success);
+  if(!success)
+	printf("Expression Error\n");
+  else
+	new_wp(args, result);
+  return 0;
+}
+
+static int cmd_d(char *args)
+{
+  if(!args) return 0;
+  int n = atoi(strtok(NULL, " "));
+  delete_wp(n);
   return 0;
 }
 
