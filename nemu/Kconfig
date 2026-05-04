@@ -58,16 +58,6 @@ config MODE_SYSTEM
 endchoice
 
 choice
-  prompt "Set Watch point"
-  default CONFIG_WATCHPOINT
-
-config CONFIG_WATCHPOINT
-  bool "ON"
-config OFF_WATCHPOINT
-  bool "OFF"
-endchoice
-
-choice
   prompt "Build target"
   default TARGET_NATIVE_ELF
 config TARGET_NATIVE_ELF
@@ -77,6 +67,12 @@ config TARGET_SHARE
 config TARGET_AM
   bool "Application on Abstract-Machine (DON'T CHOOSE)"
 endchoice
+
+config WATCHPOINT
+  bool "Enable watch point"
+  default y
+  help
+	If enabled, watch point feature is on.
 
 menu "Build Options"
 choice
