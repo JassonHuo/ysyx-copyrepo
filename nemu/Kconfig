@@ -57,8 +57,14 @@ config MODE_SYSTEM
     Support full-system functionality, including privileged instructions, MMU and devices.
 endchoice
 
-choice CONFIG_WATCHPOINT
-  bool "Watch point"
+choice
+  prompt "Set Watch point"
+  default CONFIG_WATCHPOINT
+
+config CONFIG_WATCHPOINT
+  bool "ON"
+config OFF_WATCHPOINT
+  bool "OFF"
 endchoice
 
 choice
