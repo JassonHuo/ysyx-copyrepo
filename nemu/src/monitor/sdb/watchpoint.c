@@ -17,15 +17,18 @@
 
 #define NR_WP 32
 
+/*
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
 
-  /* TODO: Add more members if necessary */
+  //TODO: Add more members if necessary
   //uint32_t point_addr;
   char *expr;
   struct watchpoint *prev;
+  uint32_t expr_result;
 } WP;
+*/
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
@@ -36,6 +39,7 @@ void init_wp_pool() {
     wp_pool[i].NO = i;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
 	wp_pool[i].prev = (i == 0 ? NULL: &wp_pool[i - 1]);
+	wp_pool[i].expr_result = 0;
   }
 
   head = NULL;
@@ -43,7 +47,7 @@ void init_wp_pool() {
 }
 
 /* TODO: Implement the functionality of watchpoint */
-WP* new_wp(char *expr)
+WP* new_wp(char *expr, word_t result)
 {
   Assert(free_ != NULL,  "%s %s %d Memory Error: Watch Point Pool Overflow", __FILE__, __func__, __LINE__);
   WP *wp = free_;
@@ -53,6 +57,7 @@ WP* new_wp(char *expr)
   wp->prev = NULL;
 //  wp->point_addr = addr;
   wp->expr = expr;
+  wp->expr_result = result;
   if(!head)
 	head = wp;
   else
