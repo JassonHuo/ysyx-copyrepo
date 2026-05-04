@@ -57,6 +57,10 @@ config MODE_SYSTEM
     Support full-system functionality, including privileged instructions, MMU and devices.
 endchoice
 
+choice CONFIG_WATCHPOINT
+  bool "Watch point"
+endchoice
+
 choice
   prompt "Build target"
   default TARGET_NATIVE_ELF
