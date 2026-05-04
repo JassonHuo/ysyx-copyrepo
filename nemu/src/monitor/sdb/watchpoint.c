@@ -72,6 +72,7 @@ WP* new_wp(char *expr, word_t result)
 	wp->next = head;
 	head = wp;
   }
+  printf("%s\n", wp->expr);
   return wp;
 }
 
