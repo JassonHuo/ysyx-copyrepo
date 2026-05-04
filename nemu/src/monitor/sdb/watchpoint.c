@@ -75,10 +75,12 @@ WP* new_wp(char *expr, word_t result)
 	head = wp;
   }
 //  printf("%s\n", wp->expr);
+/*
   for(int i = 0; i < 32; i ++)
   {
 	printf("%d %s\n", i, wp_pool[i].expr);
   }
+  */
   return wp;
 }
 
@@ -136,13 +138,15 @@ void delete_wp(int num)
 
 void display_wp()
 {
+  /*
   for(int i = 0; i < 32; i ++)
   {
 	printf("%d %s\n", i, wp_pool[i].expr);
   }
+  */
   WP *p = head;
-  printf("%s\n", p->expr);
-  printf("%s\n", head->expr);
+//  printf("%s\n", p->expr);
+//  printf("%s\n", head->expr);
   if(head == NULL)
   {
 	printf("No watch point have be set\n");
