@@ -104,3 +104,19 @@ void free_wp(WP* wp)
 	}
   }
 }
+
+void delete_wp(int num)
+{
+  WP *p = head;
+  while(p)
+  {
+	if(p->NO == num)
+	{
+	  free_wp(p);
+	  return;
+	}
+	else
+	  p = p->next;
+  }
+  printf("Don't have watch point NO%d\n", num);
+}
