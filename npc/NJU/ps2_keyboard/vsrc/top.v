@@ -85,7 +85,7 @@ module top(
 		  endcase
 		end
 		else begin 
-		  nextdata_n <= 1'b0;
+		  nextdata_n <= 1'b1;
 		end
 	  end
 /*		else if(!ready)begin
