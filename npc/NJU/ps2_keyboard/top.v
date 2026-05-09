@@ -19,10 +19,12 @@ module top(
   reg [2: 0] state, next_state;
   wire ready;
   reg nextdata_n;
-  wire [7: 0] data_in;
-  reg [7: 0] use_data;
+  wire [7: 0] data_kbd;
+//  reg [7: 0] use_data;
   reg down;
-  reg used;
+  reg [7: 0] data_in;
+  reg ready_prev;
+  reg [15: 0] counter;
 
   always@(posedge clk)begin
 	  $display("%d", state);
@@ -30,42 +32,71 @@ module top(
 		state <= NONE;
 		nextdata_n <= 1'b1;
 		down <= 1;
-		used <= 0;
 	  end
 	  else begin
+		ready_prev <= ready;
 		nextdata_n <= 1'b1;
-		if(ready && !used)begin
+		if(ready)begin
+		  data_in <= data_kbd;
 		  nextdata_n <= 1'b0;
-		  used <= 1'b1;
-		  down <= 1'b1;
+		  down <= 1'b0;
 		  case(state)
 			NONE:begin
-			  if(data_in == 8'b0)
+			  if(data_kbd == 8'b0)begin
 				state <= NONE;
-			  else
-				state <= DOWN;
+				down <= 1'b1;
 			  end
+			  else if(data_kbd == 8'hF0)begin
+				state <= WAIT;
+				down <= 1'b1;
+			  end
+			  else begin
+				state <= DOWN;
+				down <= 1'b0;
+			  end
+			end
 			DOWN:begin
 			  down <= 0;
-			  use_data <= data_in;
-			  if(data_in == 8'hF0)
+			  if(data_kbd == 8'hF0)begin
 				state <= WAIT;
-			  else
+				down <= 1'b1;
+			  end
+			  else begin
+//				if(data_in != data_kbd) counter <= counter + 1;
+				counter <= counter + 1;
 				state <= DOWN;
+				down <= 1'b0;
+			  end
 			end
 			WAIT:begin
-			  if(data_in == 8'b0)
+			  if(data_kbd == 8'b0)begin
 				state <= WAIT;
-			  else
+				down <= 1'b1;
+			  end
+			  else begin
 				state <= NONE;
+				down <= 1'b1;
+			  end
+			end
+			default:begin
+			  state <= NONE;
+			  down <= 1'b1;
 			end
 		  endcase
 		end
-		else if(!ready)begin
-		  used <= 1'b0;
+		else begin 
+		  nextdata_n <= 1'b1;
 		end
 	  end
-  end
+/*		else if(!ready)begin
+		  used <= 1'b0;
+		  nextdata_n <= 1'b1;
+		end
+		else begin
+		  nextdata_n <= 1'b1;
+		end
+		*/
+	  end
   
   ps2_keyboard kbd0(
 	.clk(clk),
@@ -73,17 +104,33 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data_in),
+	.data(data_kbd),
 	.ready(ready),
 	.overflow(overflow)
   );
 
   bcd bcd0(
-	.data(use_data),
+	.data(data_in),
 	.clk(clk),
 	.down(down),
 	.bcd_low(seg0),
 	.bcd_high(seg1)
+  );
+
+  bcd bcd1(
+	.data(counter[7: 0]),
+	.clk(clk),
+	.down(1'b0),
+	.bcd_low(seg4),
+	.bcd_high(seg5)
+  );
+  
+  bcd bcd2(
+	.data(counter[15: 8]),
+	.clk(clk),
+	.down(1'b0),
+	.bcd_low(seg6),
+	.bcd_high(seg7)
   );
 
 endmodule
