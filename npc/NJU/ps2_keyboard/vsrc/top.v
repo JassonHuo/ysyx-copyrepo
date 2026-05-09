@@ -36,10 +36,10 @@ module top(
 	  end
 	  else begin
 		ready_prev <= ready;
-		nextdata_n <= 1'b0;
+		nextdata_n <= 1'b1;
 		if(ready && !used)begin
 		  data_in <= data_kbd;
-		  nextdata_n <= 1'b1;
+		  nextdata_n <= 1'b0;
 		  used <= 1'b1;
 		  down <= 1'b0;
 		  case(state)
