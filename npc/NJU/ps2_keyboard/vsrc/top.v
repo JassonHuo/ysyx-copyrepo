@@ -24,6 +24,7 @@ module top(
   reg down;
   reg [7: 0] data_in;
   reg ready_prev;
+  reg [15: 0] counter;
 
   always@(posedge clk)begin
 	  $display("%d", state);
@@ -61,6 +62,7 @@ module top(
 				down <= 1'b1;
 			  end
 			  else begin
+				if(data_in != data_kbd) counter <= counter + 1;
 				state <= DOWN;
 				down <= 1'b0;
 			  end
@@ -112,6 +114,22 @@ module top(
 	.down(down),
 	.bcd_low(seg0),
 	.bcd_high(seg1)
+  );
+
+  bcd bcd1(
+	.data(counter[7: 0]),
+	.clk(clk),
+	.down(1'b0),
+	.bcd_low(seg4),
+	.bcd_high(seg5)
+  );
+  
+  bcd bcd2(
+	.data(counter[15: 8]),
+	.clk(clk),
+	.down(1'b0),
+	.bcd_low(seg6),
+	.bcd_high(seg7)
   );
 
 endmodule
