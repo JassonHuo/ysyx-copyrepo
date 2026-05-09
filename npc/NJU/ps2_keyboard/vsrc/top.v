@@ -62,7 +62,8 @@ module top(
 				down <= 1'b1;
 			  end
 			  else begin
-				if(data_in != data_kbd) counter <= counter + 1;
+//				if(data_in != data_kbd) counter <= counter + 1;
+				counter <= counter + 1;
 				state <= DOWN;
 				down <= 1'b0;
 			  end
