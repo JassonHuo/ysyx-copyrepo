@@ -31,7 +31,6 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
-uint32_t trace_wp();
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -39,16 +38,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-
-#ifdef CONFIG_WATCHPOINT
-  uint32_t tracer = trace_wp();
-  if(tracer)
-  {
-	nemu_state.state = NEMU_STOP;
-	printf("Watch point be trigered\n");
-	return;
-  }
-#endif
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {

@@ -31,19 +31,10 @@ void isa_reg_display() {
 	if(cpu.gpr[i] == 0)
 	  printf("gpr[%d]\t%3s: \t0x%08x| %012d\n", i, regs[i], cpu.gpr[i], cpu.gpr[i]);
 	else
-	  printf("gpr[%d]\t%3s: \t\033[33m0x%08x\033[0m| \033[33m%012u\033[0m\n", i, regs[i], cpu.gpr[i], cpu.gpr[i]);
+	  printf("gpr[%d]\t%3s: \t\033[33m0x%08x\033[0m| \033[33m%012d\033[0m\n", i, regs[i], cpu.gpr[i], cpu.gpr[i]);
   }
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  for (int i = 0; i < 32; i ++)
-  {
-	if(strcmp(s, regs[i]) == 0)
-	{
-	  *success = true;
-	  return cpu.gpr[i];
-	}
-  }
-  *success = false;
   return 0;
 }

@@ -20,20 +20,4 @@
 
 word_t expr(char *e, bool *success);
 
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-  //uint32_t point_addr;
-  char *expr;
-  struct watchpoint *prev;
-  uint32_t expr_result;
-  char *type;
-  char *disp;
-  char *enb;
-  char *address;
-  char *what;
-} WP;
-
 #endif
