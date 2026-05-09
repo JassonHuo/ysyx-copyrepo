@@ -22,7 +22,6 @@ module top(
   wire [7: 0] data_kbd;
 //  reg [7: 0] use_data;
   reg down;
-  reg used;
   reg [7: 0] data_in;
   reg ready_prev;
 
@@ -32,15 +31,13 @@ module top(
 		state <= NONE;
 		nextdata_n <= 1'b1;
 		down <= 1;
-		used <= 0;
 	  end
 	  else begin
 		ready_prev <= ready;
 		nextdata_n <= 1'b1;
-		if(ready && !used)begin
+		if(ready)begin
 		  data_in <= data_kbd;
 		  nextdata_n <= 1'b0;
-		  used <= 1'b1;
 		  down <= 1'b0;
 		  case(state)
 			NONE:begin
@@ -85,7 +82,6 @@ module top(
 		  endcase
 		end
 		else begin 
-		  used <= 1'b0;
 		  nextdata_n <= 1'b0;
 		end
 	  end
