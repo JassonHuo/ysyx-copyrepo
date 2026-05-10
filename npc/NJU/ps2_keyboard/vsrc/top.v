@@ -47,9 +47,9 @@ module top(
 	if(rst)begin
 	  state <= NONE;
 	  data <= 8'b0;
+	  nextdata_n <= 1'b1;
 	end
 	else begin
-	  if(nextdata_n)
 	  state <= next_state;
 	  if(ready) begin
 		if(~nextdata_n)
