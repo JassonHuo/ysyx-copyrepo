@@ -18,9 +18,9 @@ int main(int argc, char **argv)
   nvboard_bind_all_pins(dut);
   nvboard_init();
 
-  dut->rst = 0;
-  one_cycle();
   dut->rst = 1;
+  one_cycle();
+  dut->rst = 0;
   while(1)
   {
 	nvboard_update();
