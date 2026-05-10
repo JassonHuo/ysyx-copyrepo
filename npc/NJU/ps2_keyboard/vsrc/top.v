@@ -54,7 +54,7 @@ module top(
 	  if(ready) begin
 		if(~nextdata_n)begin
 		  data <= data_kbd;
-		  nextdata_n = 1'b1;
+		  nextdata_n <= 1'b1;
 		end
 		else begin
 		  data <= 8'b0;
