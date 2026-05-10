@@ -63,6 +63,7 @@ module top(
 	  end
 	  else begin
 //		data <= 8'b0;
+		nextdata_n <= 1'b1;
 	  end
 	end
   end
