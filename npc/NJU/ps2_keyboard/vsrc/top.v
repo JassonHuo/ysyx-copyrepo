@@ -41,7 +41,7 @@ module top(
   always@(posedge clk)begin
 	nextdata_n <= 1'b1;
 //	$display(state);
-	$display(data);
+	$display("%h", data);
 	if(rst)begin
 	  state <= NONE;
 	end
