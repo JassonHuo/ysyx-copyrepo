@@ -50,12 +50,16 @@ module top(
 	  reading <= 1'b1;
 	end
 	else begin
+	  if(nextdata_n)
+		reading <= 1'b0;
 	  state <= next_state;
-	  if(ready && ~reading) begin
-		data <= data_kbd;
+	  reading <= 1'b1;
+	  if(ready) begin
+		if(~reading)
+		  data <= data_kbd;
+		else
+		  nextdata_n <= 1'b0;
 	  end
-	  else if(reading && ready)
-		nextdata_n <= 1'b0;
 	  else begin
 		data <= 8'b0;
 	  end
