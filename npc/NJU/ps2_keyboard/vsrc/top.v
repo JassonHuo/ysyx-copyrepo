@@ -15,6 +15,7 @@ module top(
   reg [1: 0] state, next_state; 
   reg [7: 0] data; 
   reg reading;
+  reg [7: 0] prev_data_test;
 
   ps2_keyboard kbd(
 	.clk(clk),
@@ -41,8 +42,10 @@ module top(
   end
 
   always@(posedge clk)begin
+	prev_data_test <= data;
 //	nextdata_n <= 1'b1;
 //	$display(state);
+	if(data != prev_data_test)
 	$display("%h", data);
 	if(rst)begin
 	  state <= NONE;
