@@ -14,6 +14,7 @@ module top(
   parameter NONE = 0, PRESS = 1, WAIT = 2;
   reg [1: 0] state, next_state; 
   reg [7: 0] data; 
+  reg reading;
 
   ps2_keyboard kbd(
 	.clk(clk),
@@ -46,15 +47,17 @@ module top(
 	if(rst)begin
 	  state <= NONE;
 	  data <= 8'b0;
+	  reading <= 1'b1;
 	end
 	else begin
 	  state <= next_state;
-	  if(ready) begin
-		nextdata_n <= 1'b0;
+	  if(ready && ~reading) begin
 		data <= data_kbd;
 	  end
+	  else if(reading && ready)
+		nextdata_n <= 1'b0;
 	  else begin
-//		data <= 8'b0;
+		data <= 8'b0;
 	  end
 	end
   end
