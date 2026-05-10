@@ -9,10 +9,11 @@ module top(
 );
 
   reg nextdata_n;
-  wire [7: 0] data;
+  wire [7: 0] data_kbd;
   wire ready;
   parameter NONE = 0, PRESS = 1, WAIT = 2;
   reg [1: 0] state, next_state; 
+  reg [7: 0] data; 
 
   ps2_keyboard kbd(
 	.clk(clk),
@@ -20,7 +21,7 @@ module top(
 	.ps2_clk(ps2_clk),
 	.ps2_data(ps2_data),
 	.nextdata_n(nextdata_n),
-	.data(data),
+	.data(data_kbd),
 	.ready(ready),
 	.overflow(overflow)
   );	
@@ -31,7 +32,7 @@ module top(
 	else begin
 	  case(state)
 		NONE: next_state = (data == 8'b0 ? NONE: (data == 8'hF0 ? WAIT: PRESS));
-		PRESS: next_state = (data == 8'hF0 ? PRESS: WAIT);
+		PRESS: next_state = (data != 8'hF0 ? PRESS: WAIT);
 		WAIT: next_state = (data == 8'b0 && data != 8'hF0 ? WAIT: NONE);
 		default: next_state = NONE;
 	  endcase
@@ -44,11 +45,17 @@ module top(
 	$display("%h", data);
 	if(rst)begin
 	  state <= NONE;
+//	  data <= 8'b0;
 	end
 	else begin
 	  state <= next_state;
-	  if(ready)
-		nextdata_n = 1'b0;
+	  if(ready) begin
+		nextdata_n <= 1'b0;
+//		data <= data_kbd;
+	  end
+	  else begin
+//		data <= 8'b0;
+	  end
 	end
   end
 
