@@ -30,9 +30,9 @@ module top(
 	  next_state = NONE;
 	else begin
 	  case(state)
-		NONE: next_state = (data == 8'b0 ? NONE: PRESS);
+		NONE: next_state = (data == 8'b0 ? NONE: (data == 8'hF0 ? WAIT: PRESS));
 		PRESS: next_state = (data == 8'hF0 ? PRESS: WAIT);
-		WAIT: next_state = (data == 8'b0 ? WAIT: NONE);
+		WAIT: next_state = (data == 8'b0 && data != 8'hF0 ? WAIT: NONE);
 		default: next_state = NONE;
 	  endcase
 	end
