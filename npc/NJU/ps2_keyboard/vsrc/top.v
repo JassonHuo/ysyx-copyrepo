@@ -45,8 +45,9 @@ module top(
 	  state <= NONE;
 	end
 	else begin
-	  nextdata_n <= 1'b0;
 	  state <= next_state;
+	  if(state == NONE && ready)
+		nextdata_n = 1'b0;
 	end
   end
 
