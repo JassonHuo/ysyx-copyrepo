@@ -45,16 +45,16 @@ module top(
 	$display("%h", data);
 	if(rst)begin
 	  state <= NONE;
-//	  data <= 8'b0;
+	  data <= 8'b0;
 	end
 	else begin
 	  state <= next_state;
 	  if(ready) begin
 		nextdata_n <= 1'b0;
-//		data <= data_kbd;
+		data <= data_kbd;
 	  end
 	  else begin
-//		data <= 8'b0;
+		data <= 8'b0;
 	  end
 	end
   end
