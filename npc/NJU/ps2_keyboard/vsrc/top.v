@@ -4,92 +4,62 @@ module top(
   input ps2_data,
   input ps2_clk,
   output overflow,
-  output reg [6:0] seg0, seg1, seg2, seg3,
-  output reg [6:0] seg4, seg5, seg6, seg7
+  output reg [6: 0] seg0, seg1, seg2, seg3,
+  output reg [6: 0] seg4, seg5, seg6, seg7
 );
 
   reg nextdata_n;
-  wire [7:0] data_kbd;
+  wire [7: 0] data_kbd;
   wire ready;
-  parameter NONE = 2'd0, PRESS = 2'd1, WAIT = 2'd2;
-  reg [1:0] state;
-  reg [7:0] data;
-
-  // 读握手状态：0=空闲，1=等待数据出现在 data_kbd 上
-  reg rd_step;
+  parameter NONE = 0, PRESS = 1, WAIT = 2;
+  reg [1: 0] state, next_state; 
+  reg [7: 0] data; 
+  reg reading;
 
   ps2_keyboard kbd(
-    .clk(clk), .clrn(~rst),
-    .ps2_clk(ps2_clk), .ps2_data(ps2_data),
-    .nextdata_n(nextdata_n), .data(data_kbd),
-    .ready(ready), .overflow(overflow)
-  );
+	.clk(clk),
+	.clrn(~rst),
+	.ps2_clk(ps2_clk),
+	.ps2_data(ps2_data),
+	.nextdata_n(nextdata_n),
+	.data(data_kbd),
+	.ready(ready),
+	.overflow(overflow)
+  );	
 
-  always @(posedge clk) begin
-	$display(state);
-    if (rst) begin
-      state <= NONE;
-      data <= 8'd0;
-      nextdata_n <= 1'b1;
-      rd_step <= 1'b0;
-    end else begin
-      // 默认保持 nextdata_n 为高，防止误弹出
-      nextdata_n <= 1'b1;
-
-      case (rd_step)
-        1'b0: begin   // 空闲：等待 FIFO 里有数据
-          if (ready) begin
-            nextdata_n <= 1'b0;   // 拉低 nextdata_n，通知弹出
-            rd_step <= 1'b1;      // 下一拍采样数据
-          end
-        end
-
-        1'b1: begin   // 数据已弹出，此时 data_kbd 是我们要的正确值
-          data <= data_kbd;       // 采样
-          nextdata_n <= 1'b1;     // 结束本次读取
-          rd_step <= 1'b0;       // 回到空闲
-
-          // ---- 状态机跳转，使用刚采样到的 data_kbd ----
-          case (state)
-            NONE: begin
-              if (data_kbd == 8'd0)
-                state <= NONE;
-              else if (data_kbd == 8'hF0)
-                state <= WAIT;
-              else
-                state <= PRESS;
-            end
-
-            PRESS: begin
-              if (data_kbd == 8'hF0)
-                state <= WAIT;
-              else
-                state <= PRESS;
-            end
-
-            WAIT: begin
-              // 收到非 F0、非 0 的字节（即断码后半）就回到 NONE
-              if (data_kbd == 8'hF0 || data_kbd == 8'd0)
-                state <= WAIT;
-              else
-                state <= NONE;
-            end
-
-            default: state <= NONE;
-          endcase
-        end
-      endcase
-    end
+  always@(*)begin
+	if(rst)
+	  next_state = NONE;
+	else begin
+	  case(state)
+		NONE: next_state = (data == 8'b0 ? NONE: (data == 8'hF0 ? WAIT: PRESS));
+		PRESS: next_state = (data == 8'hF0 ? WAIT: PRESS);
+		WAIT: next_state = (data == 8'b0 || data == 8'hF0 ? WAIT: NONE);
+		default: next_state = NONE;
+	  endcase
+	end
   end
 
-  // 这里你可以根据 state 和 data 驱动数码管
-  // 例如：当 state == PRESS 时显示 data 对应的字模
-  // 下面是一个示例（你需要根据你的 bcd 模块来完善）：
-  /*
-  wire [6:0] seg_low, seg_high;
-  assign seg_low  = (state == PRESS) ? ... : 7'b1111111;
-  assign seg_high = (state == PRESS) ? ... : 7'b1111111;
-  // 然后连到 output seg0~7
-  */
+  always@(posedge clk)begin
+	nextdata_n <= 1'b1;
+	$display(state);
+//	$display("%h", data);
+	if(rst)begin
+	  state <= NONE;
+	  data <= 8'b0;
+	end
+	else begin
+	  if(nextdata_n)
+	  state <= next_state;
+	  if(ready) begin
+		if(~nextdata_n)
+		  data <= data_kbd;
+		nextdata_n <= 1'b0;
+	  end
+	  else begin
+//		data <= 8'b0;
+	  end
+	end
+  end
 
 endmodule
