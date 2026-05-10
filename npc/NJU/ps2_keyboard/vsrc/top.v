@@ -25,6 +25,7 @@ module top(
   );
 
   always @(posedge clk) begin
+	$display(state);
     if (rst) begin
       state      <= NONE;
       data       <= 8'd0;
