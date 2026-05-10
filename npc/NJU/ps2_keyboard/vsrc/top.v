@@ -41,7 +41,7 @@ module top(
   end
 
   always@(posedge clk)begin
-	nextdata_n <= 1'b1;
+//	nextdata_n <= 1'b1;
 //	$display(state);
 	$display("%h", data);
 	if(rst)begin
@@ -52,8 +52,10 @@ module top(
 	else begin
 	  state <= next_state;
 	  if(ready) begin
-		if(~nextdata_n)
+		if(~nextdata_n)begin
 		  data <= data_kbd;
+		  nextdata_n = 1'b1;
+		end
 		else begin
 		  data <= 8'b0;
 		  nextdata_n <= 1'b0;
