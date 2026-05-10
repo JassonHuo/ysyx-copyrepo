@@ -54,7 +54,7 @@ module top(
 		data <= data_kbd;
 	  end
 	  else begin
-		data <= 8'b0;
+//		data <= 8'b0;
 	  end
 	end
   end
