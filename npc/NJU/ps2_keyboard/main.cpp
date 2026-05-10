@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   {
 	nvboard_update();
 	one_cycle(dut);
-	tfp->dump(1);
+	tfp->dump(contextp->time());
 	cycle --;
   }
   return 0;
