@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   dut->rst = 0;
 
   long long cycle = 100000;
-  while(cycle)
+  while(1)
   {
 	nvboard_update();
 	one_cycle(dut);
