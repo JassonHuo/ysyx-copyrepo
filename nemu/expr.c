@@ -24,7 +24,7 @@
 uint8_t* guest_to_host();
 
 enum {
-  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_REG, TK_HEX, TK_NEQ, TK_DERE, TK_LAND, TK_NEGA, 
+  TK_NOTYPE = 256, TK_EQ, TK_NUM, TK_REG, TK_HEX, TK_NEQ, TK_AND, TK_DERE, 
 
   /* TODO: Add more token types */
 
@@ -50,8 +50,6 @@ static struct rule {
   {"0x[0-9a-f]+", TK_HEX},
   {"[0-9]+", TK_NUM},		// num
   {"\\$\\$*[0-9a-zA-Z]+", TK_REG},      // gpr
-  {"!=", TK_NEQ},		// not equal
-  {"&&", TK_LAND},		//logical and
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -96,7 +94,6 @@ static void add_token(int i, int substr_len, char* substr_start)
   assert(tokens[nr_token].str != NULL);
   nr_token += 1;                                                                    
 }
-
 static bool make_token(char *e) {
 //bool make_token(char *e){
   int position = 0;
@@ -116,7 +113,6 @@ static bool make_token(char *e) {
   */
 
   while (e[position] != '\0' && e[position] != '\n') {
-//		  printf("%d\n", nr_token);
     /* Try all rules one by one. */
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
@@ -137,7 +133,7 @@ static bool make_token(char *e) {
 		  case TK_NOTYPE:
 			break;
 		  case '+':
-//		  case '-':
+		  case '-':
 //		  case '*':
 		  case '/':
 		  case '(':
@@ -145,9 +141,6 @@ static bool make_token(char *e) {
 		  case TK_NUM:
 		  case TK_HEX:
 		  case TK_REG:
-		  case TK_EQ:
-		  case TK_NEQ:
-		  case TK_LAND:
 			/*
 //			char temp_str[2];
 //			temp_str[0] = rules[i].token_type;		
@@ -165,29 +158,14 @@ static bool make_token(char *e) {
 			add_token(i, substr_len, substr_start);
 			break;
 		  case '*':
-			if(nr_token == 0 || (tokens[nr_token - 1].type != TK_NUM &&
-				tokens[nr_token - 1].type != TK_HEX &&
-				tokens[nr_token - 1].type != TK_REG &&
-				tokens[nr_token - 1].type != ')'))
+			if(nr_token == 0 || (tokens[nr_token].type != TK_NUM &&
+				tokens[nr_token].type != TK_HEX &&
+				tokens[nr_token].type != TK_REG &&
+				tokens[nr_token].type != ')'))
 			{
-//			  printf("trans\n");
 			  add_token(i, substr_len, substr_start);
 			  tokens[nr_token - 1].type = TK_DERE;
 			}
-			else
-			  add_token(i, substr_len, substr_start);
-			break;
-		  case '-':
-			if(nr_token == 0 || (tokens[nr_token - 1].type != TK_NUM &&
-				  tokens[nr_token - 1].type != TK_HEX &&
-				  tokens[nr_token - 1].type != TK_REG &&
-				  tokens[nr_token - 1].type != ')'))
-			{
-			  add_token(i, substr_len, substr_start);
-			  tokens[nr_token - 1].type = TK_NEGA;
-			}
-			else
-			  add_token(i, substr_len, substr_start);
 			break;
           default: 
 			TODO();
@@ -303,10 +281,10 @@ bool valid_result = true;
 bool div_by_zero = false;
 
 static uint32_t eval(int p, int q) {
-  //printf("p: %d, q: %d\n", p, q);
-//  for (int i = p; i <= q; i ++)
-//	printf("%s ", tokens[i].str);
-//  printf("\n");
+  printf("p: %d, q: %d\n", p, q);
+  for (int i = p; i <= q; i ++)
+	printf("%s ", tokens[i].str);
+  printf("\n");
   //printf("%d, %d\n", p, q);
   if (p > q) {
 //	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
@@ -332,11 +310,8 @@ static uint32_t eval(int p, int q) {
 	{
 	  bool success;
 	  num = isa_reg_str2val(tokens[p].str + 1, &success);
-	  if(success)
-	  //Assert(success, "%s %s %d: GPR Name Error", __FILE__, __func__, __LINE__);
-		return num;
-	  printf("GPR Name Error\n");
-	  return 0;
+	  Assert(success, "%s %s %d: GPR Name Error", __FILE__, __func__, __LINE__);
+	  return num;
 	}
 	//printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
 	//exit(1);
@@ -357,14 +332,10 @@ static uint32_t eval(int p, int q) {
 	return host_read(guest_to_host(addr), 4);
   }
   */
-  else{ 
+  else {
 	int op = -1;
-	int mul_op = -1;
-	int eq_op = -1;
+	int last_op = -1;
 	int in_parentheses = 0;
-	int land_op = -1;
-	int dere_op = -1;
-	int nega_op = -1;
 	for(int pos = q; pos >= p; pos --)
 	{
 	  if(!in_parentheses && 
@@ -376,48 +347,28 @@ static uint32_t eval(int p, int q) {
 	  }
 	  else if(!in_parentheses && (tokens[pos].type == '*' ||
 		  tokens[pos].type == '/') &&
-		  mul_op < 0)
-		mul_op = pos;
+		  last_op < 0)
+		last_op = pos;
 	  else if(tokens[pos].type == ')')
 		in_parentheses += 1;
 	  else if(tokens[pos].type == '(')
 		in_parentheses -= 1;
-	  else if(!in_parentheses && ((tokens[pos].type == TK_EQ || tokens[pos].type == TK_NEQ) && eq_op < 0))
-		eq_op = pos;
-	  else if(!in_parentheses && tokens[pos].type == TK_LAND && land_op < 0)
-		land_op = pos;
-	  /*
 	  else if(tokens[pos].type == TK_DERE && !in_parentheses && last_op < 0)
 	  {
 		last_op = pos;
 	  }
-	  */
-	  else if(tokens[pos].type == TK_DERE && !in_parentheses)
-		dere_op = pos;
-	  else if(tokens[pos].type == TK_NEGA && !in_parentheses)
-		nega_op = pos;
 	}
-	if(land_op > 0)
-		op = land_op;
-	  else if(eq_op > 0)
-		op = eq_op;
-	  else if(mul_op > 0)
-		op = mul_op;
-	  else if(op > 0)
-		op = op;
-	  else if(dere_op == p)
-	  {
-		uint32_t addr = eval(p + 1, q); 
-		return host_read(guest_to_host(addr), 4);
-	  }
-	else if(nega_op == p)
-	  return -eval(p + 1, q);
-	  else
+	if (op < 0)
+	{
+	  if(last_op < 0)
 	  {
 		printf("Expression error\n");
-        valid_result = false;
-        return 0;
+		valid_result = false;
+		return 0;
 	  }
+
+	  op = last_op;	
+	}
 	int32_t val1, val2;
 //	if(tokens[op].type != TK_DERE)
 //	{
@@ -435,12 +386,16 @@ static uint32_t eval(int p, int q) {
 				  return 0;
 				}
 				return val1 / val2; 
-	  case TK_EQ: return val1 == val2;
-	  case TK_NEQ: return val1 != val2;
-	  case TK_LAND: return val1 && val2;
       default: assert(0);
     }
   }
+  /*
+  if(tokens[p].type == TK_DERE)
+  {
+	uint32_t addr = eval(p + 1, q); 
+	return host_read(guest_to_host(addr), 4);
+  }
+  */
 }
 
 /*
@@ -461,8 +416,8 @@ word_t expr(char *e, bool *success) {
 //  TODO();
   uint32_t expr_result = eval(0, nr_token - 1);
   *success = true;
-  //if(valid_result)
-//	printf("%u\n", expr_result);
+  if(valid_result)
+	printf("%u\n", expr_result);
   valid_result = true;
 //  return 0;
   return expr_result;
