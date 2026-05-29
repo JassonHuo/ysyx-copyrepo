@@ -7,6 +7,6 @@ module adder(
 
   wire [3: 0] y_add = y ^ {4{sel}};
 
-  assign z = x + y + sel;
+  assign z = x + y_add + sel;
 
 endmodule
