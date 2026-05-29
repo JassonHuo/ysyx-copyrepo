@@ -4,7 +4,7 @@ module top(
   output [6: 0] seg1
 );
 
-  reg [7: 0] num;
+  reg [7: 0] num = 8'b1;
 
   always@(posedge clk)begin
 	num <= {num[4] ^ num[3] ^ num[2] ^ num[0], num[7: 1]};
