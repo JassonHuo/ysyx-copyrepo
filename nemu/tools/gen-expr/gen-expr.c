@@ -102,11 +102,28 @@ static void gen_rand_op()
   char ops[] = "+-*/";
 //  char *op = (char*)malloc(2 * sizeof(char));
 //  Assert(op, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
-  int idx = choose(4);
+  int idx = choose(7);
 //  op[0] = ops[idx];
   //op[1] = '\0';
+//  printf("%d\n", idx);
   last_valid_pos = buf_top;
-  buf[buf_top ++] = ops[idx];
+  if(idx < 4)
+	buf[buf_top ++] = ops[idx];
+  else if(idx == 4)
+  {
+	buf[buf_top ++] = '=';
+	buf[buf_top ++] = '=';
+  }
+  else if(idx == 5)
+  {
+	buf[buf_top ++] = '!';
+	buf[buf_top ++] = '=';
+  }
+  else if(idx == 6)
+  {
+	buf[buf_top ++] = '&';
+	buf[buf_top ++] = '&';
+  }
   cur_token += 1;
 //  return op;
 }
