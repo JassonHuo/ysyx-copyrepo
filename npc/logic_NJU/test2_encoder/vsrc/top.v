@@ -7,11 +7,11 @@ module top(
   integer i;
   always@(*)begin
 	out = 3'b0;
-	for(i = 0; i < 8; i = i + 1)begin
-	  if(in[i] == 1)
+	for(i = 7; i >= 0; i = i - 1)begin
+	  if(in[i] == 1)begin
 		out = i[2: 0];
-	  else
-		out = 0;
+		break;
+	  end
 	end
   end
 
