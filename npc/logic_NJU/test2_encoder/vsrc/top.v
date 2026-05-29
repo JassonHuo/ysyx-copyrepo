@@ -2,7 +2,8 @@ module top(
   input [7: 0] in,
   input en,
   output reg [2: 0] out,
-  output reg flag
+  output reg flag,
+  output [6: 0] seg
 );
 
 
@@ -20,5 +21,10 @@ module top(
 	  end
 	end
   end
+
+  seg seg0(
+	.data(out),
+	.seg(seg)
+  );
 
 endmodule
