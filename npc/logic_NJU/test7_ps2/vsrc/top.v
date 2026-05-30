@@ -47,7 +47,7 @@ module top(
 //	$display(data);
 //	$display(data_kbd);
 	if(state != next_state)
-	  $display(next_state);
+	  $display(next_state, data);
 	if(clr)
 	  state <= NONE;
 	else begin
@@ -56,13 +56,13 @@ module top(
   end
 
   seg_out seg00(
-	.data(data[3: 0]),
+	.data(data_kbd[3: 0]),
 	.down(state != PRESS),
 	.seg(seg0)
   );
 
   seg_out seg01(
-	.data(data[7: 4]),
+	.data(data_kbd[7: 4]),
 	.down(state != PRESS),
 	.seg(seg1)
   );
