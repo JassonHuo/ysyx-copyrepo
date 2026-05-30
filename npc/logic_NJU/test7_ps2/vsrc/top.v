@@ -38,6 +38,7 @@ module top(
 		NONE: next_state = (data == 0 ? NONE: PRESS);
 		PRESS: next_state = (data == 8'hF0 ? WAIT: PRESS);
 		WAIT: next_state = (data == 8'h0 ? WAIT: NONE);
+		default: next_state = NONE;
 	  endcase
 	end
   end
@@ -69,7 +70,6 @@ module top(
 
   always@(posedge clk)begin
 	nextdata_n <= 1'b1;
-	reading <= ready;
 	if(ready && !reading)begin
 	  nextdata_n <= 1'b0;
 	  reading <= 1'b1;
@@ -78,6 +78,7 @@ module top(
 	  data <= data_kbd;
 	  reading <= 1'b0;
 	end
+	else reading <= 1'b0;
   end
 
 endmodule
