@@ -27,9 +27,8 @@ module top(
 	.overflow(overflow)
   );
 
-//  wire [7: 0] data = data_kbd & {8{ready}};
+  wire [7: 0] data = data_kbd & {8{ready}};
 
-  wire [7: 0] data = data_kbd;
   always@(*)begin
 	if(clr) next_state = NONE;
 	else begin
@@ -55,13 +54,13 @@ module top(
   end
 
   seg_out seg00(
-	.data(data[3: 0]),
+	.data(data_kbd[3: 0]),
 	.down(state != PRESS),
 	.seg(seg0)
   );
 
   seg_out seg01(
-	.data(data[7: 4]),
+	.data(data_kbd[7: 4]),
 	.down(state != PRESS),
 	.seg(seg1)
   );
