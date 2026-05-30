@@ -80,10 +80,10 @@ module top(
 	nextdata_n <= 1'b1;
 	data <= 8'b0;
 	data_reg <= data_kbd;
-	if(ready && !reading)begin
+	if(ready)begin
 	  nextdata_n <= 1'b0;
 	  reading <= 1'b1;
-	  data <= 8'b0;
+	  data <= data_kbd;
 	end
 	else if(ready && reading)begin
 	  data <= data_kbd;
