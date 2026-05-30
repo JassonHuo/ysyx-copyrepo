@@ -57,13 +57,13 @@ module top(
 
   seg_out seg00(
 	.data(data_kbd[3: 0]),
-	.down(state != PRESS),
+	.down(state != PRESS || data_kbd == 8'hF0),
 	.seg(seg0)
   );
 
   seg_out seg01(
 	.data(data_kbd[7: 4]),
-	.down(state != PRESS),
+	.down(state != PRESS || data_kbd == 8'hF0),
 	.seg(seg1)
   );
 
