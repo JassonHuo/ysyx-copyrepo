@@ -55,8 +55,8 @@ module top(
 	prev_state <= state;
 //	$display(data);
 //	$display(data_kbd);
-//	if(state != prev_state)
-//	  $display("%h, %h", state, data);
+	if(state != prev_state)
+	  $display("%h, %h", state, data);
 	if(clr)
 	  state <= NONE;
 	else begin
