@@ -12,7 +12,7 @@ module top(
 
   wire [7: 0] data_kbd;
   wire ready;
-  wire nextdata_n;
+  reg nextdata_n;
   parameter NONE = 0, PRESS = 1, WAIT = 2;
   reg [1: 0] state, next_state;
 
@@ -44,12 +44,16 @@ module top(
 //	$display(state);
 //	$display(data);
 //	$display(data_kbd);
+	nextdata_n <= 1'b1;
 	if(state != next_state)
 	  $display(next_state);
 	if(clr)
 	  state <= NONE;
 	else begin
 	  state <= next_state;
+	  if(ready)begin
+		nextdata_n <= 1'b0;
+	  end
 	end
   end
 
