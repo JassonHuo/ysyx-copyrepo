@@ -41,7 +41,8 @@ module top(
   end
 
   always@(posedge clk)begin
-	$display(state);
+//	$display(state);
+	$display(data);
 	if(clr)
 	  state <= NONE;
 	else begin
