@@ -85,6 +85,8 @@ module top(
 	  if(data_kbd != 8'hF0)
 		data_reg <= data_kbd;
 	end
+	if(!nextdata_n)
+	  data <= 8'b0;
   end
 
   always@(posedge clk)begin
