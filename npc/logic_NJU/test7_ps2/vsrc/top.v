@@ -43,11 +43,14 @@ module top(
 	end
   end
 
+  reg [1: 0] prev_state;
+
   always@(posedge clk)begin
+	prev_state <= state;
 //	$display(data);
 //	$display(data_kbd);
-	if(state != next_state)
-	  $display(next_state, data);
+	if(state != prev_state)
+	  $display("%h, %h", state, data);
 	if(clr)
 	  state <= NONE;
 	else begin
