@@ -46,7 +46,7 @@ module top(
 //	$display(state);
 //	$display(data);
 //	$display(data_kbd);
-	if(state != next_state)
+//	if(state != next_state)
 	  $display(next_state);
 	if(clr)
 	  state <= NONE;
