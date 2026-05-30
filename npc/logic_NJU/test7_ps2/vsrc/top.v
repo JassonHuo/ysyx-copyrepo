@@ -17,6 +17,7 @@ module top(
   reg [1: 0] state, next_state;
   reg reading;
   reg [7: 0] data;
+  reg [7: 0] data_reg;
 
   ps2_keyboard my_kbd(
 	.clk(clk),
@@ -59,13 +60,13 @@ module top(
   end
 
   seg_out seg00(
-	.data(data[3: 0]),
+	.data(data_reg[3: 0]),
 	.down(state != PRESS || data == 8'hF0),
 	.seg(seg0)
   );
 
   seg_out seg01(
-	.data(data[7: 4]),
+	.data(data_reg[7: 4]),
 	.down(state != PRESS || data == 8'hF0),
 	.seg(seg1)
   );
@@ -75,22 +76,19 @@ module top(
 	  $display("receive: %h", data);
 	nextdata_n <= 1'b1;
 	data <= 8'b0;
-//	if(ready && !reading)begin
-//	  nextdata_n <= 1'b0;
-//	  reading <= 1'b1;
-//	  data <= 8'b0;
-//	end
-//	else if(ready && reading)begin
-//	  data <= data_kbd;
-//	  reading <= 1'b0;
-//	end
-//	else begin
-//	  reading <= 1'b0;
-//	  data <= 8'b0;
-//	end
-	if(ready)begin
+	data_reg <= data_kbd;
+	if(ready && !reading)begin
 	  nextdata_n <= 1'b0;
+	  reading <= 1'b1;
+	  data <= 8'b0;
+	end
+	else if(ready && reading)begin
 	  data <= data_kbd;
+	  reading <= 1'b0;
+	end
+	else begin
+	  reading <= 1'b0;
+	  data <= 8'b0;
 	end
   end
 
