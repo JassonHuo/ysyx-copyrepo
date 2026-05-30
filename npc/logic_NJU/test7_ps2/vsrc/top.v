@@ -71,6 +71,8 @@ module top(
   );
 
   always@(posedge clk)begin
+	if(data != 0)
+	  $display("receive: %h", data);
 	nextdata_n <= 1'b1;
 	data <= 8'b0;
 	if(ready && !reading)begin
