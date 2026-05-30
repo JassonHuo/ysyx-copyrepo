@@ -51,13 +51,13 @@ module top(
 
   seg_out seg00(
 	.data(data[3: 0]),
-	.down(state == PRESS),
+	.down(state != PRESS),
 	.seg(seg0)
   );
 
   seg_out seg01(
 	.data(data[7: 4]),
-	.down(state == PRESS),
+	.down(state != PRESS),
 	.seg(seg1)
   );
 
