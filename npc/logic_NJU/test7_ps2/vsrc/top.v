@@ -44,16 +44,12 @@ module top(
 //	$display(state);
 //	$display(data);
 //	$display(data_kbd);
-	nextdata_n <= 1'b1;
 	if(state != next_state)
 	  $display(next_state);
 	if(clr)
 	  state <= NONE;
 	else begin
 	  state <= next_state;
-	  if(ready)begin
-		nextdata_n <= 1'b0;
-	  end
 	end
   end
 
@@ -68,5 +64,11 @@ module top(
 	.down(state != PRESS),
 	.seg(seg1)
   );
+
+  always@(posedge clk)begin
+	nextdata_n <= 1'b1;
+	if(ready && data != 0)
+	  nextdata_n <= 1'b0;
+  end
 
 endmodule
