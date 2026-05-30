@@ -73,6 +73,7 @@ module top(
 	if(ready && !reading)begin
 	  nextdata_n <= 1'b0;
 	  reading <= 1'b1;
+	  data <= 8'b0;
 	end
 	else if(ready && reading)begin
 	  data <= data_kbd;
