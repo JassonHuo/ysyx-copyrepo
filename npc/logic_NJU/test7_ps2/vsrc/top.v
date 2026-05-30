@@ -15,6 +15,8 @@ module top(
   reg nextdata_n;
   parameter NONE = 0, PRESS = 1, WAIT = 2;
   reg [1: 0] state, next_state;
+  reg reading;
+  reg [7: 0] data;
 
   ps2_keyboard my_kbd(
 	.clk(clk),
@@ -27,7 +29,7 @@ module top(
 	.overflow(overflow)
   );
 
-  wire [7: 0] data = data_kbd & {8{ready}};
+//  wire [7: 0] data = data_kbd & {8{ready}};
 
   always@(*)begin
 	if(clr) next_state = NONE;
@@ -67,8 +69,11 @@ module top(
 
   always@(posedge clk)begin
 	nextdata_n <= 1'b1;
-	if(ready && data != 0)
+	reading <= 1'b0;
+	if(ready && !reading)
 	  nextdata_n <= 1'b0;
+	else if(ready && reading)
+	  data <= data_kbd;
   end
 
 endmodule
