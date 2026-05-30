@@ -27,8 +27,9 @@ module top(
 	.overflow(overflow)
   );
 
-  wire [7: 0] data = data_kbd & {8{ready}};
+//  wire [7: 0] data = data_kbd & {8{ready}};
 
+  wire [7: 0] data = data_kbd;
   always@(*)begin
 	if(clr) next_state = NONE;
 	else begin
