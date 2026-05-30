@@ -77,8 +77,6 @@ module top(
   );
 
   always@(posedge clk)begin
-	if(data != 0)
-	  $display("receive: %h", data);
 	nextdata_n <= 1'b1;
 	data <= 8'b0;
 	data_reg <= data_kbd;
@@ -124,6 +122,39 @@ module top(
 	.data(counter[15: 12]),
 	.down(1'b0),
 	.seg(seg7)
+  );
+
+  reg [7: 0] ascii;
+
+  always@(*)begin
+	case(data_reg)
+	  8'h15: ascii = "q";
+	  8'h1d: ascii = "w";
+	  8'h24: ascii = "e";
+	  8'h2d: ascii = "r";
+	  8'h2c: ascii = "t";
+	  8'h35: ascii = "y";
+	  8'h3c: ascii = "u";
+	  8'h43: ascii = "i";
+	  8'h44: ascii = "o";
+	  8'h4d: ascii = "p";
+	  8'h1c: ascii = "a";
+	  8'h1b: ascii = "s";
+	  8'h23: ascii = "d";
+	  default: ascii = 8'h0;
+	endcase
+  end
+
+  seg_out seg10(
+	.data(ascii[3: 0]),
+	.down(state != PRESS|| data == 8'hF0),
+	.seg(seg2)
+  );
+
+  seg_out seg11(
+	.data(ascii[7: 4]),
+	.down(state != PRESS || data == 8'hF0),
+	.seg(seg3)
   );
 
 endmodule

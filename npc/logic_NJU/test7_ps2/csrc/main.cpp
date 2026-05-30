@@ -23,7 +23,7 @@ static void reset(int n)
   dut.clr = 0;
 }
 
-int main(int argc, char* argv)
+int main(int argc, char** argv)
 {
   nvboard_bind_all_pins(&dut);
   nvboard_init();
