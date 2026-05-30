@@ -7,6 +7,10 @@ module top(
   output [6: 0] seg1,
   output [6: 0] seg2,
   output [6: 0] seg3,
+  output [6: 0] seg4,
+  output [6: 0] seg5,
+  output [6: 0] seg6,
+  output [6: 0] seg7,
   output overflow
 );
 
@@ -18,6 +22,7 @@ module top(
   reg reading;
   reg [7: 0] data;
   reg [7: 0] data_reg;
+  reg [15: 0] counter;
 
   ps2_keyboard my_kbd(
 	.clk(clk),
@@ -91,5 +96,34 @@ module top(
 	  data <= 8'b0;
 	end
   end
+
+  always@(posedge clk)begin
+	if(state == NONE && next_state == PRESS)
+	  counter <= counter + 1;
+  end
+
+  seg_out seg20(
+	.data(counter[3: 0]),
+	.down(1'b0),
+	.seg(seg4)
+  );
+
+  seg_out seg21(
+	.data(counter[7: 4]),
+	.down(1'b0),
+	.seg(seg5)
+  );
+
+  seg_out seg22(
+	.data(counter[11: 8]),
+	.down(1'b0),
+	.seg(seg6)
+  );
+
+  seg_out seg23(
+	.data(counter[15: 12]),
+	.down(1'b0),
+	.seg(seg7)
+  );
 
 endmodule
