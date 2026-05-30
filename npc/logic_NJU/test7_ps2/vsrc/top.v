@@ -43,12 +43,11 @@ module top(
   end
 
   always@(posedge clk)begin
-//	$display(state);
+	$display(state);
 //	$display(data);
 //	$display(data_kbd);
 //	if(state != next_state)
 //	  $display(next_state);
-	$display(data);
 	if(clr)
 	  state <= NONE;
 	else begin
@@ -70,6 +69,7 @@ module top(
 
   always@(posedge clk)begin
 	nextdata_n <= 1'b1;
+	reading <= ready;
 	if(ready && !reading)begin
 	  nextdata_n <= 1'b0;
 	  reading <= 1'b1;
@@ -77,9 +77,6 @@ module top(
 	else if(ready && reading)begin
 	  data <= data_kbd;
 	  reading <= 1'b0;
-	end
-	else begin
-	  reading <= 1'b1;
 	end
   end
 
