@@ -78,7 +78,10 @@ module top(
 	  data <= data_kbd;
 	  reading <= 1'b0;
 	end
-	else reading <= 1'b0;
+	else begin
+	  reading <= 1'b0;
+	  data <= 8'b0;
+	end
   end
 
 endmodule
