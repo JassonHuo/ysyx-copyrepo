@@ -79,11 +79,19 @@ module top(
   always@(posedge clk)begin
 	nextdata_n <= 1'b1;
 	data <= 8'b0;
-	if(ready)begin
-	  data <= data_kbd;
+	data_reg <= data_kbd;
+	if(ready && !reading)begin
 	  nextdata_n <= 1'b0;
-	  if(data_kbd != 8'hF0)
-		data_reg <= data_kbd;
+	  reading <= 1'b1;
+	  data <= data_kbd;
+	end
+	else if(ready && reading)begin
+	  data <= data_kbd;
+	  reading <= 1'b0;
+	end
+	else begin
+	  reading <= 1'b0;
+	  data <= 8'b0;
 	end
   end
 
