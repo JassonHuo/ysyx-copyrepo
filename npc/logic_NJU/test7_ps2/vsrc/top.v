@@ -90,7 +90,9 @@ module top(
   end
 
   always@(posedge clk)begin
-	if(state == NONE && next_state == PRESS)
+	if(clr) 
+	  counter <= 16'b0;
+	else if(state == NONE && next_state == PRESS)
 	  counter <= counter + 1;
   end
 
