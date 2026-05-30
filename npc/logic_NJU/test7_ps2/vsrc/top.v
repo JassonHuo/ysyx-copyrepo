@@ -135,6 +135,29 @@ module top(
 	  8'h1c: ascii = "a";
 	  8'h1b: ascii = "s";
 	  8'h23: ascii = "d";
+	  8'h2b: ascii = "f";
+	  8'h34: ascii = "g";
+	  8'h33: ascii = "h";
+	  8'h3b: ascii = "j";
+	  8'h42: ascii = "k";
+	  8'h4b: ascii = "l";
+	  8'h1a: ascii = "z";
+	  8'h22: ascii = "x";
+	  8'h21: ascii = "c";
+	  8'h2a: ascii = "v";
+	  8'h32: ascii = "b";
+	  8'h31: ascii = "n";
+	  8'h3a: ascii = "m";
+	  8'h16: ascii = "1";
+	  8'h1e: ascii = "2";
+	  8'h26: ascii = "3";
+	  8'h25: ascii = "4";
+	  8'h2e: ascii = "5";
+	  8'h36: ascii = "6";
+	  8'h3d: ascii = "7";
+	  8'h3e: ascii = "8";
+	  8'h46: ascii = "9";
+	  8'h45: ascii = "0";
 	  default: ascii = 8'h0;
 	endcase
   end
