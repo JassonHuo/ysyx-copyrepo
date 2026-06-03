@@ -397,15 +397,19 @@ static uint32_t eval(int p, int q) {
 	  else if(tokens[pos].type == TK_NEGA && !in_parentheses)
 		nega_op = pos;
 	}
-	if(land_op > 0)
-		op = land_op;
-	  else if(eq_op > 0)
-		op = eq_op;
-	  else if(mul_op > 0)
-		op = mul_op;
-	  else if(op > 0)
-		op = op;
-	  else if(dere_op == p)
+	if(op > 0)
+	  op = op;
+	else if(land_op > 0)
+	  op = land_op;
+	else if(eq_op > 0)
+	  op = eq_op;
+	else if(mul_op > 0)
+	  op = mul_op;
+	/*
+	else if(op > 0)
+	  op = op;
+	  */
+	else if(dere_op == p)
 	  {
 		uint32_t addr = eval(p + 1, q); 
 		return host_read(guest_to_host(addr), 4);
