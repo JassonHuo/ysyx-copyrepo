@@ -403,7 +403,7 @@ static uint32_t eval(int p, int q) {
 	  op = land_op;
 	else if(eq_op > 0)
 	  op = eq_op;
-	else if(op > 0)
+	else if(plus_op > 0)
 	  op = plus_op;
 	else if(mul_op > 0)
 	  op = mul_op;
