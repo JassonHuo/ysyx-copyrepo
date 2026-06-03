@@ -401,10 +401,10 @@ static uint32_t eval(int p, int q) {
 	  op = land_op;
 	else if(eq_op > 0)
 	  op = eq_op;
-	else if(mul_op > 0)
-	  op = mul_op;
 	else if(op > 0)
 	  op = op;
+	else if(mul_op > 0)
+	  op = mul_op;
 	else if(dere_op == p)
 	  {
 		uint32_t addr = eval(p + 1, q); 
