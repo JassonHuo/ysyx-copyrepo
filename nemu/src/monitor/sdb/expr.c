@@ -372,7 +372,7 @@ static uint32_t eval(int p, int q) {
 		   tokens[pos].type == '-'))
 	  {
 		op = pos;
-		break;
+//		break;
 	  }
 	  else if(!in_parentheses && (tokens[pos].type == '*' ||
 		  tokens[pos].type == '/') &&
