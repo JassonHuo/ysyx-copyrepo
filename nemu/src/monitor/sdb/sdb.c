@@ -212,11 +212,10 @@ void sdb_mainloop() {
     cmd_c(NULL);
     return;
   }
-  if (nemu_state.state == NEMU_QUIT)
-	return;
-
   for (char *str; (str = rl_gets()) != NULL; ) {
   printf("%d\n", nemu_state.state == NEMU_QUIT);
+  if (nemu_state.state == NEMU_QUIT)
+	return;
     char *str_end = str + strlen(str);
 
     /* extract the first token as the command */
