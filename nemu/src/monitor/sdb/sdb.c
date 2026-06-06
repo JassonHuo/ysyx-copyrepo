@@ -61,10 +61,7 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
-//  return -1;
-  nemu_state.state = NEMU_QUIT;
-  return 0;
-
+  return -1;
 }
 
 static int cmd_help(char *args);
@@ -212,10 +209,8 @@ void sdb_mainloop() {
     cmd_c(NULL);
     return;
   }
+
   for (char *str; (str = rl_gets()) != NULL; ) {
-  printf("%d\n", nemu_state.state == NEMU_QUIT);
-  if (nemu_state.state == NEMU_QUIT)
-	return;
     char *str_end = str + strlen(str);
 
     /* extract the first token as the command */
@@ -238,14 +233,14 @@ void sdb_mainloop() {
     int i;
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
-		/*
-        if (nemu_state.state == NEMU_QUIT) { 
+        if (cmd_table[i].handler(args) < 0) { 
+		  nemu_state.state = NEMU_QUIT;
 		  return; 
 		}
-		*/
         break;
       }
     }
+
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
   }
 }

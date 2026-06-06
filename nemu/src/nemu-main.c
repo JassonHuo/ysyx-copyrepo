@@ -71,7 +71,6 @@ int main(int argc, char *argv[]) {
 //	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
 //	uint32_t real_result = atoi(buffer_real);
 //	printf("result: %u\n", real_result);
-	  printf("success: %d,\nexpression:%s\nresult = %u,\nperfect_result = %u\n", success, expression, real_result, atoi(result));
 	if(!success || atoi(result) != real_result)
 	{
 	  printf("Result Error\n");
