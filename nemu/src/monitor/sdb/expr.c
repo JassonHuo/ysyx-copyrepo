@@ -454,6 +454,7 @@ uint32_t do_compression()
 */
 
 word_t expr(char *e, bool *success) {
+  printf("%s\n", e);
   div_by_zero = false;
   if (!make_token(e)) {
     *success = false;
