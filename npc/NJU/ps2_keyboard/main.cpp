@@ -32,11 +32,11 @@ int main(int argc, char **argv)
   dut->rst = 0;
 
   long long cycle = 100000;
-  while(1)
+  while(cycle)
   {
 	nvboard_update();
 	one_cycle(dut);
-	tfp->dump(1);
+	tfp->dump(contextp->time());
 	cycle --;
   }
   return 0;
