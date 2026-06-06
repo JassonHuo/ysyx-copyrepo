@@ -245,7 +245,10 @@ void sdb_mainloop() {
       }
     }
 	if(nemu_state.state == NEMU_QUIT)
+	{
+	  printf("%d\n", nemu_state.state == NEMU_QUIT);
 	  return;
+	}
 
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
   }
