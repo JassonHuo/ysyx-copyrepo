@@ -212,6 +212,8 @@ void sdb_mainloop() {
     cmd_c(NULL);
     return;
   }
+  if (nemu_state.state == NEMU_QUIT)
+	return;
 
   for (char *str; (str = rl_gets()) != NULL; ) {
     char *str_end = str + strlen(str);
@@ -244,12 +246,6 @@ void sdb_mainloop() {
         break;
       }
     }
-	if(nemu_state.state == NEMU_QUIT)
-	{
-	  printf("%d\n", nemu_state.state == NEMU_QUIT);
-	  return;
-	}
-
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
   }
 }
