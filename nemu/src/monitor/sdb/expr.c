@@ -308,6 +308,7 @@ static uint32_t eval(int p, int q) {
 //	printf("%s ", tokens[i].str);
 //  printf("\n");
   //printf("%d, %d\n", p, q);
+  printf("%d, %d\n", p, q);
   if (p > q) {
 //	printf("Error in %s %d, function: %s\n", __FILE__, __LINE__, __func__);
 //	exit(1);
