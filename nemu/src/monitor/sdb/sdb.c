@@ -212,6 +212,7 @@ void sdb_mainloop() {
     cmd_c(NULL);
     return;
   }
+  printf("%d\n", nemu_state.state == NEMU_QUIT);
   if (nemu_state.state == NEMU_QUIT)
 	return;
 
