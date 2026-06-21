@@ -1,5 +1,5 @@
 `include "global.vh"
-import "DPI-C" function void ebreak();
+//import "DPI-C" function void ebreak();
 module idu(
   input [31: 0] inst_in,
   input [31: 0] pc_in,
@@ -27,7 +27,8 @@ module idu(
   output reg mem_wen,
 
   output reg valid,
-  output reg [1: 0] width
+  output reg [1: 0] width,
+  output reg break_signal
 );
 
   assign pc_out = pc_in;
@@ -76,6 +77,7 @@ module idu(
 	mem_wen = 0;
 	valid = 0;
 	width = 0;
+	break_signal = 0;
 	case(opcode)
 	  7'b0110111:begin   //LUI
 		imm = Uimm;
@@ -142,7 +144,8 @@ module idu(
 	  end
 	  7'b1110011:begin		//EBREAK
 		if(Iimm == 32'b1)
-		  ebreak();
+//		  ebreak();
+		  break_signal = 1;
 	  end
 	  default begin
 	  end

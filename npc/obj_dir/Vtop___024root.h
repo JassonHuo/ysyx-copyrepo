@@ -30,6 +30,8 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     CData/*0:0*/ top__DOT__mem_wen_idu_exu;
     CData/*0:0*/ top__DOT__valid_idu_exu;
     CData/*1:0*/ top__DOT__width_idu_exu;
+    CData/*0:0*/ top__DOT__break_idu_pc;
+    CData/*0:0*/ top__DOT__idu0__DOT____VdfgExtracted_h87ea21a1__0;
     CData/*1:0*/ top__DOT__lsu0__DOT__mem_data;
     CData/*0:0*/ __VstlFirstIteration;
     CData/*0:0*/ __VstlPhaseResult;
@@ -40,6 +42,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
     CData/*0:0*/ __VnbaPhaseResult;
     VL_OUT(pc,31,0);
     VL_IN(inst,31,0);
+    VL_OUT(a0,31,0);
     IData/*31:0*/ top__DOT__pc_wb_pc;
     IData/*31:0*/ top__DOT__imm_idu_exu;
     IData/*31:0*/ top__DOT__rdata_gpr_idu;
