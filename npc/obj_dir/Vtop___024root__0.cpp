@@ -220,7 +220,8 @@ void Vtop___024root___ico_sequent__TOP__0(Vtop___024root* vlSelf) {
             }
         }
     }
-    vlSelfRef.top__DOT__pc_en_wb_pc = (0U != (IData)(vlSelfRef.top__DOT__pc_src_idu_exu));
+    vlSelfRef.top__DOT__pc_en_wb_pc = ((0U != (IData)(vlSelfRef.top__DOT__pc_src_idu_exu)) 
+                                       && (3U == (IData)(vlSelfRef.top__DOT__pc_src_idu_exu)));
     vlSelfRef.top__DOT__exu0__DOT__alu0__DOT__z = (
                                                    (0U 
                                                     == (IData)(vlSelfRef.top__DOT__alu_op_idu_exu))
