@@ -86,7 +86,7 @@ module idu(
 		wen = 1;
 	  end
 	  7'b1100111:begin   //JALR
-		imm = Iimm;
+		imm = Iimm & 32'hFFFFFFFE;
 		pc_src = `PC_JALR;
 		alu_op = `ALU_ADD;
 		alu_src = `ALU_IMM;

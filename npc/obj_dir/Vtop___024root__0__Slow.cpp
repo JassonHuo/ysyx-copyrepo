@@ -200,7 +200,8 @@ VL_ATTR_COLD void Vtop___024root___stl_sequent__TOP__0(Vtop___024root* vlSelf) {
                         if ((2U & vlSelfRef.inst)) {
                             if ((1U & vlSelfRef.inst)) {
                                 vlSelfRef.top__DOT__imm_idu_exu 
-                                    = vlSelfRef.top__DOT__idu0__DOT__Iimm;
+                                    = (0xfffffffeU 
+                                       & vlSelfRef.top__DOT__idu0__DOT__Iimm);
                                 vlSelfRef.top__DOT__reg_src_idu_exu = 2U;
                                 vlSelfRef.top__DOT__wen_idu_exu = 1U;
                                 vlSelfRef.top__DOT__pc_src_idu_exu = 3U;
