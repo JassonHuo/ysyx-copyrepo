@@ -16,7 +16,7 @@ extern "C" {
 
 
     // DPI IMPORTS
-    // DPI import at vsrc/pc.v:1:30
+    // DPI import at vsrc/idu.v:2:30
     extern void ebreak();
     // DPI import at vsrc/lsu.v:1:29
     extern int pmem_read(int raddr);

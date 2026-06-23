@@ -2,7 +2,6 @@ module top(
   input clk,
   input rst,
   output [31: 0] pc,
-  input [31: 0] inst,
   output [31: 0] a0
 );
 
@@ -72,14 +71,12 @@ module top(
 
   wire [1: 0] width_idu_exu;
   wire [1: 0] width_exu_lsu;
-  wire break_idu_pc;
 
   pc pc0(
 	.pc_en(pc_en_wb_pc),
 	.pc_in(pc_wb_pc),
 	.rst(rst),
 	.clk(clk),
-	.break_signal(break_idu_pc),
 
 	.pc_out(pc_pc_ifu),
 	.pc_sync(pc_sync_pc_ifu)
@@ -89,7 +86,6 @@ module top(
 	.pc_in(pc_pc_ifu),
 	.pc_sync_in(pc_sync_pc_ifu),
 	.inst_addr(pc),
-	.inst_in(inst),
 	.inst_out(inst_ifu_idu),
 	.pc_sync_out(pc_sync_ifu_idu),
 	.pc_out(pc_ifu_idu)
@@ -121,8 +117,7 @@ module top(
 	.mem_wen(mem_wen_idu_exu),
 	.wmask(wmask_idu_exu),
 	.valid(valid_idu_exu),
-	.width(width_idu_exu),
-	.break_signal(break_idu_pc)
+	.width(width_idu_exu)
   );
 
   gpr gpr0(

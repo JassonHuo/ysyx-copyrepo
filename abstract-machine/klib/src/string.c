@@ -41,7 +41,7 @@ char *strncpy(char *dst, const char *src, size_t n) {
 //  panic("Not implemented");
   if(src == NULL || dst == NULL)
 	segment_fault();
-  bool is_NULL;
+  bool is_NULL = false;
   for(int i = 0; i < n; i ++)
   {
 	if(src[i] == '\0')

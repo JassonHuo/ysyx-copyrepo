@@ -67,8 +67,5 @@ module exu(
 	.zero(zero)
   );
 
-  always@(*)begin
-	$display("pc: %08x, src1: %08x, src2: %08x, imm: %08x alu:%08x", pc_in, src1, src2, imm, alu_out);
-  end
 
 endmodule

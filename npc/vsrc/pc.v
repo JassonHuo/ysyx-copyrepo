@@ -1,4 +1,3 @@
-import "DPI-C" function void ebreak();
 module pc(
   input pc_en,
   input [31: 0] pc_in,
@@ -6,8 +5,7 @@ module pc(
   input clk,
 
   output [31: 0] pc_out,
-  output [31: 0] pc_sync,
-  input break_signal
+  output [31: 0] pc_sync
 );
   reg [31: 0] pc = 0'h80000000;
   assign pc_sync = pc + 32'h4;
@@ -16,8 +14,6 @@ module pc(
 //	$display("%8x", pc);
 	if(rst)
 	  pc <= 32'h80000000;
-	else if(break_signal)
-	  ebreak();
 	else if(pc_en)
 	  pc <= pc_in;
 	else

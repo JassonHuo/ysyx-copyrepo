@@ -39,9 +39,10 @@ extern "C" int pmem_read(int addr)
 //  printf("data: %08x\n", mem[(addr - 0x80000000) >> 2]);
   if((uint32_t)addr >= 0x80000000 + MEM_SIZE + 3 || (uint32_t)addr < 0x80000000)
   {
-	printf("Address %08x out of range %08x-%08x\n", addr, MEM_SIZE, 0x80000000 + MEM_SIZE);
+	printf("Address %08x out of range %08x-%08x, at pc: %08x\n", addr, MEM_SIZE, 0x80000000 + MEM_SIZE, top->pc);
 	exit(1);
   }
+//  printf("c read %x, index: %d, pc: %08x\n", mem[((uint32_t)addr - 0x80000000) >> 2], (addr - 0x80000000) >> 2, top->pc);
   return mem[((uint32_t)addr - 0x80000000) >> 2];
 //  return mem[addr >> 2];
 }
@@ -51,9 +52,11 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 //  std::cout << "test";
   if((uint32_t)waddr >= 0x80000000 + MEM_SIZE + 3 || (uint32_t)waddr < 0x80000000)
   {
-	printf("Address %08x out of range %08x-%08x\n", waddr, MEM_SIZE, 0x80000000 + MEM_SIZE);
+	printf("Address %08x out of range %08x-%08x, at pc: %08x\n", waddr, MEM_SIZE, 0x80000000 + MEM_SIZE, top->pc);
 	exit(1);
   }
+  if(top->clk)
+  {
   uint32_t tmp = mem[((uint32_t)waddr - 0x80000000) >> 2];
 //  uint32_t tmp = mem[waddr >> 2];
   uint32_t byte_mask = 0;
@@ -90,7 +93,9 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 //  printf("%x, %x\n", mask, wdata);
   tmp = (tmp & ~mask) | (wdata & mask);
 //  printf("%8x\n", tmp);
+//  printf("c write %x, index: %d, pc: %08x\n", tmp, (waddr - 0x80000000) >> 2, top->pc); 
   mem[((uint32_t)waddr - 0x80000000) >> 2] = tmp;
+  }
 }
 
 uint32_t hex2num(std::string &hex)
@@ -208,16 +213,20 @@ int main(int argc, char** argv) {
   uint64_t cycle_num = 0;
   while(!contextp->gotFinish() && !ebreak_happened)
   {
+//	printf("mem[82935] = %08x, before pc: %08x\n", mem[82935], top->pc);
+	printf("pc: %08x\n", top->pc);
 	top->clk = 0;
-	top->inst = pmem_read(top->pc);
+//	top->inst = pmem_read(top->pc);
 //	printf("%x\n", top->pc);
 	top->eval();
 	tracep->dump(contextp->time());
 	contextp->timeInc(1);
+	if(ebreak_happened)break;
 	top->clk = 1;
 	top->eval();
 	tracep->dump(contextp->time());
 	contextp->timeInc(1);
+//	printf("mem[82935] = %08x, after pc: %08x\n", mem[82935], top->pc);
 	/*
 	if(mem[top->inst_addr >> 2] == 0)
 	{
@@ -234,5 +243,5 @@ int main(int argc, char** argv) {
   tracep->close();
   delete top;
 //  std::cout << cycle_num <<std::endl;
-  return 0;
+  return top->a0;
 }

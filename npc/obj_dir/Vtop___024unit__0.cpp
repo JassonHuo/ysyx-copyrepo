@@ -4,6 +4,14 @@
 
 #include "Vtop__pch.h"
 
+extern "C" void ebreak();
+
+void Vtop___024unit____Vdpiimwrap_ebreak_TOP____024unit() {
+    VL_DEBUG_IF(VL_DBG_MSGF("+        Vtop___024unit____Vdpiimwrap_ebreak_TOP____024unit\n"); );
+    // Body
+    ebreak();
+}
+
 extern "C" int pmem_read(int raddr);
 
 void Vtop___024unit____Vdpiimwrap_pmem_read_TOP____024unit(IData/*31:0*/ raddr, IData/*31:0*/ &pmem_read__Vfuncrtn) {
@@ -28,12 +36,4 @@ void Vtop___024unit____Vdpiimwrap_pmem_write_TOP____024unit(IData/*31:0*/ waddr,
     char wmask__Vcvt;
     wmask__Vcvt = wmask;
     pmem_write(waddr__Vcvt, wdata__Vcvt, wmask__Vcvt);
-}
-
-extern "C" void ebreak();
-
-void Vtop___024unit____Vdpiimwrap_ebreak_TOP____024unit() {
-    VL_DEBUG_IF(VL_DBG_MSGF("+        Vtop___024unit____Vdpiimwrap_ebreak_TOP____024unit\n"); );
-    // Body
-    ebreak();
 }
