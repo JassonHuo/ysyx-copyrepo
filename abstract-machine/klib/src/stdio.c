@@ -69,7 +69,7 @@ int sprintf(char *out, const char *fmt, ...) {
 	  }
 	  else
 	  {
-		printf("Unknown type\n");
+//		printf("Unknown type\n");
 		halt(1);
 	  }
 	}

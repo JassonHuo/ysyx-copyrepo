@@ -214,7 +214,6 @@ int main(int argc, char** argv) {
   while(!contextp->gotFinish() && !ebreak_happened)
   {
 //	printf("mem[82935] = %08x, before pc: %08x\n", mem[82935], top->pc);
-	printf("pc: %08x\n", top->pc);
 	top->clk = 0;
 //	top->inst = pmem_read(top->pc);
 //	printf("%x\n", top->pc);
