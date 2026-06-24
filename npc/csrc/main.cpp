@@ -12,27 +12,52 @@
 #include <sstream>
 
 #define EBREAK 0x00100073 
-#define MEM_SIZE 1048576
+#define MEM_SIZE 134217727
+#define GREEN "\033[32m"
+#define RED "\033[31m"
+#define RESET "\033[0m"
 
 bool ebreak_happened = false;
 uint32_t mem[MEM_SIZE] = {0};
+static VerilatedContext *contextp = new VerilatedContext;
+static VerilatedVcdC* tracep = new VerilatedVcdC;
+static Vtop *top = new Vtop;
 
 void ebreak()
 {
   ebreak_happened = true;
+  printf("[%s:%d %s] npc: ", __FILE__, __LINE__, __func__);
+  if(!top->a0)
+	printf(GREEN "HIT GOOD TRAP " RESET);
+  else
+	printf(RED "HIT BAD TRAP " RESET);
+  printf("at pc = %08x\n", top->pc);
 }
 
 extern "C" int pmem_read(int addr)
 {
-//  printf("%08x\n", addr);
-  return mem[(addr - 0x80000000) >> 2];
+//  printf("data: %08x\n", mem[(addr - 0x80000000) >> 2]);
+  if((uint32_t)addr >= 0x80000000 + MEM_SIZE + 3 || (uint32_t)addr < 0x80000000)
+  {
+	printf("Address %08x out of range %08x-%08x, at pc: %08x\n", addr, MEM_SIZE, 0x80000000 + MEM_SIZE, top->pc);
+	exit(1);
+  }
+//  printf("c read %x, index: %d, pc: %08x\n", mem[((uint32_t)addr - 0x80000000) >> 2], (addr - 0x80000000) >> 2, top->pc);
+  return mem[((uint32_t)addr - 0x80000000) >> 2];
 //  return mem[addr >> 2];
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask)
 {
 //  std::cout << "test";
-  uint32_t tmp = mem[(waddr - 0x80000000) >> 2];
+  if((uint32_t)waddr >= 0x80000000 + MEM_SIZE + 3 || (uint32_t)waddr < 0x80000000)
+  {
+	printf("Address %08x out of range %08x-%08x, at pc: %08x\n", waddr, MEM_SIZE, 0x80000000 + MEM_SIZE, top->pc);
+	exit(1);
+  }
+  if(top->clk)
+  {
+  uint32_t tmp = mem[((uint32_t)waddr - 0x80000000) >> 2];
 //  uint32_t tmp = mem[waddr >> 2];
   uint32_t byte_mask = 0;
   /*
@@ -68,7 +93,9 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 //  printf("%x, %x\n", mask, wdata);
   tmp = (tmp & ~mask) | (wdata & mask);
 //  printf("%8x\n", tmp);
-  mem[(waddr - 0x80000000) >> 2] = tmp;
+//  printf("c write %x, index: %d, pc: %08x\n", tmp, (waddr - 0x80000000) >> 2, top->pc); 
+  mem[((uint32_t)waddr - 0x80000000) >> 2] = tmp;
+  }
 }
 
 uint32_t hex2num(std::string &hex)
@@ -163,9 +190,11 @@ int main(int argc, char** argv) {
 	}
   }
   } 
+  /*
   VerilatedContext *contextp = new VerilatedContext;
   VerilatedVcdC* tracep = new VerilatedVcdC;
   Vtop *top = new Vtop;
+  */
 
   top->rst = 1;
   for(int i = 0; i < 10; i ++)
@@ -184,16 +213,19 @@ int main(int argc, char** argv) {
   uint64_t cycle_num = 0;
   while(!contextp->gotFinish() && !ebreak_happened)
   {
+//	printf("mem[82935] = %08x, before pc: %08x\n", mem[82935], top->pc);
 	top->clk = 0;
-	top->inst = pmem_read(top->pc);
-//	printf("%x\n", top->inst);
+//	top->inst = pmem_read(top->pc);
+//	printf("%x\n", top->pc);
 	top->eval();
 	tracep->dump(contextp->time());
 	contextp->timeInc(1);
+	if(ebreak_happened)break;
 	top->clk = 1;
 	top->eval();
 	tracep->dump(contextp->time());
 	contextp->timeInc(1);
+//	printf("mem[82935] = %08x, after pc: %08x\n", mem[82935], top->pc);
 	/*
 	if(mem[top->inst_addr >> 2] == 0)
 	{
@@ -205,9 +237,10 @@ int main(int argc, char** argv) {
 	}
 	*/
 	cycle_num ++;
+//	printf("%08x\n", top->pc);
   }
   tracep->close();
   delete top;
 //  std::cout << cycle_num <<std::endl;
-  return 0;
+  return top->a0;
 }

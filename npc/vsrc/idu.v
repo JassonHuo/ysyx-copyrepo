@@ -84,7 +84,7 @@ module idu(
 		wen = 1;
 	  end
 	  7'b1100111:begin   //JALR
-		imm = Iimm;
+		imm = Iimm & 32'hFFFFFFFE;
 		pc_src = `PC_JALR;
 		alu_op = `ALU_ADD;
 		alu_src = `ALU_IMM;
@@ -112,6 +112,7 @@ module idu(
 		wen = 0;
 		valid = 1;
 		mem_wen = 1;
+//		$display("idu store: %08x, pc: %08x", src2, pc_in);
 		if(funct3 == 3'b000)begin   //SB
 		  width = `MEM_BYTE;
 		end

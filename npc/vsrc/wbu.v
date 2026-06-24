@@ -36,7 +36,7 @@ module wbu(
 	  end
 	  default: begin
 		pc_dync_out = pc_sync;
-		pc_wen = 1'b1;
+		pc_wen = 1'b0;
 	  end
 	endcase
 

@@ -41,7 +41,7 @@ char *strncpy(char *dst, const char *src, size_t n) {
 //  panic("Not implemented");
   if(src == NULL || dst == NULL)
 	segment_fault();
-  bool is_NULL;
+  bool is_NULL = false;
   for(int i = 0; i < n; i ++)
   {
 	if(src[i] == '\0')
@@ -101,19 +101,62 @@ int strncmp(const char *s1, const char *s2, size_t n) {
 }
 
 void *memset(void *s, int c, size_t n) {
-  panic("Not implemented");
+//  panic("Not implemented");
+  unsigned char* p = (unsigned char*)s;
+  if(s == NULL)
+	segment_fault();
+  for(int i = 0; i < n; i ++)
+  {
+	p[i] = (unsigned char)c;
+  }
+  return s;
 }
 
 void *memmove(void *dst, const void *src, size_t n) {
-  panic("Not implemented");
+//  panic("Not implemented");
+  char *d = (char*)dst;
+  char *s = (char*)src;
+  if(s == d)
+	return dst;
+  else if(d > s && d < s + n)
+  {
+	while(n--)
+	  d[n] = s[n];
+  }
+  else
+  {
+	for(size_t i = 0; i < n; i ++)
+	  d[i] = s[i];
+  }
+  return dst;
 }
 
 void *memcpy(void *out, const void *in, size_t n) {
-  panic("Not implemented");
+//  panic("Not implemented");
+  char *i = (char*)in;
+  char *o = (char*)out;
+  if(i == o)
+	return out;
+  else
+  {
+	for(size_t idx = 0; idx < n; idx ++)
+	{
+	  o[idx] = i[idx];
+	}
+  }
+  return out;
 }
 
 int memcmp(const void *s1, const void *s2, size_t n) {
-  panic("Not implemented");
+//  panic("Not implemented");
+  unsigned char *cs1 = (unsigned char*)s1;
+  unsigned char *cs2 = (unsigned char*)s2;
+  for(size_t i = 0; i < n; i ++)
+  {
+	if(cs1[i] != cs2[i])
+	  return cs1[i] - cs2[i];
+  }
+  return 0;
 }
 
 #endif

@@ -57,7 +57,9 @@ module lsu(
 	  rdata = (pmem_read(alu) >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
-//	  $display("%x", src2);
+//	  $display("lsu load %08x, pc: %08x", rdata, pc_in);
+//	  $display("lsu store: %08x, mem_wen = %d, pc: %08x", src2, mem_wen, pc_in);
+//	  $display("addr: %x", src2);
 	  
 //	  case(width)
 //		`MEM_WORD: rdata = mem_data;
@@ -65,6 +67,7 @@ module lsu(
 //		`MEM_BYTE: rdata = (mem_data >> alu[1: 0]) & 32'hFF;
 //	  endcase
 	  if(mem_wen)
+//		$display("lsu store: %08x, mem_wen = %d, pc: %08x", src2, mem_wen, pc_in);
 		pmem_write(alu, src2, {4'b0, mask});
 	end
 	else

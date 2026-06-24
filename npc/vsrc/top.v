@@ -2,7 +2,7 @@ module top(
   input clk,
   input rst,
   output [31: 0] pc,
-  input [31: 0] inst
+  output [31: 0] a0
 );
 
   wire pc_en_wb_pc;
@@ -86,7 +86,6 @@ module top(
 	.pc_in(pc_pc_ifu),
 	.pc_sync_in(pc_sync_pc_ifu),
 	.inst_addr(pc),
-	.inst_in(inst),
 	.inst_out(inst_ifu_idu),
 	.pc_sync_out(pc_sync_ifu_idu),
 	.pc_out(pc_ifu_idu)
@@ -129,7 +128,8 @@ module top(
 	.raddr2(raddr2_idu_gpr),
 	.rdata1(rdata1_gpr_idu),
 	.rdata2(rdata2_gpr_idu),
-	.wen(wen_wb_gpr)
+	.wen(wen_wb_gpr),
+	.a0(a0)
   );
 
   exu exu0(
