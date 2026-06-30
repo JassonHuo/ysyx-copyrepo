@@ -15,25 +15,23 @@ module top(
   parameter A = 0, B = 1, C = 2, D = 3;
 
   wire counter_zero = (counter0 == 0 && counter1 == 0);
-  reg [7: 0] counter = {counter1, counter0};
-
 
   always@(posedge clk)begin
 	$display("%d%d", counter1, counter0);
 	if(rst)begin
 	  state <= A;
-	  counter <= 8'h29;
+	  {counter1, counter0} <= 8'h29;
 	end
 	else begin
 	  state <= next_state;
 	  if(state == A && next_state == B)
 		{counter1, counter0} <= 8'h04;
 	  else if(state == B && next_state == C)
-		counter <= 8'h19;
+		{counter1, counter0}<= 8'h19;
 	  else if(state == C && next_state == D)
-		counter <= 8'h04;
+		{counter1, counter0}<= 8'h04;
 	  else if(state == D && next_state == A)
-		counter <= 8'h29;
+		{counter1, counter0}<= 8'h29;
 	  else begin
 		counter0 <= (counter0 == 0 ? 9: counter0 - 1);
 		counter1 <= (counter0 == 0 ? counter1 - 1: counter1);
