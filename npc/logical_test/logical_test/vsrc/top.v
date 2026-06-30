@@ -50,13 +50,17 @@ module top(
   assign north[2] = (state == A || state == B);
 
   always@(*)begin
-	case(state)
-	  A: next_state = (counter_zero ? B: A);
-	  B: next_state = (counter_zero ? C: B);
-	  C: next_state = (counter_zero ? D: C);
-	  D: next_state = (counter_zero ? A: D);
-	  default: next_state = A;
-	endcase
+	if(rst)
+	  next_state = A;
+	else begin
+	  case(state)
+		A: next_state = (counter_zero ? B: A);
+		B: next_state = (counter_zero ? C: B);
+		C: next_state = (counter_zero ? D: C);
+		D: next_state = (counter_zero ? A: D);
+		default: next_state = A;
+	  endcase
+	end
   end
 
   bcd bcd0(
