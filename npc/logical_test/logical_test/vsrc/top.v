@@ -20,7 +20,7 @@ module top(
 	state <= next_state;
 	$display("%d%d", counter1, counter0);
 	if(state == A && next_state == B)
-	  counter <= 8'h04;
+	  {counter1, counter0} <= 8'h04;
 	else if(state == B && next_state == C)
 	  counter <= 8'h19;
 	else if(state == C && next_state == D)
