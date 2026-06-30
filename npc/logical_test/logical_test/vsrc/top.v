@@ -16,6 +16,11 @@ module top(
   wire counter_zero = (counter0 == 0 && counter1 == 0);
   reg [7: 0] counter = {counter1, counter0};
 
+  initial begin
+	state = A;
+	counter = 8'h29;
+  end
+
   always@(posedge clk)begin
 	state <= next_state;
 	$display("%d%d", counter1, counter0);
