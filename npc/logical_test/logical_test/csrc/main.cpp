@@ -30,6 +30,10 @@ int main(int argc, char**argv)
   tracep->open("wave.vcd");
   nvboard_bind_all_pins(top);
   nvboard_init();
+  top->rst = 1;
+  for(int i = 0; i < 10; i ++)
+	one_cycle();
+  top->rst = 0;
   while(!contextp->gotFinish())
   {
 	uint64_t counter = 1000000000;
