@@ -18,6 +18,7 @@ module top(
 
   always@(posedge clk)begin
 	state <= next_state;
+	$display("%d%d", counter1, counter0);
 	if(state == A && next_state == B)
 	  counter <= 8'h04;
 	else if(state == B && next_state == C)
