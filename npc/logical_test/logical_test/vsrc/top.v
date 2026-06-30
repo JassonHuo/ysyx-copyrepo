@@ -19,13 +19,13 @@ module top(
 
 
   always@(posedge clk)begin
+	$display("%d%d", counter1, counter0);
 	if(rst)begin
 	  state <= A;
 	  counter <= 8'h29;
 	end
 	else begin
 	  state <= next_state;
-	  $display("%d%d", counter1, counter0);
 	  if(state == A && next_state == B)
 		{counter1, counter0} <= 8'h04;
 	  else if(state == B && next_state == C)
