@@ -32,7 +32,7 @@ int main(int argc, char**argv)
   nvboard_init();
   while(!contextp->gotFinish())
   {
-	uint32_t counter = 1000000;
+	uint32_t counter = 100000000;
 	while(counter && !contextp->gotFinish())
 	{
 	  counter --;
