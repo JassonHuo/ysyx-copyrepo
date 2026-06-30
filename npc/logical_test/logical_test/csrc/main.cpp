@@ -32,13 +32,14 @@ int main(int argc, char**argv)
   nvboard_init();
   while(!contextp->gotFinish())
   {
-	uint64_t counter = 100000000000;
+	uint64_t counter = 1000000000;
+	one_cycle();
+	nvboard_update();
 	while(counter && !contextp->gotFinish())
 	{
 	  counter --;
 	  nvboard_update();
 	}
-	one_cycle();
   }
   tracep->close();
   delete top;
