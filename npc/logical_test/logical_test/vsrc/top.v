@@ -17,7 +17,7 @@ module top(
   wire counter_zero = (counter0 == 0 && counter1 == 0);
 
   always@(posedge clk)begin
-	$display("%d%d", counter1, counter0);
+//	$display("%d%d", counter1, counter0);
 	if(rst)begin
 	  state <= A;
 	  {counter1, counter0} <= 8'h29;

@@ -1,13 +1,13 @@
 module fre_div(
   input clk,
-  output clk_out
+  output reg clk_out
 );
 
-  reg [32: 0] counter;
+  reg [31: 0] counter;
   always@(posedge clk)begin
-	counter <= (counter == 0 ? 1000000000: 0);
+	  counter <= (counter == 0 ? 32'd50000000: 32'b0);
+    clk_out <= (counter != 0 ? clk_out: ~clk_out);
   end
 
-  assign clk_out = (counter != 0 ? clk_out: ~clk_out);
 
 endmodule
