@@ -34,6 +34,7 @@ int main(int argc, char**argv)
   for(int i = 0; i < 10; i ++)
 	one_cycle();
   top->rst = 0;
+  /*
   while(!contextp->gotFinish())
   {
 	uint64_t counter = 1000000000;
@@ -45,6 +46,7 @@ int main(int argc, char**argv)
 	  nvboard_update();
 	}
   }
+  */
   tracep->close();
   delete top;
   return 0;

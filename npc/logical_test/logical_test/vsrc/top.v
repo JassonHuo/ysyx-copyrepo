@@ -15,8 +15,14 @@ module top(
   parameter A = 0, B = 1, C = 2, D = 3;
 
   wire counter_zero = (counter0 == 0 && counter1 == 0);
+  wire div_clk;
 
-  always@(posedge clk)begin
+  fre_div div0(
+	.clk(clk),
+	.clk_out(div_clk)
+  );
+
+  always@(posedge div_clk)begin
 //	$display("%d%d", counter1, counter0);
 	if(rst)begin
 	  state <= A;
