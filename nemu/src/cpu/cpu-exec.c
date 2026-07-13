@@ -91,6 +91,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
+static void manage_queue(Decode *s)
+{
+  word_t pc = s->pc;
+  uint8_t *inst = (uint8_t*)&s->isa.inst;
+  printf("%08x %02x %02x %02x %02x\n", pc, inst[0], inst[1], inst[2], inst[3]);
+}
+
 static void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
@@ -100,6 +107,7 @@ static void execute(uint64_t n) {
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
+  manage_queue(&s);
 }
 
 static void statistic() {
