@@ -8,28 +8,6 @@
 char buffer[64];
 int buffer_top;
 
-int itoa(int num)
-{
-  if(num == 0)
-  {
-	buffer[0] = '0';	
-	return 1;
-  }
-  int counter = 0;
-  char tmp[64] = {0}; 
-  int tmp_top = 0;
-  while(num != 0)
-  {
-	tmp[counter] = num % 10;
-	num /= 10;
-	tmp_top ++;
-  }
-  counter = tmp_top;
-  while(tmp_top)
-	buffer[buffer_top ++] = tmp[tmp_top--];
-  return counter;
-}
-
 int printf(const char *fmt, ...) {
   panic("Not implemented");
 }
@@ -38,45 +16,60 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
   panic("Not implemented");
 }
 
-int sprintf(char *out, const char *fmt, ...) {
-//  panic("Not implemented");
-  va_list ap;
-  va_start(ap, fmt);
-  int pos = 0;
-  while(fmt[pos] != '\0')
+int sprintf(char *out, const char *fmt, ...)
+{
+  va_list args;
+  va_start(args, fmt);
+  int fmt_pos = 0;
+  int out_pos = 0;
+  while(fmt[fmt_pos] != '\0')
   {
-	if(fmt[pos] == '%')
-	{
-	  if(fmt[++pos] == 'd')
-	  {
-		int num = va_arg(ap, int);
-		itoa(num);
-		char *s = buffer;
-		while(*s != '\0')
+    if(fmt[fmt_pos] == '%')
+    {
+      fmt_pos ++;
+      if(fmt[fmt_pos] == 's')
+      {
+        char *tmp = va_arg(args, char*);
+        while(*tmp != '\0')
+        {
+          out[out_pos++] = *(tmp++);
+        }
+	  }
+	  else if(fmt[fmt_pos] == 'd')
+      {
+        char tmp[13];
+        int tmp_pos = 0;
+        int num = va_arg(args, int);
+        if(num < 0)
 		{
-		  out[++pos] = *s++;
+          out[out_pos++] = '-';
+		  num = -num;
 		}
-		out[++pos] = '\0';
-	  }
-	  else if(fmt[++ pos] == 's')
-	  {
-		char *s = va_arg(ap, char*);
-		while(*s != '\0')
-		{
-		  out[++pos] = *s++;
-		}
-		out[++pos] = '\0';
-	  }
-	  else
-	  {
-//		printf("Unknown type\n");
-		halt(1);
-	  }
-	}
-	pos ++;
+		else if(num == 0)
+		  out[out_pos++] = '0';
+        while(num != 0)
+        {
+          tmp [tmp_pos++] = '0' + num % 10;
+          num /= 10;
+        }
+		tmp[tmp_pos] = '\0';
+        for(int i = 0; i < tmp_pos; i ++)
+          out[out_pos++] = tmp[tmp_pos - 1 - i];
+      }
+      else
+      {
+        halt(1);
+      }
+    }
+    else
+    {
+      out[out_pos++] = fmt[fmt_pos];
+    }
+    fmt_pos++;
   }
-  va_end(ap);
-  return 0;
+  out[out_pos] = '\0';
+  va_end(args);
+  return out_pos;
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
