@@ -33,6 +33,9 @@ static bool g_print_step = false;
 void device_update();
 uint32_t trace_wp();
 
+char Queue[10][32];
+int head = 0, tail = 0;
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
