@@ -120,7 +120,7 @@ static void manage_queue(Decode *s)
   int ilen = s->snpc - s->pc;
   char inst_str[100];
   char *p = inst_str;
-  char inst_dis[50];
+//  char inst_dis[50];
   for(int i = ilen - 1; i >= 0; i --)
   {
 	p += snprintf(p, 4, " %02x", inst[i]);
@@ -133,8 +133,10 @@ static void manage_queue(Decode *s)
 	i = (i + 1) % qu_size;
   }
   */
+  /*
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(inst_dis, 50, pc, inst, ilen);
+  */
 //  printf("%s\n", inst_dis);
 }
 
