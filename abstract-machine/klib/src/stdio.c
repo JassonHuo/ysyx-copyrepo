@@ -53,6 +53,7 @@ int PRINT(char *out, const char* fmt, va_list args)
         char tmp[13];
         int tmp_pos = 0;
         int num = va_arg(args, int);
+		unsigned int abs_num = num;
         if(num < 0)
 		{
 #ifdef STD_PRINTF
@@ -61,7 +62,7 @@ int PRINT(char *out, const char* fmt, va_list args)
 #else
           out[out_pos++] = '-';
 #endif
-		  num = -num;
+		  abs_num = ~((unsigned int)num) + 1;
 		}
 		else if(num == 0)
 #ifdef STD_PRINTF
@@ -70,10 +71,10 @@ int PRINT(char *out, const char* fmt, va_list args)
 #else
 		  out[out_pos++] = '0';
 #endif
-        while(num != 0)
+        while(abs_num != 0)
         {
-          tmp [tmp_pos++] = '0' + num % 10;
-          num /= 10;
+          tmp [tmp_pos++] = '0' + abs_num % 10;
+          abs_num /= 10;
         }
 		tmp[tmp_pos] = '\0';
         for(int i = 0; i < tmp_pos; i ++)
