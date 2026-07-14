@@ -149,7 +149,7 @@ static void display_inst()
   {
 	char inst_dis[50];
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-	disassemble(inst_dis, 50, pc_Queue[i], (uint8_t*)&code_Queue[i], ilen);
+	disassemble(inst_dis, 50, pc_Queue[i], (uint8_t*)(code_Queue + i), ilen);
 	if(i == tail - 1)
 	  printf(" -->");
 	printf("\t0x%08x: %s\t\t%s\n", pc_Queue[i], inst_dis, Queue[i]);
