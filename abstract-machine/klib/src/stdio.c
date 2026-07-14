@@ -5,7 +5,7 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-char buffer[64];
+char buffer[1000];
 int buffer_top;
 
 
@@ -26,10 +26,10 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 //int sprintf(char *out, const char *fmt, ...)
 //{
 */
-int PRINT(char *out, const char* fmt, va_list args)
+int PRINT(const char* fmt, va_list args)
 {
   int fmt_pos = 0;
-  int out_pos = 0;
+  int buffer_pos = 0;
   while(fmt[fmt_pos] != '\0')
   {
     if(fmt[fmt_pos] == '%')
@@ -40,12 +40,7 @@ int PRINT(char *out, const char* fmt, va_list args)
         char *tmp = va_arg(args, char*);
         while(*tmp != '\0')
         {
-#ifdef STD_PRINTF
-		  putch(*(tmp++));
-		  out_pos++;
-#else
-          out[out_pos++] = *(tmp++);
-#endif
+          buffer[buffer_pos++] = *(tmp++);
         }
 	  }
 	  else if(fmt[fmt_pos] == 'd')
@@ -56,22 +51,12 @@ int PRINT(char *out, const char* fmt, va_list args)
 		unsigned int abs_num = num;
         if(num < 0)
 		{
-#ifdef STD_PRINTF
-		  putch('-');
-		  out_pos++;
-#else
-          out[out_pos++] = '-';
-#endif
+          buffer[buffer_pos++] = '-';
 		  abs_num = ~((unsigned int)num) + 1;
 		}
 		else if(num == 0)
 		{
-#ifdef STD_PRINTF
-		  putch('0');
-		  out_pos++;
-#else
-		  out[out_pos++] = '0';
-#endif
+		  buffer[buffer_pos++] = '0';
 		}
         while(abs_num != 0)
         {
@@ -81,12 +66,7 @@ int PRINT(char *out, const char* fmt, va_list args)
 		tmp[tmp_pos] = '\0';
         for(int i = 0; i < tmp_pos; i ++)
 		{
-#ifdef STD_PRINTF
-		  putch(tmp[tmp_pos - 1 - i]);
-		  out_pos++;
-#else
-          out[out_pos++] = tmp[tmp_pos - 1 - i];
-#endif
+          buffer[buffer_pos++] = tmp[tmp_pos - 1 - i];
 		}
       }
       else
@@ -96,30 +76,25 @@ int PRINT(char *out, const char* fmt, va_list args)
     }
     else
     {
-#ifdef STD_PRINTF
-	  putch(fmt[fmt_pos]);
-	  out_pos++;
-#else
-      out[out_pos++] = fmt[fmt_pos];
-#endif
+      buffer[buffer_pos++] = fmt[fmt_pos];
     }
     fmt_pos++;
   }
-#ifdef STD_PRINTF
-#else
-  out[out_pos] = '\0';
-#endif
-  return out_pos;
+  buffer[buffer_pos] = '\0';
+  return buffer_pos;
 }
 
 int printf(const char *fmt, ...) {
 //  panic("Not implemented");
-  char *tmp = NULL;
   va_list args;
   va_start(args, fmt);
-#define STD_PRINTF
-  int ret = PRINT(tmp, fmt, args);
-#undef STD_PRINTF
+  int ret = PRINT(fmt, args);
+  for(int i = 0; ;i++)
+  {
+	if(buffer[i] == '\0')
+	  break;
+	putch(buffer[i]);
+  }
   va_end(args);
   return ret;
 }
@@ -132,7 +107,15 @@ int sprintf(char *out, const char *fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  int ret = PRINT(out, fmt, args);
+  int ret = PRINT(fmt, args);
+  int i;
+  for(i = 0; ; i++)
+  {
+	if(buffer[i] == '\0')
+	  break;
+	out[i] = buffer[i];
+  }
+  out[i] = '\0';
   va_end(args);
   return ret;
 }
