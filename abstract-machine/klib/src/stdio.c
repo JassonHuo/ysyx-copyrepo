@@ -58,7 +58,7 @@ int PRINT(const char* fmt, va_list args)
 		right_align = 1;
 		fmt_pos ++;
 	  }
-	  if (fmt[fmt_pos] == 0)
+	  if (fmt[fmt_pos] == '0')
 	  {
 		full_zero = 1;
 		fmt_pos++;
