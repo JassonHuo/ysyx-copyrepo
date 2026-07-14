@@ -75,7 +75,7 @@ int PRINT(char *out, const char* fmt, va_list args)
 		tmp[tmp_pos] = '\0';
         for(int i = 0; i < tmp_pos; i ++)
 #ifdef STD_PRINTF
-		  putch(tmp[tmp_pos - 1 - i])
+		  putch(tmp[tmp_pos - 1 - i]);
 #else
           out[out_pos++] = tmp[tmp_pos - 1 - i];
 #endif
