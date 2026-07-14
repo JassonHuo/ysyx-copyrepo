@@ -55,8 +55,12 @@ int PRINT(const char* fmt, va_list args)
 	  int width = 0;
 	  if (fmt[fmt_pos] == '-')
 	  {
-		right_align = 1;
+		right_align = 0;
 		fmt_pos ++;
+	  }
+	  else
+	  {
+		right_align = 1;
 	  }
 	  if (fmt[fmt_pos] == '0')
 	  {
