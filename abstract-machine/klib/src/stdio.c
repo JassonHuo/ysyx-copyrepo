@@ -123,10 +123,7 @@ int PRINT(const char* fmt, va_list args)
 		{
 		  for(int i = 0; i < (full_width - tmp_pos); i++)
 		  {
-			if(full_zero)
-			  buffer[buffer_pos++] = '0';
-			else
-			  buffer[buffer_pos++] = ' ';
+			buffer[buffer_pos++] = ' ';
 		  }
 		}
       }
