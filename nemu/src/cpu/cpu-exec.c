@@ -33,7 +33,7 @@ static bool g_print_step = false;
 void device_update();
 uint32_t trace_wp();
 
-char Queue[10][32];
+char Queue[10][100];
 int head = 0, tail = 0;
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
@@ -104,7 +104,7 @@ static void manage_queue(Decode *s)
   char *p = inst_str;
   for(int i = ilen - 1; i >= 0; i --)
   {
-	p += snprintf(p, 4, "%02x", inst[i]);
+	p += snprintf(p, 4, " %02x", inst[i]);
   }
   printf("%08x %s\n", pc, inst_str);
   inQueue();
