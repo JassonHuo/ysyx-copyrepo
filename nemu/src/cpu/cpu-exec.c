@@ -149,8 +149,8 @@ static void display_inst()
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 	disassemble(inst_dis, 50, pc_Queue[i], (uint8_t*)(code_Queue + i), ilen);
 	if(i == tail - 1)
-	  printf(" -->");
-	printf("\t0x%08x: %-60s%s\n", pc_Queue[i], inst_dis, Queue[i]);
+	  printf("  -->");
+	printf("\t0x%08x: %-30s%-5s\n", pc_Queue[i], inst_dis, Queue[i]);
 	i = (i + 1) % qu_size;
   }
 }
