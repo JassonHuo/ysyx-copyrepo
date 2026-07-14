@@ -42,6 +42,7 @@ int PRINT(char *out, const char* fmt, va_list args)
         {
 #ifdef STD_PRINTF
 		  putch(*(tmp++));
+		  out_pos++;
 #else
           out[out_pos++] = *(tmp++);
 #endif
@@ -56,6 +57,7 @@ int PRINT(char *out, const char* fmt, va_list args)
 		{
 #ifdef STD_PRINTF
 		  putch('-');
+		  out_pos++;
 #else
           out[out_pos++] = '-';
 #endif
@@ -64,6 +66,7 @@ int PRINT(char *out, const char* fmt, va_list args)
 		else if(num == 0)
 #ifdef STD_PRINTF
 		  putch('0');
+		  out_pos++;
 #else
 		  out[out_pos++] = '0';
 #endif
@@ -76,6 +79,7 @@ int PRINT(char *out, const char* fmt, va_list args)
         for(int i = 0; i < tmp_pos; i ++)
 #ifdef STD_PRINTF
 		  putch(tmp[tmp_pos - 1 - i]);
+		  out_pos++;
 #else
           out[out_pos++] = tmp[tmp_pos - 1 - i];
 #endif
@@ -89,13 +93,15 @@ int PRINT(char *out, const char* fmt, va_list args)
     {
 #ifdef STD_PRINTF
 	  putch(fmt[fmt_pos]);
+	  out_pos++;
 #else
       out[out_pos++] = fmt[fmt_pos];
 #endif
     }
     fmt_pos++;
   }
-#ifndef STD_PRINTF
+#ifdef STD_PRINTF
+#else
   out[out_pos] = '\0';
 #endif
   return out_pos;
