@@ -150,7 +150,7 @@ static void display_inst()
 	disassemble(inst_dis, 50, pc_Queue[i], (uint8_t*)(code_Queue + i), ilen);
 	if(i == tail - 1)
 	  printf(" -->");
-	printf("\t0x%08x: %s\t\t%s\n", pc_Queue[i], inst_dis, Queue[i]);
+	printf("\t0x%08x: %-20s%s\n", pc_Queue[i], inst_dis, Queue[i]);
 	i = (i + 1) % qu_size;
   }
 }
