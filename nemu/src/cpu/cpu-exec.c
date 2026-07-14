@@ -33,7 +33,8 @@ static bool g_print_step = false;
 void device_update();
 uint32_t trace_wp();
 
-char Queue[10][100];
+char Queue[20][100];
+int qu_size = 20;
 int head = 0, tail = 0;
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
@@ -91,27 +92,36 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
-static void inQueue()
+static void inQueue(char *inst)
 {
-  return;
+  if(head == (tail + 1) % qu_size)
+	head = (head + 1) % qu_size;
+//  memcpy(Queue[tail], inst, 100);
+  for(int i = 0; i < 100; i ++)
+  {
+	if(inst[i] == '\0')
+	  break;
+	Queue[tail][i] = inst[i];
+  }
+  tail = (tail + 1) % qu_size;
 }
 static void manage_queue(Decode *s)
 {
   word_t pc = s->pc;
   uint8_t *inst = (uint8_t*)&s->isa.inst;
   int ilen = s->snpc - s->pc;
-  char inst_str[32];
+  char inst_str[100];
   char *p = inst_str;
   char inst_dis[50];
   for(int i = ilen - 1; i >= 0; i --)
   {
 	p += snprintf(p, 4, " %02x", inst[i]);
   }
-  printf("%08x %s\n", pc, inst_str);
+  inQueue(inst_str);
+  printf("%s\n", Queue[(tail - 1 + qu_size) % qu_size]);
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(inst_dis, 50, pc, inst, ilen);
   printf("%s\n", inst_dis);
-  inQueue();
 }
 
 static void execute(uint64_t n) {
