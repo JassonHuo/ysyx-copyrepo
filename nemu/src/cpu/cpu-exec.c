@@ -66,6 +66,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   isa_exec_once(s);
   manage_queue(s);
   
+	if(s->snpc != s->dnpc)
+	  printf("%08x\n", s->pc);
 //  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
@@ -158,7 +160,6 @@ static void display_inst()
 static void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
-	printf("%08x\n", s.pc);
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
