@@ -142,7 +142,7 @@ static void manage_queue(Decode *s)
 
 static void display_inst()
 {
-#ifdef CONFIG_ISAriscv32
+#ifdef CONFIG_ISA_riscv32
   int ilen = 4;
 #else
   int ilen = 8;
