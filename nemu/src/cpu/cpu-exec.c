@@ -142,11 +142,7 @@ static void manage_queue(Decode *s)
 
 static void display_inst()
 {
-#ifdef CONFIG_ISA_riscv32
   int ilen = 4;
-#else
-  int ilen = 8;
-#endif
   for(int i = head; i != tail; )
   {
 	char inst_dis[50];
