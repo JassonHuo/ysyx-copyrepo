@@ -29,6 +29,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 
 #define MATCH_WIDTH(left, right) do{\
   int scale = 1;\
+  width = 0;\
   for(int i = right - 1; ; i--)\
   {\
 	width += scale * (fmt[i] - '0');\
@@ -69,13 +70,15 @@ int PRINT(const char* fmt, va_list args)
 	  full_width = width;
 	  if(fmt[point_pos] == '.')
 	  {
-		int end_pos = point_pos;
+		int end_pos = point_pos + 1;
 		while(fmt[end_pos] >= '0' && fmt[end_pos] <= '9')
 		  end_pos ++;
-		MATCH_WIDTH(point_pos, end_pos);
+		MATCH_WIDTH(point_pos + 1, end_pos);
 //		float_prec = width;
+		fmt_pos = end_pos;
 	  }
-	  width = 0;
+	  else
+		fmt_pos = point_pos;
       if(fmt[fmt_pos] == 's')
       {
         char *tmp = va_arg(args, char*);
