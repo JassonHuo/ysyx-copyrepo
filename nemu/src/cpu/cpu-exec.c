@@ -126,11 +126,13 @@ static void manage_queue(Decode *s)
 	p += snprintf(p, 4, " %02x", inst[i]);
   }
   inQueue(inst_str, pc, inst);
+  /*
   for(int i = head; i != tail; )
   {
 	printf("0x%08x: %s\n", pc_Queue[i], Queue[i]);
 	i = (i + 1) % qu_size;
   }
+  */
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(inst_dis, 50, pc, inst, ilen);
 //  printf("%s\n", inst_dis);
@@ -148,6 +150,7 @@ static void display_inst()
 	char inst_dis[50];
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 	disassemble(inst_dis, 50, pc_Queue[i], code_Queue[i], ilen);
+	printf("\t0x%08x: %s\t\t%s\n", pc_Queue[i], inst_dis, Queue[i]);
 	i = (i + 1) % qu_size;
   }
 }
