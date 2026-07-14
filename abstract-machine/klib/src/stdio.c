@@ -65,12 +65,14 @@ int PRINT(char *out, const char* fmt, va_list args)
 		  abs_num = ~((unsigned int)num) + 1;
 		}
 		else if(num == 0)
+		{
 #ifdef STD_PRINTF
 		  putch('0');
 		  out_pos++;
 #else
 		  out[out_pos++] = '0';
 #endif
+		}
         while(abs_num != 0)
         {
           tmp [tmp_pos++] = '0' + abs_num % 10;
@@ -78,12 +80,14 @@ int PRINT(char *out, const char* fmt, va_list args)
         }
 		tmp[tmp_pos] = '\0';
         for(int i = 0; i < tmp_pos; i ++)
+		{
 #ifdef STD_PRINTF
 		  putch(tmp[tmp_pos - 1 - i]);
 		  out_pos++;
 #else
           out[out_pos++] = tmp[tmp_pos - 1 - i];
 #endif
+		}
       }
       else
       {
