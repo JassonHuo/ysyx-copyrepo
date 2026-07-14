@@ -118,7 +118,11 @@ static void manage_queue(Decode *s)
 	p += snprintf(p, 4, " %02x", inst[i]);
   }
   inQueue(inst_str);
-  printf("%s\n", Queue[(tail - 1 + qu_size) % qu_size]);
+  for(int i = head; i != tail; )
+  {
+	printf("%s\n", Queue[i]);
+	i = (i + 1) % qu_size;
+  }
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(inst_dis, 50, pc, inst, ilen);
 //  printf("%s\n", inst_dis);
