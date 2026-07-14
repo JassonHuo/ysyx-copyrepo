@@ -114,7 +114,7 @@ int PRINT(char *out, const char* fmt, va_list args)
 
 int printf(const char *fmt, ...) {
 //  panic("Not implemented");
-  char tmp[5];
+  char *tmp = NULL;
   va_list args;
   va_start(args, fmt);
 #define STD_PRINTF
