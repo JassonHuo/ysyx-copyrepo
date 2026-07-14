@@ -35,7 +35,7 @@ uint32_t trace_wp();
 
 char Queue[20][100];
 word_t pc_Queue[20];
-uint8_t *code_Queue[20];
+uint32_t code_Queue[20];
 int qu_size = 20;
 int head = 0, tail = 0;
 
@@ -98,7 +98,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
-static void inQueue(char *inst, word_t pc, uint8_t *code)
+static void inQueue(char *inst, word_t pc, uint32_t code)
 {
   if(head == (tail + 1) % qu_size)
 	head = (head + 1) % qu_size;
@@ -125,7 +125,7 @@ static void manage_queue(Decode *s)
   {
 	p += snprintf(p, 4, " %02x", inst[i]);
   }
-  inQueue(inst_str, pc, inst);
+  inQueue(inst_str, pc, s->isa.inst);
   /*
   for(int i = head; i != tail; )
   {
@@ -149,7 +149,7 @@ static void display_inst()
   {
 	char inst_dis[50];
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-	disassemble(inst_dis, 50, pc_Queue[i], code_Queue[i], ilen);
+	disassemble(inst_dis, 50, pc_Queue[i], (uint8_t*)&code_Queue[i], ilen);
 	if(i == tail - 1)
 	  printf(" -->");
 	printf("\t0x%08x: %s\t\t%s\n", pc_Queue[i], inst_dis, Queue[i]);
