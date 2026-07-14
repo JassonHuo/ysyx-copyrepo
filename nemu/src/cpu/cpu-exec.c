@@ -91,11 +91,23 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
+static void inQueue()
+{
+  return;
+}
 static void manage_queue(Decode *s)
 {
   word_t pc = s->pc;
   uint8_t *inst = (uint8_t*)&s->isa.inst;
-  printf("%08x %02x %02x %02x %02x\n", pc, inst[0], inst[1], inst[2], inst[3]);
+  int ilen = s->snpc - s->pc;
+  char inst_str[32];
+  char *p = inst_str;
+  for(int i = ilen - 1; i >= 0; i --)
+  {
+	p += snprintf(p, 4, "%02x", inst[i]);
+  }
+  printf("%08x %s\n", pc, inst_str);
+  inQueue();
 }
 
 static void execute(uint64_t n) {
