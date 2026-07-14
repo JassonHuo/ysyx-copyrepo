@@ -53,10 +53,12 @@ int PRINT(const char* fmt, va_list args)
 	  int right_align = 0;
 	  int full_zero = 0;
 	  int width = 0;
+	  int is_nega = 0;
 	  if (fmt[fmt_pos] == '-')
 	  {
 		right_align = 0;
 		fmt_pos ++;
+		is_nega = 1;
 	  }
 	  else
 	  {
@@ -114,7 +116,7 @@ int PRINT(const char* fmt, va_list args)
 		tmp[tmp_pos] = '\0';
 		if(tmp_pos < full_width && right_align)
 		{
-		  for(int i = 0; i < (full_width - tmp_pos); i++)
+		  for(int i = 0; i < (full_width - tmp_pos - is_nega); i++)
 		  {
 			if(full_zero)
 			  buffer[buffer_pos++] = '0';
@@ -128,7 +130,7 @@ int PRINT(const char* fmt, va_list args)
 		}
 		if(tmp_pos < full_width && !right_align)
 		{
-		  for(int i = 0; i < (full_width - tmp_pos); i++)
+		  for(int i = 0; i < (full_width - tmp_pos - is_nega); i++)
 		  {
 			buffer[buffer_pos++] = ' ';
 		  }
