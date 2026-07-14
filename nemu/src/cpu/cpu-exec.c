@@ -126,7 +126,7 @@ static void manage_queue(Decode *s)
   inQueue(inst_str, pc);
   for(int i = head; i != tail; )
   {
-	printf("%08x: %s\n", pc_Queue[i], Queue[i]);
+	printf("0x%08x: %s\n", pc_Queue[i], Queue[i]);
 	i = (i + 1) % qu_size;
   }
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
