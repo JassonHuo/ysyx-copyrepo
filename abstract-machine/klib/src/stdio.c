@@ -33,7 +33,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
   {\
 	width += scale * (fmt[i] - '0');\
 	scale *= 10;\
-	if(i >= left)\
+	if(i < left)\
 	  break;\
   }\
 }while(0)
