@@ -26,6 +26,18 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 //int sprintf(char *out, const char *fmt, ...)
 //{
 */
+
+#define MATCH_WIDTH(left, right) do{\
+  int scale = 1;\
+  for(int i = right - 1; ; i--)\
+  {\
+	width += scale * (fmt[i] - '0');\
+	scale *= 10;\
+	if(i >= left)\
+	  break;\
+  }\
+}while(0)
+
 int PRINT(const char* fmt, va_list args)
 {
   int fmt_pos = 0;
@@ -35,6 +47,35 @@ int PRINT(const char* fmt, va_list args)
     if(fmt[fmt_pos] == '%')
     {
       fmt_pos ++;
+	  int full_width = 0;
+//	  int float_prec = 0;
+	  int right_align = 0;
+	  int full_zero = 0;
+	  int width = 0;
+	  if (fmt[fmt_pos] == '-')
+	  {
+		right_align = 1;
+		fmt_pos ++;
+	  }
+	  if (fmt[fmt_pos] == 0)
+	  {
+		full_zero = 1;
+		fmt_pos++;
+	  }
+	  int point_pos = fmt_pos;
+	  while (fmt[point_pos] >= '0' && fmt[point_pos] <= '9')
+		point_pos ++;
+	  MATCH_WIDTH(fmt_pos, point_pos);
+	  full_width = width;
+	  if(fmt[point_pos] == '.')
+	  {
+		int end_pos = point_pos;
+		while(fmt[end_pos] >= '0' && fmt[end_pos] <= '9')
+		  end_pos ++;
+		MATCH_WIDTH(point_pos, end_pos);
+//		float_prec = width;
+	  }
+	  width = 0;
       if(fmt[fmt_pos] == 's')
       {
         char *tmp = va_arg(args, char*);
@@ -64,9 +105,29 @@ int PRINT(const char* fmt, va_list args)
           abs_num /= 10;
         }
 		tmp[tmp_pos] = '\0';
+		if(tmp_pos < full_width && right_align)
+		{
+		  for(int i = 0; i < (full_width - tmp_pos); i++)
+		  {
+			if(full_zero)
+			  buffer[buffer_pos++] = '0';
+			else
+			  buffer[buffer_pos++] = ' ';
+		  }
+		}
         for(int i = 0; i < tmp_pos; i ++)
 		{
           buffer[buffer_pos++] = tmp[tmp_pos - 1 - i];
+		}
+		if(tmp_pos < full_width && !right_align)
+		{
+		  for(int i = 0; i < (full_width - tmp_pos); i++)
+		  {
+			if(full_zero)
+			  buffer[buffer_pos++] = '0';
+			else
+			  buffer[buffer_pos++] = ' ';
+		  }
 		}
       }
       else
