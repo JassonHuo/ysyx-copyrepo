@@ -141,9 +141,9 @@ static void manage_queue(Decode *s)
 static void display_inst()
 {
 #ifdef CONFIG_ISAriscv32
-  int ilen = 32;
+  int ilen = 4;
 #else
-  int ilen = 64;
+  int ilen = 8;
 #endif
   for(int i = head; i != tail; )
   {
