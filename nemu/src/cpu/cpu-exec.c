@@ -149,7 +149,7 @@ static void display_inst()
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 	disassemble(inst_dis, 50, pc_Queue[i], (uint8_t*)(code_Queue + i), ilen);
 	if(i == tail - 1)
-	  printf("  -->\033[33m");
+	  printf("  -->\033[31m");
 	printf("\t0x%08x: %-20s%s\033[0m\n", pc_Queue[i], Queue[i], inst_dis);
 	i = (i + 1) % qu_size;
   }
