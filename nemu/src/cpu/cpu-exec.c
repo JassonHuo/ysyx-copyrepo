@@ -63,6 +63,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   //printf("%d, %d, %d\n", pc, snpc, ilen);
+  printf("%08x\n", s->pc);
   isa_exec_once(s);
   manage_queue(s);
   
