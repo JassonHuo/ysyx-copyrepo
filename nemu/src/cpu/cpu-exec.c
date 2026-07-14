@@ -34,7 +34,8 @@ void device_update();
 uint32_t trace_wp();
 
 char Queue[20][100];
-uint32_t pc_Queue[20];
+word_t pc_Queue[20];
+uint8_t *code_Queue[20];
 int qu_size = 20;
 int head = 0, tail = 0;
 
@@ -97,7 +98,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
-static void inQueue(char *inst, uint32_t pc)
+static void inQueue(char *inst, word_t pc, uint8_t *code)
 {
   if(head == (tail + 1) % qu_size)
 	head = (head + 1) % qu_size;
@@ -109,6 +110,7 @@ static void inQueue(char *inst, uint32_t pc)
 	Queue[tail][i] = inst[i];
   }
   pc_Queue[tail] = pc;
+  code_Queue[tail] = code;
   tail = (tail + 1) % qu_size;
 }
 static void manage_queue(Decode *s)
@@ -123,7 +125,7 @@ static void manage_queue(Decode *s)
   {
 	p += snprintf(p, 4, " %02x", inst[i]);
   }
-  inQueue(inst_str, pc);
+  inQueue(inst_str, pc, inst);
   for(int i = head; i != tail; )
   {
 	printf("0x%08x: %s\n", pc_Queue[i], Queue[i]);
@@ -134,12 +136,30 @@ static void manage_queue(Decode *s)
 //  printf("%s\n", inst_dis);
 }
 
+static void display_inst()
+{
+#ifdef CONFIG_ISAriscv32
+  int ilen = 32;
+#else
+  int ilen = 64;
+#endif
+  for(int i = head; i != tail; )
+  {
+	char inst_dis[50];
+	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+	disassemble(inst_dis, 50, pc_Queue[i], code_Queue[i], ilen);
+	i = (i + 1) % qu_size;
+  }
+}
+
 static void execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
+	if (nemu_state.state == NEMU_ABORT)
+	  display_inst();
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
