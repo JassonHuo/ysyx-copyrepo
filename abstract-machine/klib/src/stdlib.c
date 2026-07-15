@@ -37,6 +37,7 @@ void *malloc(size_t size) {
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
 //  panic("Not implemented");
+  printf("test1\n");
   if(!size)
 	return NULL;
   int max_align_t = 8;
@@ -50,6 +51,7 @@ void *malloc(size_t size) {
   addr += size;
   return ret_addr;
 #endif
+  printf("test2\n");
   return NULL;
 }
 
