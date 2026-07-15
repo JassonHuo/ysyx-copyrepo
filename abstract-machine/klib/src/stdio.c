@@ -59,7 +59,6 @@ int PRINT(const char* fmt, va_list args)
 	  {
 		right_align = 0;
 		fmt_pos ++;
-		is_nega = 1;
 	  }
 	  else
 	  {
@@ -103,6 +102,7 @@ int PRINT(const char* fmt, va_list args)
         if(num < 0)
 		{
 		  abs_num = ~((unsigned int)num) + 1;
+		  is_nega = 1;
 		}
 		else if(num == 0)
 		{
