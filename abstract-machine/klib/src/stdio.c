@@ -142,6 +142,8 @@ int PRINT(const char* fmt, va_list args)
 		  }
 		}
       }
+	  else if(fmt[fmt_pos] == 'c')
+		buffer[buffer_pos++] = (char)va_arg(args, int);
       else
       {
         halt(1);

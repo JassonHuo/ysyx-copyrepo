@@ -38,20 +38,18 @@ void *malloc(size_t size) {
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
 //  panic("Not implemented");
   int max_align_t = 8;
-  printf("test1\n");
   if(addr == NULL)
 	addr = (uint8_t*)heap.start;
   if(size == 0)
 	return addr;
   uint8_t *ret_addr = addr;
-  printf("%08d\n", ret_addr);
+//  printf("%08d\n", ret_addr);
   size = (size % max_align_t == 0 ? size: (((size / max_align_t) + 1) * max_align_t));
   if(addr + size > (uint8_t*)heap.end)
 	return NULL;
   addr += size;
   return ret_addr;
 #endif
-  printf("test2\n");
   return NULL;
 }
 
