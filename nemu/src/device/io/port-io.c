@@ -42,7 +42,7 @@ uint32_t pio_read(ioaddr_t addr, int len) {
   printf("test1\n");
   uint32_t read_data = map_read(addr, len, &maps[mapid]);
   extern CPU_state cpu;
-  printf("%08x: Read data: %5d form device: %s\n", cpu.pc, read_data, maps[mapid].name);
+  printf("%08x: Read data:  %5d form device: %s\n", cpu.pc, read_data, maps[mapid].name);
   return read_data;
 }
 
@@ -51,6 +51,6 @@ void pio_write(ioaddr_t addr, int len, uint32_t data) {
   int mapid = find_mapid_by_addr(maps, nr_map, addr);
   assert(mapid != -1);
   printf("test2\n");
-  printf("Write data: %d to device: %s\n", data, maps[mapid].name);
+  printf("%08x; Write data: %5d  to  device: %s\n", cpu.pc, data, maps[mapid].name);
   map_write(addr, len, data, &maps[mapid]);
 }
