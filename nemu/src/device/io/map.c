@@ -52,7 +52,7 @@ void init_map() {
   p_space = io_space;
 }
 
-char device_buffer[30][50];
+char device_buffer[30][100];
 int head = 0, tail = 0;
 int buffer_size = 30;
 void inQueue(char *str)
@@ -80,8 +80,8 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
   paddr_t offset = addr - map->low;
   invoke_callback(map->callback, offset, len, false); // prepare data to read
   word_t ret = host_read(map->space + offset, len);
-  char tmp[50];
-  sprintf(tmp, "0x%08x: Read  data: %5d form device: %s", cpu.pc,  ret, map->name);
+  char tmp[100];
+  sprintf(tmp, "\033[31m0x%08x: Read  data: %5d form device: %s\033[0m", cpu.pc,  ret, map->name);
   inQueue(tmp);
   display_device();
   return ret;
@@ -93,8 +93,8 @@ void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
   paddr_t offset = addr - map->low;
   host_write(map->space + offset, len, data);
   invoke_callback(map->callback, offset, len, true);
-  char tmp[50];
-  sprintf(tmp, "0x%08x; Write data: %5d  to  device: %s", cpu.pc, data, map->name);
+  char tmp[100];
+  sprintf(tmp, "\033m[31m0x%08x; Write data: %5d  to  device: %s\033[0m", cpu.pc, data, map->name);
   inQueue(tmp);
   display_device();
 }
