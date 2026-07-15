@@ -37,12 +37,12 @@ void *malloc(size_t size) {
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
 //  panic("Not implemented");
-  printf("test1\n");
   if(!size)
 	return NULL;
   int max_align_t = 8;
   if(addr == NULL)
 	addr = (uint8_t*)heap.start;
+  printf("test1\n");
   uint8_t *ret_addr = addr;
   printf("%08d\n", ret_addr);
   size = (size % max_align_t == 0 ? size: (((size / max_align_t) + 1) * max_align_t));
