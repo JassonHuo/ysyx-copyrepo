@@ -33,13 +33,15 @@ static bool g_print_step = false;
 void device_update();
 uint32_t trace_wp();
 
+/*
 char Queue[20][100];
 word_t pc_Queue[20];
 uint32_t code_Queue[20];
 int qu_size = 20;
 int head = 0, tail = 0;
+*/
 
-static void manage_queue(Decode *s);
+//static void manage_queue(Decode *s);
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -65,7 +67,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 //  printf("%08x\n", s->pc);
   //printf("%d, %d, %d\n", pc, snpc, ilen);
   isa_exec_once(s);
-  manage_queue(s);
+//  manage_queue(s);
   
 //  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
@@ -99,6 +101,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
+/*
 static void inQueue(char *inst, word_t pc, uint32_t code)
 {
   if(head == (tail + 1) % qu_size)
@@ -127,17 +130,6 @@ static void manage_queue(Decode *s)
 	p += snprintf(p, 4, " %02x", inst[i]);
   }
   inQueue(inst_str, pc, s->isa.inst);
-  /*
-  for(int i = head; i != tail; )
-  {
-	printf("0x%08x: %s\n", pc_Queue[i], Queue[i]);
-	i = (i + 1) % qu_size;
-  }
-  */
-  /*
-  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-  disassemble(inst_dis, 50, pc, inst, ilen);
-  */
 //  printf("%s\n", inst_dis);
 }
 
@@ -155,6 +147,7 @@ static void display_inst()
 	i = (i + 1) % qu_size;
   }
 }
+*/
 
 static void execute(uint64_t n) {
   Decode s;
@@ -162,8 +155,10 @@ static void execute(uint64_t n) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
+	/*
 	if (nemu_state.state == NEMU_ABORT || (nemu_state.state != NEMU_RUNNING && nemu_state.halt_ret))
 	  display_inst();
+	  */
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
