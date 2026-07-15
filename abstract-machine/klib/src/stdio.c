@@ -30,11 +30,12 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 #define MATCH_WIDTH(left, right) do{\
   int scale = 1;\
   width = 0;\
+  if(left == right) break;\
   for(int i = right - 1; ; i--)\
   {\
 	width += scale * (fmt[i] - '0');\
 	scale *= 10;\
-	if(i < left)\
+	if(i <= left)\
 	  break;\
   }\
 }while(0)
@@ -117,6 +118,8 @@ int PRINT(const char* fmt, va_list args)
 		if(is_nega)
 		  tmp[tmp_pos ++] = '-';
 		tmp[tmp_pos] = '\0';
+		if(is_nega && full_zero)
+		  buffer[buffer_pos++] = '-';
 		if(tmp_pos < full_width && right_align)
 		{
 		  for(int i = 0; i < (full_width - tmp_pos); i++)
@@ -127,9 +130,9 @@ int PRINT(const char* fmt, va_list args)
 			  buffer[buffer_pos++] = ' ';
 		  }
 		}
-        for(int i = 0; i < tmp_pos; i ++)
+        for(int i = 0; i < tmp_pos - (is_nega&&full_zero) ; i ++)
 		{
-          buffer[buffer_pos++] = tmp[tmp_pos - 1 - i];
+          buffer[buffer_pos++] = tmp[tmp_pos - 1 - i - (is_nega&&full_zero)];
 		}
 		if(tmp_pos < full_width && !right_align)
 		{
