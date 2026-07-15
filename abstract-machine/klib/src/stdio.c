@@ -106,7 +106,9 @@ int PRINT(const char* fmt, va_list args)
 		}
 		else if(num == 0)
 		{
-		  buffer[buffer_pos++] = '0';
+		  tmp[0] = '0';
+		  tmp[1] = '\0';
+		  tmp_pos = 1;
 		}
         while(abs_num != 0)
         {
