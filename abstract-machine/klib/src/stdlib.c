@@ -39,7 +39,7 @@ void *malloc(size_t size) {
 //  panic("Not implemented");
   if(!size)
 	return NULL;
-  int max_align_t = 4;
+  int max_align_t = 8;
   if(addr == NULL)
 	addr = (uint8_t*)heap.start;
   uint8_t *ret_addr = addr;
