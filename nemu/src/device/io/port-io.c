@@ -38,6 +38,8 @@ uint32_t pio_read(ioaddr_t addr, int len) {
   assert(addr + len - 1 < PORT_IO_SPACE_MAX);
   int mapid = find_mapid_by_addr(maps, nr_map, addr);
   assert(mapid != -1);
+  printf("test1\n");
+  printf("Read device: %s\n", maps[mapid].name);
   return map_read(addr, len, &maps[mapid]);
 }
 
@@ -45,5 +47,7 @@ void pio_write(ioaddr_t addr, int len, uint32_t data) {
   assert(addr + len - 1 < PORT_IO_SPACE_MAX);
   int mapid = find_mapid_by_addr(maps, nr_map, addr);
   assert(mapid != -1);
+  printf("test2\n");
+  printf("Write device: %s\n", maps[mapid].name);
   map_write(addr, len, data, &maps[mapid]);
 }
