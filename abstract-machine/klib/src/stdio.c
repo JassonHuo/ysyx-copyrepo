@@ -101,7 +101,6 @@ int PRINT(const char* fmt, va_list args)
 		unsigned int abs_num = num;
         if(num < 0)
 		{
-          buffer[buffer_pos++] = '-';
 		  abs_num = ~((unsigned int)num) + 1;
 		}
 		else if(num == 0)
@@ -115,10 +114,12 @@ int PRINT(const char* fmt, va_list args)
           tmp [tmp_pos++] = '0' + abs_num % 10;
           abs_num /= 10;
         }
+		if(is_nega)
+		  tmp[tmp_pos ++] = '-';
 		tmp[tmp_pos] = '\0';
 		if(tmp_pos < full_width && right_align)
 		{
-		  for(int i = 0; i < (full_width - tmp_pos - is_nega); i++)
+		  for(int i = 0; i < (full_width - tmp_pos); i++)
 		  {
 			if(full_zero)
 			  buffer[buffer_pos++] = '0';
@@ -132,7 +133,7 @@ int PRINT(const char* fmt, va_list args)
 		}
 		if(tmp_pos < full_width && !right_align)
 		{
-		  for(int i = 0; i < (full_width - tmp_pos - is_nega); i++)
+		  for(int i = 0; i < (full_width - tmp_pos); i++)
 		  {
 			buffer[buffer_pos++] = ' ';
 		  }
