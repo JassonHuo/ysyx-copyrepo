@@ -23,11 +23,15 @@
 static uint8_t *io_space = NULL;
 static uint8_t *p_space = NULL;
 
+void display_device();
+
 uint8_t* new_space(int size) {
   uint8_t *p = p_space;
   // page aligned;
   size = (size + (PAGE_SIZE - 1)) & ~PAGE_MASK;
   p_space += size;
+  if(p_space - io_space > IO_SPACE_MAX)
+	display_device();
   assert(p_space - io_space < IO_SPACE_MAX);
   return p;
 }
@@ -36,6 +40,8 @@ static void check_bound(IOMap *map, paddr_t addr) {
   if (map == NULL) {
     Assert(map != NULL, "address (" FMT_PADDR ") is out of bound at pc = " FMT_WORD, addr, cpu.pc);
   } else {
+	if(addr > map->high || addr < map->low)
+	  display_device();
     Assert(addr <= map->high && addr >= map->low,
         "address (" FMT_PADDR ") is out of bound {%s} [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
         addr, map->name, map->low, map->high, cpu.pc);
@@ -55,6 +61,7 @@ void init_map() {
 char device_buffer[30][100];
 int head = 0, tail = 0;
 int buffer_size = 30;
+
 void inQueue(char *str)
 {
   sprintf(device_buffer[tail], "%s", str);
@@ -75,6 +82,8 @@ void display_device()
 }
 
 word_t map_read(paddr_t addr, int len, IOMap *map) {
+  if(len < 1 || len > 8)
+	display_device();
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
@@ -83,11 +92,12 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
   char tmp[100];
   sprintf(tmp, "0x%08x: Read  data: %5d form device: %s", cpu.pc,  ret, map->name);
   inQueue(tmp);
-  display_device();
   return ret;
 }
 
 void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
+  if(len < 1 || len > 8)
+	display_device();
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
@@ -96,5 +106,4 @@ void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
   char tmp[100];
   sprintf(tmp, "0x%08x; Write data: %5d  to  device: %s", cpu.pc, data, map->name);
   inQueue(tmp);
-  display_device();
 }
