@@ -93,12 +93,13 @@ int PRINT(const char* fmt, va_list args)
           buffer[buffer_pos++] = *(tmp++);
         }
 	  }
-	  else if(fmt[fmt_pos] == 'd')
+	  else if(fmt[fmt_pos] == 'd' || fmt[fmt_pos] == 'x')
       {
         char tmp[13];
         int tmp_pos = 0;
         int num = va_arg(args, int);
 		unsigned int abs_num = num;
+		int num_sys = (fmt[fmt_pos] == 'd' ? 10: 16);
         if(num < 0)
 		{
 		  abs_num = ~((unsigned int)num) + 1;
@@ -112,8 +113,12 @@ int PRINT(const char* fmt, va_list args)
 		}
         while(abs_num != 0)
         {
-          tmp [tmp_pos++] = '0' + abs_num % 10;
-          abs_num /= 10;
+		  int digit = abs_num % num_sys;
+		  if(digit >= '0' && digit <= '9')
+			tmp [tmp_pos++] = '0' + digit;
+		  else
+			tmp [tmp_pos++] = 'a' + digit - 10;
+          abs_num /= num_sys;
         }
 		if(is_nega)
 		  tmp[tmp_pos ++] = '-';
