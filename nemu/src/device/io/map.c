@@ -63,6 +63,17 @@ void inQueue(char *str)
 	head = (head + 1) % buffer_size;
 }
 
+void display_device()
+{
+  for(int i = head; i != tail; )
+  {
+	if((i + 1) % buffer_size == tail)
+	  printf(" -->");
+	printf("\t%s\n", device_buffer[i]);
+	i = (i + 1) % buffer_size;
+  }
+}
+
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
@@ -72,6 +83,7 @@ word_t map_read(paddr_t addr, int len, IOMap *map) {
   char tmp[50];
   sprintf(tmp, "0x%08x: Read  data: %5d form device: %s", cpu.pc,  ret, map->name);
   inQueue(tmp);
+  display_device();
   return ret;
 }
 
@@ -84,4 +96,5 @@ void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
   char tmp[50];
   sprintf(tmp, "0x%08x; Write data: %5d  to  device: %s", cpu.pc, data, map->name);
   inQueue(tmp);
+  display_device();
 }
