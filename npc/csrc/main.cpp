@@ -215,6 +215,7 @@ int main(int argc, char** argv) {
   {
 //	printf("mem[82935] = %08x, before pc: %08x\n", mem[82935], top->pc);
 	top->clk = 0;
+//	printf("pc=%08x\n", top->pc);
 //	top->inst = pmem_read(top->pc);
 //	printf("%x\n", top->pc);
 	top->eval();
