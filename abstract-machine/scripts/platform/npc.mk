@@ -26,8 +26,6 @@ image: image-dep
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: insert-arg
-#	echo "TODO: add command here to run simulation"
-	echo "running $(IMAGE)"
-	$(NPC_HOME)/obj_dir/Vtop $(IMAGE).bin
+	echo "TODO: add command here to run simulation"
 
 .PHONY: insert-arg
