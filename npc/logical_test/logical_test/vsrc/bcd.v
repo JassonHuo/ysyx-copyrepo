@@ -1,0 +1,33 @@
+module bcd(
+  input [3: 0] data,
+  input down,
+  output reg [6: 0] bcd_out
+);
+
+  always@(*)begin
+	if(down)begin
+	  bcd_out = 7'b1111111;
+	end
+	else begin
+	  case(data)
+	    0: bcd_out = 7'b0000001;
+		1: bcd_out = 7'b1001111;
+	    2: bcd_out = 7'b0010010;
+	    3: bcd_out = 7'b0000110;
+	    4: bcd_out = 7'b1001100;
+	    5: bcd_out = 7'b0100100;
+	    6: bcd_out = 7'b0100000;
+	    7: bcd_out = 7'b0001111;
+	    8: bcd_out = 7'b0000000;
+	    9: bcd_out = 7'b0000100;
+        10: bcd_out = 7'b0001000;
+        11: bcd_out = 7'b1100000;
+        12: bcd_out = 7'b0110001;
+        13: bcd_out = 7'b1000010;
+        14: bcd_out = 7'b0110000;
+        15: bcd_out = 7'b0111000;
+        default: bcd_out = 7'b0000001;		  
+	  endcase
+	end
+  end
+endmodule
