@@ -51,19 +51,11 @@ CFLAGS_BUILD += $(if $(CONFIG_CC_ASAN),-fsanitize=address,)
 CFLAGS_TRACE += -DITRACE_COND=$(if $(CONFIG_ITRACE_COND),$(call remove_quote,$(CONFIG_ITRACE_COND)),true)
 CFLAGS  += $(CFLAGS_BUILD) $(CFLAGS_TRACE) -D__GUEST_ISA__=$(GUEST_ISA)
 LDFLAGS += $(CFLAGS_BUILD)
-#CFLAGS  += -DCHECK_EVAL
-CFLAGS += $(AM_DFLAG)
-CFLAGS += -I$(AM_HOME)/am/include
-CFLAGS += -I$(AM_HOME)/klib/include
-CFLAGS += -I$(AM_HOME)/include
 
 # Include rules for menuconfig
 include $(NEMU_HOME)/scripts/config.mk
 
 ifdef CONFIG_TARGET_AM
-#CFLAGS += -I$(AM_HOME)/am/include
-#CFLAGS += -I$(AM_HOME)/klib/include
-#CFLAGS += -I$(AM_HOME)/include
 include $(AM_HOME)/Makefile
 LINKAGE += $(ARCHIVES)
 else

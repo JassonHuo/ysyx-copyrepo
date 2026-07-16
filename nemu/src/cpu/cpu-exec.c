@@ -31,17 +31,6 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
-uint32_t trace_wp();
-
-/*
-char Queue[20][100];
-word_t pc_Queue[20];
-uint32_t code_Queue[20];
-int qu_size = 20;
-int head = 0, tail = 0;
-*/
-
-//static void manage_queue(Decode *s);
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -49,27 +38,12 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-
-#ifdef CONFIG_WATCHPOINT
-  uint32_t tracer = trace_wp();
-  if(tracer)
-  {
-	nemu_state.state = NEMU_STOP;
-	printf("Watch point be trigered\n");
-	return;
-  }
-#endif
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
-//  printf("%08x\n", s->pc);
-  //printf("%d, %d, %d\n", pc, snpc, ilen);
   isa_exec_once(s);
-//  manage_queue(s);
-  
-//  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -78,10 +52,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   int i;
   uint8_t *inst = (uint8_t *)&s->isa.inst;
 #ifdef CONFIG_ISA_x86
-//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   for (i = 0; i < ilen; i ++) {
 #else
-//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   for (i = ilen - 1; i >= 0; i --) {
 #endif
     p += snprintf(p, 4, " %02x", inst[i]);
@@ -96,58 +68,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
-//  printf("inst: %x\n", *(uint8_t *)&s->isa.inst);
-//  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
 #endif
 }
-
-/*
-static void inQueue(char *inst, word_t pc, uint32_t code)
-{
-  if(head == (tail + 1) % qu_size)
-	head = (head + 1) % qu_size;
-//  memcpy(Queue[tail], inst, 100);
-  for(int i = 0; i < 100; i ++)
-  {
-	if(inst[i] == '\0')
-	  break;
-	Queue[tail][i] = inst[i];
-  }
-  pc_Queue[tail] = pc;
-  code_Queue[tail] = code;
-  tail = (tail + 1) % qu_size;
-}
-static void manage_queue(Decode *s)
-{
-  word_t pc = s->pc;
-  uint8_t *inst = (uint8_t*)&s->isa.inst;
-  int ilen = s->snpc - s->pc;
-  char inst_str[100];
-  char *p = inst_str;
-//  char inst_dis[50];
-  for(int i = ilen - 1; i >= 0; i --)
-  {
-	p += snprintf(p, 4, " %02x", inst[i]);
-  }
-  inQueue(inst_str, pc, s->isa.inst);
-//  printf("%s\n", inst_dis);
-}
-
-static void display_inst()
-{
-  int ilen = 4;
-  for(int i = head; i != tail; )
-  {
-	char inst_dis[50];
-	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-	disassemble(inst_dis, 50, pc_Queue[i], (uint8_t*)(code_Queue + i), ilen);
-	if(i == tail - 1)
-	  printf("  -->\033[31m");
-	printf("\t0x%08x: %-20s%s\033[0m\n", pc_Queue[i], Queue[i], inst_dis);
-	i = (i + 1) % qu_size;
-  }
-}
-*/
 
 static void execute(uint64_t n) {
   Decode s;
@@ -155,10 +77,6 @@ static void execute(uint64_t n) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
-	/*
-	if (nemu_state.state == NEMU_ABORT || (nemu_state.state != NEMU_RUNNING && nemu_state.halt_ret))
-	  display_inst();
-	  */
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
@@ -181,7 +99,6 @@ void assert_fail_msg() {
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n) {
   g_print_step = (n < MAX_INST_TO_PRINT);
-//  printf("%d\n", nemu_state.state);
   switch (nemu_state.state) {
     case NEMU_END: case NEMU_ABORT: case NEMU_QUIT:
       printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");

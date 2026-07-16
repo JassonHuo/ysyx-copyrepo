@@ -18,23 +18,11 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-#include <memory/host.h>
 
 static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
-void execute();
-void isa_reg_display();
-word_t pmem_read(paddr_t addr, int len);
-uint8_t* guest_to_host();
-//bool make_token();
-//uint32_t do_compression();
-word_t expr();
-WP* new_wp(char *expr, word_t result);
-void free_wp(WP *wp);
-void delete_wp(int num);
-void display_wp();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -65,12 +53,6 @@ static int cmd_q(char *args) {
 }
 
 static int cmd_help(char *args);
-static int cmd_si(char *args);
-static int cmd_info(char *args);
-static int cmd_x(char *args);
-static int cmd_p(char *args);
-static int cmd_w(char *args);
-static int cmd_d(char *args);
 
 static struct {
   const char *name;
@@ -80,12 +62,6 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  { "si", "Execute by steps you want", cmd_si },
-  { "info", "Display the status of register", cmd_info },
-  { "x", "Scanf the memory", cmd_x },
-  { "p", "Solve the math expression", cmd_p },
-  { "w", "Set the watch point", cmd_w }, 
-  { "d", "Delete the watch point", cmd_d }, 
 
   /* TODO: Add more commands */
 
@@ -113,90 +89,6 @@ static int cmd_help(char *args) {
     }
     printf("Unknown command '%s'\n", arg);
   }
-  return 0;
-}
-
-static int cmd_si(char *args)
-{
-  int n = args ? atoi(args): 1;
-  if(args && atoi(args) < 0)
-  {
-	printf("The number of instruction must be positive\n");
-	return 0;
-  }
-  else
-  {
-	cpu_exec(n);	
-	return 0;
-  }
-}
-
-static int cmd_info(char *args)
-{
-  char *arg = strtok(NULL, " ");
-  if (arg && strcmp(arg, "r") == 0) 
-  {
-	isa_reg_display();
-	return 0;
-  }
-  else if(arg && strcmp(arg, "w") == 0)
-  {
-	display_wp();
-	return 0;
-  }
-  else return 0;
-}
-
-static int cmd_x(char *args)
-{
-  if(!args) return 0;
-  int n = atoi(strtok(args, " "));
-  char *addr = strtok(NULL, " ");
-  if(!n || !addr) return 0;
-  uint32_t beg_addr;
-  sscanf(addr, "%x", &beg_addr);
-  printf("%d, %08x\n", n, beg_addr);
-//  uint32_t pmem = pmem_read((paddr_t)beg_addr, 4);
-  for (int i = 0; i < n; i ++)
-  {
-	uint32_t pmem = host_read(guest_to_host(beg_addr), 4);
-	printf("%08x: %08x\n", beg_addr, pmem);
-	beg_addr += 4;
-  }
-  return 0;
-}
-
-static int cmd_p(char *args)
-{
-//  bool token_complite = make_token(args);
-  bool success;
-  //uint32_t result = expr(strtok(NULL, " "), &success);
-  uint32_t result = expr(args, &success);
-  if(!success)
-	printf("Expression Error\n");
-//	printf("%s is not a right compresstion\n", args);
-  else
-	printf("%u\n", result);
-  return 0;
-}
-
-static int cmd_w(char *args)
-{
-  if(!args) return 0;
-  bool success;
-  uint32_t result = expr(args, &success);
-  if(!success)
-	printf("Expression Error\n");
-  else
-	new_wp(args, result);
-  return 0;
-}
-
-static int cmd_d(char *args)
-{
-  if(!args) return 0;
-  int n = atoi(strtok(NULL, " "));
-  delete_wp(n);
   return 0;
 }
 
@@ -233,10 +125,7 @@ void sdb_mainloop() {
     int i;
     for (i = 0; i < NR_CMD; i ++) {
       if (strcmp(cmd, cmd_table[i].name) == 0) {
-        if (cmd_table[i].handler(args) < 0) { 
-		  nemu_state.state = NEMU_QUIT;
-		  return; 
-		}
+        if (cmd_table[i].handler(args) < 0) { return; }
         break;
       }
     }
