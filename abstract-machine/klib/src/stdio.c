@@ -114,7 +114,7 @@ int PRINT(const char* fmt, va_list args)
         while(abs_num != 0)
         {
 		  int digit = abs_num % num_sys;
-		  if(digit >= 0 && digit <= 9)
+		  if(digit >= '0' && digit <= '9')
 			tmp [tmp_pos++] = '0' + digit;
 		  else
 			tmp [tmp_pos++] = 'a' + digit - 10;
