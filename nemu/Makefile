@@ -53,9 +53,6 @@ CFLAGS  += $(CFLAGS_BUILD) $(CFLAGS_TRACE) -D__GUEST_ISA__=$(GUEST_ISA)
 LDFLAGS += $(CFLAGS_BUILD)
 #CFLAGS  += -DCHECK_EVAL
 CFLAGS += $(AM_DFLAG)
-CFLAGS += -I$(AM_HOME)/am/include
-CFLAGS += -I$(AM_HOME)/klib/include
-CFLAGS += -I$(AM_HOME)/include
 
 # Include rules for menuconfig
 include $(NEMU_HOME)/scripts/config.mk
