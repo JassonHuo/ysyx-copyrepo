@@ -57,6 +57,7 @@ CFLAGS += $(AM_DFLAG)
 include $(NEMU_HOME)/scripts/config.mk
 
 ifdef CONFIG_TARGET_AM
+CLAGS += -I$(AM_HOME)/klib/include
 include $(AM_HOME)/Makefile
 LINKAGE += $(ARCHIVES)
 else
