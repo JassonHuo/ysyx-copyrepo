@@ -170,8 +170,7 @@ static int cmd_p(char *args)
 {
 //  bool token_complite = make_token(args);
   bool success;
-  //uint32_t result = expr(strtok(NULL, " "), &success);
-  uint32_t result = expr(args, &success);
+  uint32_t result = expr(strtok(NULL, " "), &success);
   if(!success)
 	printf("Expression Error\n");
 //	printf("%s is not a right compresstion\n", args);

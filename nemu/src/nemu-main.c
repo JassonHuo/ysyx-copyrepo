@@ -27,7 +27,6 @@ extern bool div_by_zero;
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
-  printf("here\n");
   am_init_monitor();
 #else
   init_monitor(argc, argv);

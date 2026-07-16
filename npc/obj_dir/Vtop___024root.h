@@ -6,56 +6,21 @@
 #define VERILATED_VTOP___024ROOT_H_  // guard
 
 #include "verilated.h"
-class Vtop___024unit;
 
 
 class Vtop__Syms;
 
 class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final {
   public:
-    // CELLS
-    Vtop___024unit* __PVT____024unit;
 
     // DESIGN SPECIFIC STATE
-    VL_IN8(clk,0,0);
-    VL_IN8(rst,0,0);
-    CData/*0:0*/ top__DOT__pc_en_wb_pc;
-    CData/*3:0*/ top__DOT__alu_op_idu_exu;
-    CData/*1:0*/ top__DOT__pc_src_idu_exu;
-    CData/*1:0*/ top__DOT__reg_src_idu_exu;
-    CData/*0:0*/ top__DOT__alu_src_idu_exu;
-    CData/*0:0*/ top__DOT__wen_idu_exu;
-    CData/*3:0*/ top__DOT__raddr1_wbu_gpr;
-    CData/*3:0*/ top__DOT__raddr2_wbu_gpr;
-    CData/*0:0*/ top__DOT__mem_wen_idu_exu;
-    CData/*0:0*/ top__DOT__valid_idu_exu;
-    CData/*1:0*/ top__DOT__width_idu_exu;
-    CData/*1:0*/ top__DOT__lsu0__DOT__mem_data;
+    VL_IN8(a,0,0);
+    VL_IN8(b,0,0);
+    VL_OUT8(f,0,0);
     CData/*0:0*/ __VstlFirstIteration;
-    CData/*0:0*/ __VstlPhaseResult;
-    CData/*0:0*/ __Vtrigprevexpr___TOP__clk__0;
-    CData/*0:0*/ __VactPhaseResult;
-    CData/*0:0*/ __VnbaPhaseResult;
-    VL_OUT(pc,31,0);
-    VL_OUT(a0,31,0);
-    IData/*31:0*/ top__DOT__pc_wb_pc;
-    IData/*31:0*/ top__DOT__imm_idu_exu;
-    IData/*31:0*/ top__DOT__rdata_gpr_idu;
-    IData/*31:0*/ top__DOT__rdata_lsu_wbu;
-    IData/*31:0*/ top__DOT__pc0__DOT__pc;
-    IData/*31:0*/ top__DOT__ifu0__DOT__inst;
-    IData/*31:0*/ top__DOT__idu0__DOT__Iimm;
-    IData/*31:0*/ top__DOT__gpr0__DOT__Gpr__DOT__rdata2;
-    IData/*31:0*/ top__DOT__exu0__DOT__pc_sync_in;
-    IData/*31:0*/ top__DOT__exu0__DOT__alu0__DOT__z;
-    IData/*31:0*/ __Vfunc_pmem_read__0__Vfuncout;
-    IData/*31:0*/ __Vfunc_pmem_read__2__Vfuncout;
-    IData/*31:0*/ __VactIterCount;
-    VlUnpacked<IData/*31:0*/, 16> top__DOT__gpr0__DOT__Gpr__DOT__rf;
+    CData/*0:0*/ __VicoFirstIteration;
     VlUnpacked<QData/*63:0*/, 1> __VstlTriggered;
-    VlUnpacked<QData/*63:0*/, 1> __VactTriggered;
-    VlUnpacked<QData/*63:0*/, 1> __VnbaTriggered;
-    VlUnpacked<CData/*0:0*/, 2> __Vm_traceActivity;
+    VlUnpacked<QData/*63:0*/, 1> __VicoTriggered;
 
     // INTERNAL VARIABLES
     Vtop__Syms* vlSymsp;
