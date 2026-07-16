@@ -365,14 +365,16 @@ static uint32_t eval(int p, int q) {
 	int land_op = -1;
 	int dere_op = -1;
 	int nega_op = -1;
+	int plus_op = -1;
 	for(int pos = q; pos >= p; pos --)
 	{
 	  if(!in_parentheses && 
 		  (tokens[pos].type == '+' || 
-		   tokens[pos].type == '-'))
+		   tokens[pos].type == '-') &&
+		  plus_op < 0)
 	  {
-		op = pos;
-		break;
+		plus_op = pos;
+//		break;
 	  }
 	  else if(!in_parentheses && (tokens[pos].type == '*' ||
 		  tokens[pos].type == '/') &&
@@ -398,14 +400,14 @@ static uint32_t eval(int p, int q) {
 		nega_op = pos;
 	}
 	if(land_op > 0)
-		op = land_op;
-	  else if(eq_op > 0)
-		op = eq_op;
-	  else if(mul_op > 0)
-		op = mul_op;
-	  else if(op > 0)
-		op = op;
-	  else if(dere_op == p)
+	  op = land_op;
+	else if(eq_op > 0)
+	  op = eq_op;
+	else if(plus_op > 0)
+	  op = plus_op;
+	else if(mul_op > 0)
+	  op = mul_op;
+	else if(dere_op == p)
 	  {
 		uint32_t addr = eval(p + 1, q); 
 		return host_read(guest_to_host(addr), 4);
