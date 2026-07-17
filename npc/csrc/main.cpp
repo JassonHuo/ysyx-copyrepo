@@ -15,6 +15,7 @@
 #define MEM_SIZE 134217727
 #define GREEN "\033[32m"
 #define RED "\033[31m"
+#define BLUE "\033[34m"
 #define RESET "\033[0m"
 
 bool ebreak_happened = false;
@@ -37,11 +38,13 @@ void ebreak()
 extern "C" int pmem_read(int addr)
 {
 //  printf("data: %08x\n", mem[(addr - 0x80000000) >> 2]);
+  /*
   if((uint32_t)addr >= 0x80000000 + MEM_SIZE + 3 || (uint32_t)addr < 0x80000000)
   {
 	printf("Address %08x out of range %08x-%08x, at pc: %08x\n", addr, MEM_SIZE, 0x80000000 + MEM_SIZE, top->pc);
 	ebreak();
   }
+  */
 //  printf("c read %x, index: %d, pc: %08x\n", mem[((uint32_t)addr - 0x80000000) >> 2], (addr - 0x80000000) >> 2, top->pc);
   return mem[((uint32_t)addr - 0x80000000) >> 2];
 //  return mem[addr >> 2];
@@ -50,19 +53,33 @@ extern "C" int pmem_read(int addr)
 extern "C" void pmem_write(int waddr, int wdata, char wmask)
 {
 //  std::cout << "test";
+  /*
   if((uint32_t)waddr >= 0x80000000 + MEM_SIZE + 3 || (uint32_t)waddr < 0x80000000)
   {
 	printf("Address %08x out of range %08x-%08x, at pc: %08x\n", waddr, MEM_SIZE, 0x80000000 + MEM_SIZE, top->pc);
 	ebreak();
   }
+  */
+  /*
+  printf("%08x\n", waddr);
   if(waddr == 0x10000000) 
   {
 //	putchar(wdata);
 	printf("%c\n", wdata);
 	return;
   }
+  */
   if(top->clk)
   {
+	if(waddr > 0x87ffffff || waddr < 0x80000000)
+	  printf("%08x\n", waddr);
+	if(waddr == 0x10000000) 
+	{
+  //	putchar(wdata);
+	  printf("%08x\n", waddr);
+	  printf("%c\n", wdata);
+	  return;
+	}
   uint32_t tmp = mem[((uint32_t)waddr - 0x80000000) >> 2];
 //  uint32_t tmp = mem[waddr >> 2];
   uint32_t byte_mask = 0;
@@ -115,6 +132,9 @@ int main(int argc, char** argv) {
  // mem[1] = 0x0100a103;
   //mem[2] = 0x00100073;
   //mem[5] = 0x90abcdef;
+
+  printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]\n" RESET);
+  printf(BLUE "Open device serial at [0x10000000, ]\n" RESET);
 
   if(argc == 1)
   {
