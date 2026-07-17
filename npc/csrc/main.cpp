@@ -10,6 +10,9 @@
 #include <cstring>
 #include <iostream>	
 #include <sstream>
+#include <time.h>
+//#include <device/map.h>
+//#include <am.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -24,6 +27,10 @@ static VerilatedContext *contextp = new VerilatedContext;
 static VerilatedVcdC* tracep = new VerilatedVcdC;
 static Vtop *top = new Vtop;
 
+static uint8_t *serial_base = NULL;
+
+static uint32_t start_time;
+
 void ebreak()
 {
   ebreak_happened = true;
@@ -33,6 +40,17 @@ void ebreak()
   else
 	printf(RED "HIT BAD TRAP " RESET);
   printf("at pc = %08x\n", top->pc);
+}
+
+static inline void time_init()
+{
+  start_time = time(NULL);
+}
+
+static inline uint32_t get_time()
+{
+  printf("%ld\n", time(NULL));
+  return time(NULL) - start_time;
 }
 
 extern "C" int pmem_read(int addr)
@@ -46,6 +64,7 @@ extern "C" int pmem_read(int addr)
   }
   */
 //  printf("c read %x, index: %d, pc: %08x\n", mem[((uint32_t)addr - 0x80000000) >> 2], (addr - 0x80000000) >> 2, top->pc);
+  if(addr == 0xa0000048) return get_time();
   return mem[((uint32_t)addr - 0x80000000) >> 2];
 //  return mem[addr >> 2];
 }
@@ -71,53 +90,45 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
   */
   if(top->clk)
   {
+	/*
 	if(waddr > 0x87ffffff || waddr < 0x80000000)
 	  printf("%08x\n", waddr);
-	if(waddr == 0x10000000) 
+	  */
+	if(waddr == 0x10000000)
 	{
-  //	putchar(wdata);
-	  printf("%08x\n", waddr);
-	  printf("%c\n", wdata);
-	  return;
+      putchar(wdata);
+	  fflush(stdout);
 	}
-  uint32_t tmp = mem[((uint32_t)waddr - 0x80000000) >> 2];
+	else if(waddr >= 0x80000000 && waddr <= 0x87ffffff)
+	{
+	  uint32_t tmp = mem[((uint32_t)waddr - 0x80000000) >> 2];
 //  uint32_t tmp = mem[waddr >> 2];
-  uint32_t byte_mask = 0;
-  /*
-  for(int byte = 0; byte < 4; byte ++)
-  {
-	byte_mask = wmask % 2;
-	wmask /= 2;
-	if(byte_mask)
-	{
-	  tmp = (tmp & ~(0xFF << byte * 8)) | (wdata & (0xFF << byte * 8));
-	}
-  }
-  */
-  uint32_t mask = 0;
-  for (int byte = 0; byte < 4; byte ++)
-  {
-	byte_mask = wmask % 2;
-	wmask /= 2;
-	if(byte_mask)
-	  mask = mask | 0xFF << byte * 8;
-  }
-  uint32_t tmp_mask = mask;
-  while(tmp_mask % 2 == 0)
-  {
-	tmp_mask = tmp_mask >> 4;
-  }
-  wdata = wdata & tmp_mask;
-  while(tmp_mask != mask)
-  {
-	tmp_mask = tmp_mask << 4;
-	wdata = wdata << 4;
-  }
-//  printf("%x, %x\n", mask, wdata);
-  tmp = (tmp & ~mask) | (wdata & mask);
-//  printf("%8x\n", tmp);
-//  printf("c write %x, index: %d, pc: %08x\n", tmp, (waddr - 0x80000000) >> 2, top->pc); 
-  mem[((uint32_t)waddr - 0x80000000) >> 2] = tmp;
+	  uint32_t byte_mask = 0;
+	  uint32_t mask = 0;
+	  for (int byte = 0; byte < 4; byte ++)
+	  {
+		byte_mask = wmask % 2;
+		wmask /= 2;
+		if(byte_mask)
+		  mask = mask | 0xFF << byte * 8;
+	  }
+	  uint32_t tmp_mask = mask;
+	  while(tmp_mask % 2 == 0)
+	  {
+		tmp_mask = tmp_mask >> 4;
+	  }
+	  wdata = wdata & tmp_mask;
+	  while(tmp_mask != mask)
+	  {
+		tmp_mask = tmp_mask << 4;
+		wdata = wdata << 4;
+	  }
+	//  printf("%x, %x\n", mask, wdata);
+	  tmp = (tmp & ~mask) | (wdata & mask);
+	//  printf("%8x\n", tmp);
+	//  printf("c write %x, index: %d, pc: %08x\n", tmp, (waddr - 0x80000000) >> 2, top->pc); 
+	  mem[((uint32_t)waddr - 0x80000000) >> 2] = tmp;
+	  }
   }
 }
 
@@ -126,6 +137,18 @@ uint32_t hex2num(std::string &hex)
   return std::stoul(hex, nullptr, 16);
 }
 
+/*
+void init_serial()
+{
+  serial_base = new_space(8);
+#ifdef CONFIG_HAS_PORT_IO
+  add_pio_map("serial", 0x10000000, serial_base, 8, NULL);
+#else
+  add_mmio_map("serial", 0x10000000, serial_base, 8, NULL);
+#endif
+}
+*/
+
 int main(int argc, char** argv) {
 //  uint32_t mem[1024] = {0};
 //  mem[0] = 0x00400093;
@@ -133,8 +156,9 @@ int main(int argc, char** argv) {
   //mem[2] = 0x00100073;
   //mem[5] = 0x90abcdef;
 
-  printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]\n" RESET);
-  printf(BLUE "Open device serial at [0x10000000, ]\n" RESET);
+  printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
+  printf(BLUE "Open device serial at [0x10000000, ]" RESET "\n");
+  printf(BLUE "Open device rtc at []" RESET "\n");
 
   if(argc == 1)
   {

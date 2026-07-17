@@ -3,7 +3,7 @@ NXDC_FILE = constr/top.nxdc
 INC_PATH ?= 
 
 include ../Makefile 
-include $(NVBOARD_HOME)/scripts/nvboard.mk 
+#include $(NVBOARD_HOME)/scripts/nvboard.mk 
 
 
 VERILATOR = verilator
@@ -17,33 +17,37 @@ default: $(BIN)
 
 $(shell mkdir -p $(BUILD_DIR))
 
-SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
-$(SRC_AUTO_BIND) : $(NXDC_FILE)
-	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+#SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+#$(SRC_AUTO_BIND) : $(NXDC_FILE)
+#	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
-CSRC = /home/jasonhuo/ysyx/ysyx-workbench/npc/csrc/nv_switch.cpp
-VSRC = /home/jasonhuo/ysyx/ysyx-workbench/npc/vsrc/top.v
+#CSRC = /home/jasonhuo/ysyx/ysyx-workbench/npc/csrc/nv_switch.cpp
+VSRC = $(NPC_HOME)/vsrc/*.v
 #VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-#CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cpp")
-CSRC += $(SRC_AUTO_BIND)
+#CSRC = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cpp")
+#CSRC += $(SRC_AUTO_BIND)
+CSRC = $(NPC_HOME)/csrc/main.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+$(info INCFLAGS = $(INCFLAGS))
 
 
-$(BIN): $(VSRC) $(CSRC) $(NVBOARD_ARCHIVE) 
+$(BIN): $(VSRC) $(CSRC) #$(NVBOARD_ARCHIVE) 
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
-		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
+		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
+		--trace-vcd -j 0 -I$(NPC_HOME)/vsrc \
 
 
 all: default
 	@echo "Write this Makefile by your self."
 
 run: $(BIN)
-	@$^
+#	@$^
+	$(BIN) $(IMG)
 
 clean: 
 	rm -rf $(BUILD_DIR)
