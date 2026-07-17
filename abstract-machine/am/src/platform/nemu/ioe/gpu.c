@@ -22,11 +22,22 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
 
 void __am_gpu_fbdraw(AM_GPU_FBDRAW_T *ctl) {
   uint32_t *fb = (uint32_t *)(uintptr_t)FB_ADDR;
-  int w = io_read(AM_GPU_CONFIG).width;
-  int h = io_read(AM_GPU_CONFIG).height;
-  for (int i = 0; i < w * h; i ++)
+  int screen_w = io_read(AM_GPU_CONFIG).width;
+//  int screen_h = io_read(AM_GPU_CONFIG).height;
+//  for (int i = 0; i < w * h; i ++)
 	//fb[i] = ((uint32_t*)ctl->pixels)[i];
-	fb[i] = 0;
+//	fb[i] = 0;
+  int x = ctl->x;
+  int y = ctl->y;
+  int w = ctl->w;
+  int h = ctl->h;
+  for(int i = x; i < x + w; i++)
+  {
+	for(int j = y; j < y + h; j++)
+	{
+	  fb[j * screen_w + i] = ((uint32_t*)ctl->pixels)[(j - y) * screen_w + (i - x)];
+	}
+  }
   if (ctl->sync) {
     outl(SYNC_ADDR, 1);
   }
