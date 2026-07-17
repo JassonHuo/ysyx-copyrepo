@@ -17,6 +17,11 @@ MAINARGS_MAX_LEN = 64
 MAINARGS_PLACEHOLDER = the_insert-arg_rule_in_Makefile_will_insert_mainargs_here
 CFLAGS += -DMAINARGS_MAX_LEN=$(MAINARGS_MAX_LEN) -DMAINARGS_PLACEHOLDER=$(MAINARGS_PLACEHOLDER)
 
+VERILATOR = verilator
+NPC_VFLAGS += --cc --build --exe --trace-vcd --top-module top -j 0 -Ivsrc	
+NPC_VSRCS += $(NPC_HOME)/vsrc/*.v
+NPC_CSRCS += $(NPC_HOME)/csrc/main.cpp
+
 insert-arg: image
 	@python $(AM_HOME)/tools/insert-arg.py $(IMAGE).bin $(MAINARGS_MAX_LEN) $(MAINARGS_PLACEHOLDER) "$(mainargs)"
 
@@ -26,6 +31,7 @@ image: image-dep
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: insert-arg
-	echo "TODO: add command here to run simulation"
+#	echo "TODO: add command here to run simulation"
+	$(NPC_HOME)/obj_dir/Vtop $(IMAGE).bin
 
 .PHONY: insert-arg
