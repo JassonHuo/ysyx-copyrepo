@@ -40,7 +40,7 @@ extern "C" int pmem_read(int addr)
   if((uint32_t)addr >= 0x80000000 + MEM_SIZE + 3 || (uint32_t)addr < 0x80000000)
   {
 	printf("Address %08x out of range %08x-%08x, at pc: %08x\n", addr, MEM_SIZE, 0x80000000 + MEM_SIZE, top->pc);
-	exit(1);
+	ebreak();
   }
 //  printf("c read %x, index: %d, pc: %08x\n", mem[((uint32_t)addr - 0x80000000) >> 2], (addr - 0x80000000) >> 2, top->pc);
   return mem[((uint32_t)addr - 0x80000000) >> 2];
@@ -53,7 +53,13 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
   if((uint32_t)waddr >= 0x80000000 + MEM_SIZE + 3 || (uint32_t)waddr < 0x80000000)
   {
 	printf("Address %08x out of range %08x-%08x, at pc: %08x\n", waddr, MEM_SIZE, 0x80000000 + MEM_SIZE, top->pc);
-	exit(1);
+	ebreak();
+  }
+  if(waddr == 0x10000000) 
+  {
+//	putchar(wdata);
+	printf("%c\n", wdata);
+	return;
   }
   if(top->clk)
   {
