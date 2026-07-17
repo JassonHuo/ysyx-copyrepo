@@ -100,7 +100,7 @@ int PRINT(const char* fmt, va_list args)
         int num = va_arg(args, int);
 		unsigned int abs_num = num;
 		int num_sys = (fmt[fmt_pos] == 'd' ? 10: 16);
-        if(num < 0)
+        if(fmt[fmt_pos] == 'd' && num < 0)
 		{
 		  abs_num = ~((unsigned int)num) + 1;
 		  is_nega = 1;
