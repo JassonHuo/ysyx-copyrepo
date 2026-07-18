@@ -26,8 +26,8 @@
 #define MAX_INST_TO_PRINT 10
 #define IRING_SIZE 20
 
-#define RED "033[31m"
-#define RESET "033[0m"
+#define RED "\033[31m"
+#define RESET "\033[0m"
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
