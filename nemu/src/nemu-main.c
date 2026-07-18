@@ -23,7 +23,8 @@ word_t expr();
 
 extern bool div_by_zero;
 //bool make_token();
-
+uint32_t range_start;
+uint32_t range_end;
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
@@ -31,6 +32,11 @@ int main(int argc, char *argv[]) {
   am_init_monitor();
 #else
   init_monitor(argc, argv);
+#endif
+
+#ifdef CONFIG_EN_MTRACE_RANGE
+sscanf(CONFIG_RANGE_START, "%x", &range_start);
+sscanf(CONFIG_RANGE_END, "%x", &range_end);
 #endif
 
 #ifdef CHECK_EVAL
