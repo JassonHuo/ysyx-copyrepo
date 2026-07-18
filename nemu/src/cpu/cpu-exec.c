@@ -41,7 +41,7 @@ void display_iring()
 {
   for(int i = 0; i < IRING_SIZE; i++)
   {
-	if(i == iring_p)
+	if(i == iring_p - 1)
 	{
 	  printf(" -->");
 	if(i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
