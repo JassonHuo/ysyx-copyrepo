@@ -102,7 +102,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 //  printf("inst: %x\n", *(uint8_t *)&s->isa.inst);
 //  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   char tmp[100] = {};
-  sprintf(tmp, "0x%08x: %-30s\t%02x %02x %02x %02x", s->pc, p, inst[3], inst[2], inst[1], inst[0]);
+  sprintf(tmp, "0x%08x: %-30s%02x %02x %02x %02x", s->pc, p, inst[3], inst[2], inst[1], inst[0]);
   memcpy(iringbuf[iring_p ++], tmp, 100);
   iring_p %= IRING_SIZE;
 #endif
