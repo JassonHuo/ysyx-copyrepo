@@ -107,8 +107,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
 //  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   char tmp[100] = {};
   sprintf(tmp, "\t0x%08x: %02x %02x %02x %02x %10s%s", s->pc, inst[3], inst[2], inst[1], inst[0], " ", p);
-  memcpy(iringbuf[iring_p ++], tmp, 100);
-  iring_p %= IRING_SIZE;
+  memcpy(iringbuf[iring_p], tmp, 100);
+  iring_p = (iring_p + 1) % IRING_SIZE;
 #endif
 }
 
