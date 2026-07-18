@@ -11,6 +11,7 @@
 #include <iostream>	
 #include <sstream>
 #include <time.h>
+#include <sys/time.h>
 //#include <device/map.h>
 //#include <am.h>
 
@@ -27,9 +28,11 @@ static VerilatedContext *contextp = new VerilatedContext;
 static VerilatedVcdC* tracep = new VerilatedVcdC;
 static Vtop *top = new Vtop;
 
+static struct timeval tv;
+
 static uint8_t *serial_base = NULL;
 
-static uint32_t start_time;
+static uint64_t start_time;
 
 void ebreak()
 {
@@ -44,13 +47,14 @@ void ebreak()
 
 static inline void time_init()
 {
-  start_time = time(NULL);
+  gettimeofday(&tv, NULL);
+  start_time = tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
-static inline uint32_t get_time()
+static inline uint64_t get_time()
 {
-  printf("%ld\n", time(NULL));
-  return time(NULL) - start_time;
+  gettimeofday(&tv, NULL);
+  return tv.tv_sec * 1000000 + tv.tv_usec - start_time;
 }
 
 extern "C" int pmem_read(int addr)
@@ -66,6 +70,8 @@ extern "C" int pmem_read(int addr)
 //  printf("c read %x, index: %d, pc: %08x\n", mem[((uint32_t)addr - 0x80000000) >> 2], (addr - 0x80000000) >> 2, top->pc);
 //  if(addr == 0xa0000048) return get_time();
   if(addr == 0x10000000) return 0;
+  else if(addr == 0x10000048) return (uint32_t)get_time();
+  else if(addr == 0x1000004c) return get_time() >> 32;
   return mem[((uint32_t)addr - 0x80000000) >> 2];
 //  return mem[addr >> 2];
 }
@@ -95,7 +101,9 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	if(waddr > 0x87ffffff || waddr < 0x80000000)
 	  printf("%08x\n", waddr);
 	  */
-	if(waddr == 0x10000000)
+	if(waddr == 0x10000048) return;
+	else if(waddr == 0x1000004c) return;
+	else if(waddr == 0x10000000)
 	{
       putchar(wdata);
 	  fflush(stdout);
@@ -158,8 +166,8 @@ int main(int argc, char** argv) {
   //mem[5] = 0x90abcdef;
 
   printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
-  printf(BLUE "Open device serial at [0x10000000, ]" RESET "\n");
-  printf(BLUE "Open device rtc at []" RESET "\n");
+  printf(BLUE "Open device serial at [0x10000000, 0x10000004]" RESET "\n");
+  printf(BLUE "Open device rtc at [0x10000048, 0x1000004f]" RESET "\n");
 
   if(argc == 1)
   {
@@ -257,11 +265,12 @@ int main(int argc, char** argv) {
   }
   top->rst = 0;
 
-  contextp->traceEverOn(true);
-  top->trace(tracep, 99);
-  tracep->open("wave.vcd");
+//  contextp->traceEverOn(true);
+ // top->trace(tracep, 99);
+//  tracep->open("wave.vcd");
   top->rst = 0;
   uint64_t cycle_num = 0;
+  time_init();
   while(!contextp->gotFinish() && !ebreak_happened)
   {
 //	printf("mem[82935] = %08x, before pc: %08x\n", mem[82935], top->pc);
@@ -270,13 +279,13 @@ int main(int argc, char** argv) {
 //	top->inst = pmem_read(top->pc);
 //	printf("%x\n", top->pc);
 	top->eval();
-	tracep->dump(contextp->time());
-	contextp->timeInc(1);
+//	tracep->dump(contextp->time());
+//	contextp->timeInc(1);
 	if(ebreak_happened)break;
 	top->clk = 1;
 	top->eval();
-	tracep->dump(contextp->time());
-	contextp->timeInc(1);
+//	tracep->dump(contextp->time());
+//	contextp->timeInc(1);
 //	printf("mem[82935] = %08x, after pc: %08x\n", mem[82935], top->pc);
 	/*
 	if(mem[top->inst_addr >> 2] == 0)
@@ -291,7 +300,7 @@ int main(int argc, char** argv) {
 	cycle_num ++;
 //	printf("%08x\n", top->pc);
   }
-  tracep->close();
+ // tracep->close();
   delete top;
 //  std::cout << cycle_num <<std::endl;
   return top->a0;
