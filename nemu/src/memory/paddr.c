@@ -18,6 +18,11 @@
 #include <device/mmio.h>
 #include <isa.h>
 
+#ifdef CONFIG_EN_MTRACE_RANGE
+extern uint32_t range_start;
+extern uint32_t range_end;
+#endif
+
 #if   defined(CONFIG_PMEM_MALLOC)
 static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
@@ -53,10 +58,16 @@ void init_mem() {
 
 word_t paddr_read(paddr_t addr, int len) {
 #ifdef CONFIG_MTRACE
+#ifdef CONFIG_EN_MTRACE_RANGE
+  if(addr >= range_start && addr <= range_end){
+#endif
   if(len == 1)
 	printf("read memory at addr 0x%08x\n", (word_t)addr);
   else
 	printf("read memory from addr 0x%08x to 0x%08x\n", (word_t)addr, (word_t)(addr + len - 1));
+#ifdef CONFIG_EN_MTRACE_RANGE
+  }
+#endif
 #endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
@@ -66,10 +77,16 @@ word_t paddr_read(paddr_t addr, int len) {
 
 void paddr_write(paddr_t addr, int len, word_t data) {
 #ifdef CONFIG_MTRACE
+#ifdef CONFIG_EN_MTRACE_RANGE
+  if(addr >= range_start && addr <= range_end){
+#endif
   if(len == 1)
 	printf("write memory at addr 0x%08x\n", (word_t)addr);
   else
 	printf("write memory from addr	0x%08x to 0x%08x\n", (word_t)addr, (word_t)(addr + len - 1));
+#ifdef CONFIG_EN_MTRACE_RANGE
+  }
+#endif
 #endif
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);

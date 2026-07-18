@@ -156,6 +156,20 @@ config MTRACE
   bool "Enable memory tracer"
   default y
 
+config EN_MTRACE_RANGE
+  depends on MTRACE
+  bool "Set range of memory tracer"
+  default n
+
+config RANGE_START
+  depends on EN_MTRACE_RANGE
+  string "Start"
+  default "0x80000000"
+config RANGE_END
+  depends on EN_MTRACE_RANGE
+  string "End"
+  default "0x87ffffff"
+
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF
@@ -168,6 +182,7 @@ config DIFFTEST
 config WATCHPOINT
   bool "Enable watchpoint"
   default y
+
 
 choice
   prompt "Reference design"
