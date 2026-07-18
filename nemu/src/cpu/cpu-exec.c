@@ -47,7 +47,7 @@ void display_iring()
 	if(i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
 	  break;
 	}
-	printf("%s\n", iringbuf[i]);
+	printf("%d %s\n", i, iringbuf[i]);
   }
 }
 
