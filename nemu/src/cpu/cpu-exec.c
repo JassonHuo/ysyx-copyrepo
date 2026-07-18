@@ -24,6 +24,10 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10
+#define IRING_SIZE 20
+
+#define RED "\033[31m"
+#define RESET "\033[0m"
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -33,15 +37,23 @@ static bool g_print_step = false;
 void device_update();
 uint32_t trace_wp();
 
-/*
-char Queue[20][100];
-word_t pc_Queue[20];
-uint32_t code_Queue[20];
-int qu_size = 20;
-int head = 0, tail = 0;
-*/
+static char iringbuf[IRING_SIZE][100] = {0};
+static int iring_p = 0;
 
-//static void manage_queue(Decode *s);
+void display_iring()
+{
+  int flag = 1;
+  for(int i = 0; (flag && i < IRING_SIZE); i++)
+  {
+	if(i == (iring_p - 1 + IRING_SIZE) % IRING_SIZE)
+	{
+	  printf(RED " -->");
+	if(i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
+	  flag = 0;
+	}
+	printf("%s" RESET "\n", iringbuf[i]);
+  }
+}
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -67,7 +79,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
 //  printf("%08x %08x\n", s->pc, s->isa.inst);
   //printf("%d, %d, %d\n", pc, snpc, ilen);
   isa_exec_once(s);
-//  manage_queue(s);
   
 //  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
@@ -98,56 +109,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
 //  printf("inst: %x\n", *(uint8_t *)&s->isa.inst);
 //  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
+  char tmp[100] = {};
+  sprintf(tmp, "\t0x%08x: %02x %02x %02x %02x %10s%s", s->pc, inst[3], inst[2], inst[1], inst[0], " ", p);
+  memcpy(iringbuf[iring_p], tmp, 100);
+  iring_p = (iring_p + 1) % IRING_SIZE;
 #endif
 }
 
-/*
-static void inQueue(char *inst, word_t pc, uint32_t code)
-{
-  if(head == (tail + 1) % qu_size)
-	head = (head + 1) % qu_size;
-//  memcpy(Queue[tail], inst, 100);
-  for(int i = 0; i < 100; i ++)
-  {
-	if(inst[i] == '\0')
-	  break;
-	Queue[tail][i] = inst[i];
-  }
-  pc_Queue[tail] = pc;
-  code_Queue[tail] = code;
-  tail = (tail + 1) % qu_size;
-}
-static void manage_queue(Decode *s)
-{
-  word_t pc = s->pc;
-  uint8_t *inst = (uint8_t*)&s->isa.inst;
-  int ilen = s->snpc - s->pc;
-  char inst_str[100];
-  char *p = inst_str;
-//  char inst_dis[50];
-  for(int i = ilen - 1; i >= 0; i --)
-  {
-	p += snprintf(p, 4, " %02x", inst[i]);
-  }
-  inQueue(inst_str, pc, s->isa.inst);
-//  printf("%s\n", inst_dis);
-}
-
-static void display_inst()
-{
-  int ilen = 4;
-  for(int i = head; i != tail; )
-  {
-	char inst_dis[50];
-	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-	disassemble(inst_dis, 50, pc_Queue[i], (uint8_t*)(code_Queue + i), ilen);
-	if(i == tail - 1)
-	  printf("  -->\033[31m");
-	printf("\t0x%08x: %-20s%s\033[0m\n", pc_Queue[i], Queue[i], inst_dis);
-	i = (i + 1) % qu_size;
-  }
-}
-*/
 
 static void execute(uint64_t n) {
   Decode s;
@@ -155,10 +123,8 @@ static void execute(uint64_t n) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
-	/*
 	if (nemu_state.state == NEMU_ABORT || (nemu_state.state != NEMU_RUNNING && nemu_state.halt_ret))
-	  display_inst();
-	  */
+	  display_iring();
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
