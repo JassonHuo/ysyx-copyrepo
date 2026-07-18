@@ -26,6 +26,9 @@
 #define MAX_INST_TO_PRINT 10
 #define IRING_SIZE 20
 
+#define RED "033[31m"
+#define RESET "033[0m"
+
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
@@ -44,11 +47,11 @@ void display_iring()
   {
 	if(i == (iring_p - 1 + IRING_SIZE) % IRING_SIZE)
 	{
-	  printf(" -->");
+	  printf(RED " -->");
 	if(i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
 	  flag = 0;
 	}
-	printf("%s\n", iringbuf[i]);
+	printf("%s" RESET "\n", iringbuf[i]);
   }
 }
 
