@@ -89,8 +89,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
 //  printf("inst: %x\n", *(uint8_t *)&s->isa.inst);
 //  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
-  char tmp[100] = {};
-  printf("\t0x%08x: %-20s%02x %02x %02x %02x", s->pc, p, code[0], code[1], code[2], code[3]);
+//  char tmp[100] = {};
+  printf("\t0x%08x: %-20s%02x %02x %02x %02x", s->pc, p, inst[0], inst[1], inst[2], inst[3]);
 #endif
 }
 
