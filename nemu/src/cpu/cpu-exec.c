@@ -34,8 +34,18 @@ static bool g_print_step = false;
 void device_update();
 uint32_t trace_wp();
 
-static char iringbuf[IRING_SIZE][100];
+static char iringbuf[IRING_SIZE][100] = {0};
 static int iring_p = 0;
+
+void display_iring()
+{
+  for(int i = 0; i < IRING_SIZE; i++)
+  {
+	if(i == iring_p && i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
+	  break;
+	printf("%s\n", iringbuf[i]);
+  }
+}
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -105,10 +115,8 @@ static void execute(uint64_t n) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
-	/*
 	if (nemu_state.state == NEMU_ABORT || (nemu_state.state != NEMU_RUNNING && nemu_state.halt_ret))
-	  display_inst();
-	  */
+	  display_iring();
     if (nemu_state.state != NEMU_RUNNING) break;
     IFDEF(CONFIG_DEVICE, device_update());
   }
