@@ -33,7 +33,8 @@ static bool g_print_step = false;
 void device_update();
 uint32_t trace_wp();
 
-//static char iringbuf[20][100];
+static char iringbuf[20][100];
+static int iring_p = 0;
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -89,8 +90,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
       MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst, ilen);
 //  printf("inst: %x\n", *(uint8_t *)&s->isa.inst);
 //  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
-//  char tmp[100] = {};
-  printf("\t0x%08x: %-20s%02x %02x %02x %02x", s->pc, p, inst[0], inst[1], inst[2], inst[3]);
+  char tmp[100] = {};
+  sprintf(tmp, "\t0x%08x: %-20s%02x %02x %02x %02x", s->pc, p, inst[3], inst[2], inst[1], inst[0]);
+  memcpy(iringbuf[iring_p ++], tmp, 100);
 #endif
 }
 
