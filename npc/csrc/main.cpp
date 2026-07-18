@@ -29,7 +29,7 @@ static Vtop *top = new Vtop;
 
 static uint8_t *serial_base = NULL;
 
-static uint32_t start_time;
+static uint64_t start_time;
 
 void ebreak()
 {
@@ -47,7 +47,7 @@ static inline void time_init()
   start_time = time(NULL);
 }
 
-static inline uint32_t get_time()
+static inline uint64_t get_time()
 {
   printf("%ld\n", time(NULL));
   return time(NULL) - start_time;
@@ -64,7 +64,12 @@ extern "C" int pmem_read(int addr)
   }
   */
 //  printf("c read %x, index: %d, pc: %08x\n", mem[((uint32_t)addr - 0x80000000) >> 2], (addr - 0x80000000) >> 2, top->pc);
-  if(addr == 0xa0000048) return get_time();
+//  if(addr == 0xa0000048) return get_time();
+  if(addr > 0x87ffffff || addr < 0x80000000)
+	printf("%08x\n", addr);
+  else if(addr == 0x10000000) return 0;
+  else if(addr == 0x10000010) return (uint32_t)get_time();
+  else if(addr == 0x10000014) return get_time() >> 32;
   return mem[((uint32_t)addr - 0x80000000) >> 2];
 //  return mem[addr >> 2];
 }
@@ -157,8 +162,8 @@ int main(int argc, char** argv) {
   //mem[5] = 0x90abcdef;
 
   printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
-  printf(BLUE "Open device serial at [0x10000000, ]" RESET "\n");
-  printf(BLUE "Open device rtc at []" RESET "\n");
+  printf(BLUE "Open device serial at [0x10000000, 0x10000000]" RESET "\n");
+  printf(BLUE "Open device rtc at [0x10000010]" RESET "\n");
 
   if(argc == 1)
   {

@@ -1,5 +1,6 @@
 TOPNAME = top
 NXDC_FILE = constr/top.nxdc
+#INC_PATH += $(AM_HOME)/am/src/riscv/riscv.h
 INC_PATH ?= 
 
 include ../Makefile 
