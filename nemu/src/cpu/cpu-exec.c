@@ -41,8 +41,12 @@ void display_iring()
 {
   for(int i = 0; i < IRING_SIZE; i++)
   {
-	if(i == iring_p && i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
+	if(i == iring_p)
+	{
+	  printf(" -->");
+	if(i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
 	  break;
+	}
 	printf("%s\n", iringbuf[i]);
   }
 }
@@ -102,7 +106,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 //  printf("inst: %x\n", *(uint8_t *)&s->isa.inst);
 //  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   char tmp[100] = {};
-  sprintf(tmp, "0x%08x: %02x %02x %02x %02x %10s%s", s->pc, inst[3], inst[2], inst[1], inst[0], " ", p);
+  sprintf(tmp, "\t0x%08x: %02x %02x %02x %02x %10s%s", s->pc, inst[3], inst[2], inst[1], inst[0], " ", p);
   memcpy(iringbuf[iring_p ++], tmp, 100);
   iring_p %= IRING_SIZE;
 #endif
