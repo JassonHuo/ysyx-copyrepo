@@ -68,6 +68,12 @@ config TARGET_AM
   bool "Application on Abstract-Machine (DON'T CHOOSE)"
 endchoice
 
+config WATCHPOINT
+  bool "Enable watch poitn"
+  default y
+  help
+	If enable, watch point feature will be on.
+
 menu "Build Options"
 choice
   prompt "Compiler"
