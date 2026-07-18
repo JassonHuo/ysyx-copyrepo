@@ -39,13 +39,14 @@ static int iring_p = 0;
 
 void display_iring()
 {
-  for(int i = 0; i < IRING_SIZE; i++)
+  int flag = 1;
+  for(int i = 0; (flag && i < IRING_SIZE); i++)
   {
 	if(i == (iring_p - 1 + IRING_SIZE) % IRING_SIZE)
 	{
 	  printf(" -->");
 	if(i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
-	  break;
+	  flag = 0;
 	}
 	printf("i = %d p = %d %s\n", i, iring_p, iringbuf[i]);
   }
