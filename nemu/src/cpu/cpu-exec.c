@@ -24,6 +24,7 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10
+#define IRING_SIZE 20
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
@@ -33,7 +34,7 @@ static bool g_print_step = false;
 void device_update();
 uint32_t trace_wp();
 
-static char iringbuf[20][100];
+static char iringbuf[IRING_SIZE][100];
 static int iring_p = 0;
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
@@ -93,6 +94,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   char tmp[100] = {};
   sprintf(tmp, "\t0x%08x: %-20s%02x %02x %02x %02x", s->pc, p, inst[3], inst[2], inst[1], inst[0]);
   memcpy(iringbuf[iring_p ++], tmp, 100);
+  iring_p %= IRING_SIZE;
 #endif
 }
 
