@@ -81,7 +81,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   isa_exec_once(s);
   
 //  printf("%08x, %08x\n", s->pc, s->snpc);
-  printf("p = %d\n", iring_p);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
