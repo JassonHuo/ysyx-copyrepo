@@ -174,8 +174,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
-  uint32_t full_inst = s->isa.inst;
-  uint8_t *inst = (uint8_t *)&full_inst;
+  uint8_t *inst = (uint8_t *)&s->isa.inst;
 #ifdef CONFIG_ISA_x86
 //  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   for (i = 0; i < ilen; i ++) {
@@ -202,6 +201,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   memcpy(iringbuf[iring_p], tmp, 100);
   iring_p = (iring_p + 1) % IRING_SIZE;
 
+  /*
 #ifdef CONFIG_FTRACE
   uint8_t opcode = full_inst & 0x7f;
   char fb_tmp[100] = {0};
@@ -230,8 +230,39 @@ static void exec_once(Decode *s, vaddr_t pc) {
   }
   printf("%s\n", fb_tmp);
 #endif
+*/
 
 //  p += snprintf(p, 2, "\n");
+#endif
+
+#ifdef CONFIG_FTRACE
+  uint32_t full_inst = s->isa.inst;
+  uint8_t opcode = full_inst & 0x7f;
+  char fb_tmp[100] = {0};
+  uint8_t rd = (full_inst >> 12) & 0x1f;
+//  uint8_t rs1 = (full_inst >> 15) & 0x1f;
+  if(opcode == 0b1101111 && rd == 1)
+  {
+	uint32_t imm = (((int32_t)full_inst >> 30) << 20) | (((full_inst >> 12) & 0xff) << 12) | (((full_inst >> 20) & 0x1) << 11) | (((full_inst >> 21) & 0x3ff) << 1);
+	int fun = 0;
+	uint32_t tar_addr = imm + pc;
+	for(fun = 0; fun < fun_top; fun++)
+	{
+	  if(tar_addr >= functs[fun].addr && tar_addr < functs[fun].addr + functs[fun].size)
+		break;
+	}
+	if(fun == fun_top)
+	{
+	  printf("Unknown function\n");
+	  exit(1);
+	}
+	int p = 0;
+	p += sprintf(fb_tmp, "%08x:-", s->pc);
+	for(int i = 0; i < layer; i++) p += sprintf(fb_tmp + p, "--");
+	p += sprintf(fb_tmp + p, "call [%s@%08x]\n", functs[fun].func_name, functs[fun].addr);
+	layer ++;
+  }
+  printf("%s\n", fb_tmp);
 #endif
 }
 
