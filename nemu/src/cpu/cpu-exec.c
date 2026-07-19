@@ -57,6 +57,8 @@ void init_elf(char *elf_file)
   Elf32_Ehdr Ehdr;
   Assert(fread(&Ehdr, sizeof(Elf32_Ehdr), 1, elf_fp) == 1, "Read error at %s %d", __FILE__, __LINE__);
 
+  printf("test\n");
+
   Elf32_Shdr *Shdr = NULL;
   fseek(elf_fp, Ehdr.e_shoff, SEEK_SET);
   Assert(fread(Shdr, Ehdr.e_shentsize, Ehdr.e_shnum, elf_fp) == Ehdr.e_shnum, "Read error at %s %d", __FILE__, __LINE__);
