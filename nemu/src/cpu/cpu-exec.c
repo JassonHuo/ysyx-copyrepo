@@ -236,6 +236,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 
 #ifdef CONFIG_FTRACE
+  printf("test2");
   uint32_t full_inst = s->isa.inst;
   uint8_t opcode = full_inst & 0x7f;
   char fb_tmp[100] = {0};
@@ -244,7 +245,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   if(opcode == 0b1101111 && rd == 1)
   {
 	uint32_t imm = (((int32_t)full_inst >> 30) << 20) | (((full_inst >> 12) & 0xff) << 12) | (((full_inst >> 20) & 0x1) << 11) | (((full_inst >> 21) & 0x3ff) << 1);
-	printf("%d\n", imm);
 	int fun = 0;
 	uint32_t tar_addr = imm + pc;
 	for(fun = 0; fun < fun_top; fun++)
