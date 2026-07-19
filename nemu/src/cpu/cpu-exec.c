@@ -236,11 +236,10 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 
 #ifdef CONFIG_FTRACE
-  printf("test2");
   uint32_t full_inst = s->isa.inst;
   uint8_t opcode = full_inst & 0x7f;
   char fb_tmp[100] = {0};
-  uint8_t rd = (full_inst >> 12) & 0x1f;
+  uint8_t rd = (full_inst >> 7) & 0x1f;
 //  uint8_t rs1 = (full_inst >> 15) & 0x1f;
   if(opcode == 0b1101111 && rd == 1)
   {
