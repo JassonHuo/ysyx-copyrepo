@@ -98,6 +98,8 @@ void init_elf(char *elf_file)
 	  fun_top++;
 	}
   }
+  for(int i = 0; i < fun_top; i++)
+	printf("%s, %08x, %d\n", fs[i].func_name, fs[i].addr, fs[i].size);
 #endif
 }
 
