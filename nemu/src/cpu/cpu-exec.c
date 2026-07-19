@@ -37,7 +37,7 @@ typedef struct FUNC
 {
   uint32_t addr;
   int size;
-  char func_name[100];
+  char func_name[30];
 } FUNC;
 FILE *elf_fp = NULL;
 
@@ -204,7 +204,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 
 #ifdef CONFIG_FTRACE
   uint8_t opcode = full_inst & 0x7f;
-//  char fb_tmp[100];
+  char fb_tmp[100] = {0};
   uint8_t rd = (full_inst >> 12) & 0x1f;
 //  uint8_t rs1 = (full_inst >> 15) & 0x1f;
   if(opcode == 0b1101111 && rd == 1)
@@ -222,11 +222,13 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	  printf("Unknown function\n");
 	  exit(1);
 	}
-	printf("%08x:-", s->pc);
-	for(int i = 0; i < layer; i++) printf("--");
-	printf("call [%s@%08x]\n", functs[fun].func_name, functs[fun].addr);
+	int p = 0;
+	p += sprintf(fb_tmp, "%08x:-", s->pc);
+	for(int i = 0; i < layer; i++) p += sprintf(fb_tmp + p, "--");
+	p += sprintf(fb_tmp + p, "call [%s@%08x]\n", functs[fun].func_name, functs[fun].addr);
 	layer ++;
   }
+  printf("%s\n", fb_tmp);
 #endif
 
 //  p += snprintf(p, 2, "\n");
