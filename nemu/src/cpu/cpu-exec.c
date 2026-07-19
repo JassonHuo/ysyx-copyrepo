@@ -74,6 +74,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
 }
 
+//static int layer = 0;
+
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
@@ -114,6 +116,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   sprintf(tmp, "\t0x%08x: %02x %02x %02x %02x %10s%s", s->pc, inst[3], inst[2], inst[1], inst[0], " ", p);
   memcpy(iringbuf[iring_p], tmp, 100);
   iring_p = (iring_p + 1) % IRING_SIZE;
+
 //  p += snprintf(p, 2, "\n");
 #endif
 }
