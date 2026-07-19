@@ -31,6 +31,7 @@
 #define RED "\033[31m"
 #define RESET "\033[0m"
 
+#ifdef CONFIG_FTRACE
 typedef struct FUNC
 {
   uint32_t addr;
@@ -41,9 +42,11 @@ FILE *elf_fp = NULL;
 
 FUNC *functs = NULL;
 int fun_top = 0;
+#endif
 
 void init_elf(char *elf_file)
 {
+#ifdef CONFIG_FTRACE
   elf_fp = fopen(elf_file, "rb");
   if(!elf_fp)
   {
@@ -92,6 +95,7 @@ void init_elf(char *elf_file)
 	  fun_top++;
 	}
   }
+#endif
 }
 
 CPU_state cpu = {};
