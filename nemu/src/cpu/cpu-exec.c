@@ -45,10 +45,9 @@ int fun_top = 0;
 void init_elf(char *elf_file)
 {
   elf_fp = fopen(elf_file, "rb");
-  printf("%s\n", elf_file);
   if(!elf_fp)
   {
-	printf("Elf file open fail, try again\n");
+	printf("Elf file %s open fail, try again\n", elf_file);
 	exit(1);
   }
   Elf32_Ehdr Ehdr;
