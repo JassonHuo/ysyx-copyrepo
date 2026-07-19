@@ -27,6 +27,7 @@
  */
 #define MAX_INST_TO_PRINT 10
 #define IRING_SIZE 20
+#define FB_SIZE 100
 
 #define RED "\033[31m"
 #define RESET "\033[0m"
@@ -42,12 +43,24 @@ FILE *elf_fp = NULL;
 
 FUNC *functs = NULL;
 int fun_top = 0;
+char ftrace_buffer[FB_SIZE][100];
+int fb_head = 0;
+int fb_tail = 0;
+static int layer = 0;
+
+void fb_inQue(char *str)
+{
+  memcpy(ftrace_buffer[fb_tail], str, 100);
+  fb_tail = (fb_tail + 1) % FB_SIZE;
+  if(fb_tail == fb_head)
+	fb_head = (fb_head + 1) % FB_SIZE;
+}
 #endif
 
 void init_elf(char *elf_file)
 {
 #ifdef CONFIG_FTRACE
-  Log("\033[34m[src/monitor/monitor.c:63 load_elf] The image is %s", elf_file);
+  Log("\033[34mThe image is %s", elf_file);
   elf_fp = fopen(elf_file, "rb");
   if(!elf_fp)
   {
@@ -57,8 +70,10 @@ void init_elf(char *elf_file)
   Elf32_Ehdr Ehdr;
   Assert(fread(&Ehdr, sizeof(Elf32_Ehdr), 1, elf_fp) == 1, "Read error at %s %d", __FILE__, __LINE__);
 
+
   Elf32_Shdr *Shdr = NULL;
   fseek(elf_fp, Ehdr.e_shoff, SEEK_SET);
+  Shdr = (Elf32_Shdr *)malloc(Ehdr.e_shentsize * Ehdr.e_shnum);
   Assert(fread(Shdr, Ehdr.e_shentsize, Ehdr.e_shnum, elf_fp) == Ehdr.e_shnum, "Read error at %s %d", __FILE__, __LINE__);
 
   Elf32_Shdr strtab = Shdr[Ehdr.e_shstrndx - 1];
@@ -159,7 +174,8 @@ static void exec_once(Decode *s, vaddr_t pc) {
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
-  uint8_t *inst = (uint8_t *)&s->isa.inst;
+  uint32_t full_inst = s->isa.inst;
+  uint8_t *inst = (uint8_t *)&full_inst;
 #ifdef CONFIG_ISA_x86
 //  printf("%08x, %08x, %d\n", s->pc, s->snpc, ilen);
   for (i = 0; i < ilen; i ++) {
@@ -185,6 +201,33 @@ static void exec_once(Decode *s, vaddr_t pc) {
   sprintf(tmp, "\t0x%08x: %02x %02x %02x %02x %10s%s", s->pc, inst[3], inst[2], inst[1], inst[0], " ", p);
   memcpy(iringbuf[iring_p], tmp, 100);
   iring_p = (iring_p + 1) % IRING_SIZE;
+
+#ifdef CONFIG_FTRACE
+  uint8_t opcode = full_inst & 0x7f;
+//  char fb_tmp[100];
+  uint8_t rd = (full_inst >> 12) & 0x1f;
+//  uint8_t rs1 = (full_inst >> 15) & 0x1f;
+  if(opcode == 0b1101111 && rd == 1)
+  {
+	uint32_t imm = (((int32_t)full_inst >> 30) << 20) | (((full_inst >> 12) & 0xff) << 12) | (((full_inst >> 20) & 0x1) << 11) | (((full_inst >> 21) & 0x3ff) << 1);
+	int fun = 0;
+	uint32_t tar_addr = imm + pc;
+	for(fun = 0; fun < fun_top; fun++)
+	{
+	  if(tar_addr >= functs[fun].addr && tar_addr < functs[fun].addr + functs[fun].size)
+		break;
+	}
+	if(fun == fun_top)
+	{
+	  printf("Unknown function\n");
+	  exit(1);
+	}
+	printf("%08x:-", s->pc);
+	for(int i = 0; i < layer; i++) printf("--");
+	printf("call [%s@%08x]\n", functs[fun].func_name, functs[fun].addr);
+	layer ++;
+  }
+#endif
 
 //  p += snprintf(p, 2, "\n");
 #endif
