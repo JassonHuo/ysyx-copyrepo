@@ -24,7 +24,9 @@ word_t expr();
 extern bool div_by_zero;
 //bool make_token();
 uint32_t range_start;
+
 uint32_t range_end;
+
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
