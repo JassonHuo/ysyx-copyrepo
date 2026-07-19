@@ -257,6 +257,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	  exit(1);
 	}
 	int p = 0;
+	printf("test\n");
 	p += sprintf(fb_tmp, "%08x:-", s->pc);
 	for(int i = 0; i < layer; i++) p += sprintf(fb_tmp + p, "--");
 	p += sprintf(fb_tmp + p, "call [%s@%08x]\n", functs[fun].func_name, functs[fun].addr);
