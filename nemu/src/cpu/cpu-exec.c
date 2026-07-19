@@ -262,7 +262,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	p += sprintf(fb_tmp + p, "call [%s@%08x]\n", functs[fun].func_name, functs[fun].addr);
 	layer ++;
   }
-  //printf("%s\n", fb_tmp);
+  printf("%s\n", fb_tmp);
 #endif
 }
 
