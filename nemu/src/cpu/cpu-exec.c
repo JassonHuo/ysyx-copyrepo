@@ -47,7 +47,7 @@ int fun_top = 0;
 void init_elf(char *elf_file)
 {
 #ifdef CONFIG_FTRACE
-  Log("\033[34m[src/monitor/monitor.c:63 load_elf] The image is %s", elf_file);
+  Log("\033[34mThe image is %s", elf_file);
   elf_fp = fopen(elf_file, "rb");
   if(!elf_fp)
   {
