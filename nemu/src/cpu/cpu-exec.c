@@ -18,6 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 #include <elf.h>
+#include <assert.h>
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -29,6 +30,69 @@
 
 #define RED "\033[31m"
 #define RESET "\033[0m"
+
+typedef struct FUNC
+{
+  uint32_t addr;
+  int size;
+  char func_name[100];
+} FUNC;
+FILE *elf_fp = NULL;
+
+FUNC *functs = NULL;
+int fun_top = 0;
+
+void init_elf(char *elf_file)
+{
+  elf_fp = fopen(elf_file, "rb");
+  if(!elf_fp)
+  {
+	printf("Elf file open fail, try again\n");
+	exit(1);
+  }
+  Elf32_Ehdr Ehdr;
+  Assert(fread(&Ehdr, sizeof(Elf32_Ehdr), 1, elf_fp) == 1, "Read error at %s %d", __FILE__, __LINE__);
+
+  Elf32_Shdr *Shdr = NULL;
+  fseek(elf_fp, Ehdr.e_shoff, SEEK_SET);
+  Assert(fread(Shdr, Ehdr.e_shentsize, Ehdr.e_shnum, elf_fp) == Ehdr.e_shnum, "Read error at %s %d", __FILE__, __LINE__);
+
+  Elf32_Shdr strtab = Shdr[Ehdr.e_shstrndx - 1];
+  char *str_array = (char *)malloc(strtab.sh_size);
+  fseek(elf_fp, strtab.sh_offset, SEEK_SET);
+  Assert(fread(str_array, strtab.sh_size, 1, elf_fp) == 1, "Read error at %s %d", __FILE__, __LINE__);
+
+  int sym_length = 0;
+  Elf32_Sym *sym = NULL;
+
+  for(int i = 0; i < Ehdr.e_shnum; i++)
+  {
+	if(Shdr[i].sh_type == SHT_SYMTAB)
+	{
+	  sym_length = Shdr[i].sh_size / sizeof(Elf32_Sym);
+	  sym = (Elf32_Sym *)malloc(Shdr[i].sh_size);
+	  fseek(elf_fp, Shdr[i].sh_offset, SEEK_SET);
+	  Assert(fread(sym, sizeof(Elf32_Sym), sym_length, elf_fp) == sym_length, "Read error at %s %d", __FILE__, __LINE__);
+	  break;
+	}
+  }
+
+  FUNC* fs = (FUNC*)malloc(sym_length * sizeof(FUNC));
+  for(int i = 0; i < sym_length; i++)
+  {
+	if(ELF32_ST_TYPE(sym[i].st_info) == STT_FUNC)
+	{
+	  char *p = &str_array[sym[i].st_name];
+	  int tmp_pos = 0;
+	  fs[fun_top].addr = sym[i].st_value;
+	  fs[fun_top].size = sym[i].st_size;
+	  while(*p != 0)
+		fs[fun_top].func_name[tmp_pos++] = *p++;
+	  fs[fun_top].func_name[tmp_pos] = '\0';
+	  fun_top++;
+	}
+  }
+}
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
