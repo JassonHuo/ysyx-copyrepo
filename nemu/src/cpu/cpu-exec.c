@@ -62,6 +62,7 @@ void init_elf(char *elf_file)
   fseek(elf_fp, Ehdr.e_shoff, SEEK_SET);
   Assert(fread(Shdr, Ehdr.e_shentsize, Ehdr.e_shnum, elf_fp) == Ehdr.e_shnum, "Read error at %s %d", __FILE__, __LINE__);
 
+  printf("test\n");
   Elf32_Shdr strtab = Shdr[Ehdr.e_shstrndx - 1];
   char *str_array = (char *)malloc(strtab.sh_size);
   fseek(elf_fp, strtab.sh_offset, SEEK_SET);
@@ -74,7 +75,6 @@ void init_elf(char *elf_file)
   {
 	if(Shdr[i].sh_type == SHT_SYMTAB)
 	{
-  printf("test\n");
 	  sym_length = Shdr[i].sh_size / sizeof(Elf32_Sym);
 	  sym = (Elf32_Sym *)malloc(Shdr[i].sh_size);
 	  fseek(elf_fp, Shdr[i].sh_offset, SEEK_SET);
