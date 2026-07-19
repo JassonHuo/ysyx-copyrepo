@@ -60,9 +60,8 @@ void init_elf(char *elf_file)
 
   Elf32_Shdr *Shdr = NULL;
   fseek(elf_fp, Ehdr.e_shoff, SEEK_SET);
-  printf("test1\n");
+  Shdr = (Elf32_Shdr *)malloc(Ehdr.e_shentsize * Ehdr.e_shnum);
   Assert(fread(Shdr, Ehdr.e_shentsize, Ehdr.e_shnum, elf_fp) == Ehdr.e_shnum, "Read error at %s %d", __FILE__, __LINE__);
-  printf("test2\n");
 
   Elf32_Shdr strtab = Shdr[Ehdr.e_shstrndx - 1];
   char *str_array = (char *)malloc(strtab.sh_size);
