@@ -27,7 +27,7 @@
  */
 #define MAX_INST_TO_PRINT 10
 #define IRING_SIZE 20
-#define FB_SIZE 100
+#define FB_SIZE 300
 
 #define RED "\033[31m"
 #define RESET "\033[0m"
@@ -164,6 +164,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
 }
 
+#ifdef CONFIG_FTRACE
 #define FUNCTION_MATCH do{\
 	for(fun = 0; fun < fun_top; fun++)\
 	{\
@@ -176,6 +177,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	  exit(1);\
 	} \
 }while(0)
+#endif
 
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
@@ -248,19 +250,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
 		exit(1);
 	  }
 	}
-	/*
-	int fun = 0;
-	for(fun = 0; fun < fun_top; fun++)
-	{
-	  if(tar_addr >= functs[fun].addr && tar_addr < functs[fun].addr + functs[fun].size)
-		break;
-	}
-	if(fun == fun_top)
-	{
-	  printf("Unknown function\n");
-	  exit(1);
-	} 
-	*/
 	FUNCTION_MATCH;
 	int p = 0;
 	p += sprintf(fb_tmp, "%08x:-", s->pc);
