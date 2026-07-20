@@ -211,7 +211,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	}\
 	FUNCTION_MATCH;\
 	int p = 0;\
-	p += sprintf(fb_tmp, "%08x:-", s->pc);\
+	p += sprintf(fb_tmp, "0x%08x:-", s->pc);\
 	for(int i = 0; i < layer; i++) p += sprintf(fb_tmp + p, "--");\
 	p += sprintf(fb_tmp + p, "call [%s@%08x]", functs[fun].func_name, functs[fun].addr);\
 	layer ++;\
@@ -226,7 +226,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	  uint32_t tar_addr = s->pc;\
 	  FUNCTION_MATCH;\
 	  int p = 0;\
-	  p += sprintf(fb_tmp, "%08x:-", s->pc);\
+	  p += sprintf(fb_tmp, "0x%08x:-", s->pc);\
 	  for(int i = 0; i < layer; i ++) p += sprintf(fb_tmp + p,  "--");\
 	  p += sprintf(fb_tmp + p, "ret [%s]", functs[fun].func_name);\
 	  fb_inQue(fb_tmp);\
