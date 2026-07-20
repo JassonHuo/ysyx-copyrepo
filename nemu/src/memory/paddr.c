@@ -18,6 +18,9 @@
 #include <device/mmio.h>
 #include <isa.h>
 
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
+
 #ifdef CONFIG_EN_MTRACE_RANGE
 extern uint32_t range_start;
 extern uint32_t range_end;
@@ -27,6 +30,31 @@ extern uint32_t range_end;
 static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
+#endif
+
+#ifdef CONFIG_MTRACE
+#define MB_SIZE 100
+char mb_buffer[MB_SIZE][100];
+int mb_head = 0, mb_tail = 0;
+char mb_tmp[100];
+extern CPU_state cpu;
+void mb_inQue(char *str)
+{
+  memcpy(mb_buffer[mb_tail], str, 100);
+  mb_tail = (mb_tail + 1) % MB_SIZE;
+  if(mb_head == mb_tail)
+	mb_head = (mb_head + 1) % MB_SIZE;
+}
+
+void display_mt_buffer()
+{
+  printf(YELLOW "Memory Tracer log:\n" RESET);
+  for(int i = mb_head; i != mb_tail; )
+  {
+	printf("%s\n", mb_buffer[i]);
+	i = (i + 1) % MB_SIZE;
+  }
+}
 #endif
 
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
@@ -62,9 +90,10 @@ word_t paddr_read(paddr_t addr, int len) {
   if(addr >= range_start && addr <= range_end){
 #endif
   if(len == 1)
-	printf("read memory at addr 0x%08x\n", (word_t)addr);
+	sprintf(mb_tmp, "0x%08x: read memory at addr 0x%08x", cpu.pc, (word_t)addr);
   else
-	printf("read memory from addr 0x%08x to 0x%08x\n", (word_t)addr, (word_t)(addr + len - 1));
+	sprintf(mb_tmp, "0x%08x: read memory from addr 0x%08x to 0x%08x", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
+  mb_inQue(mb_tmp);
 #ifdef CONFIG_EN_MTRACE_RANGE
   }
 #endif
@@ -81,9 +110,10 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   if(addr >= range_start && addr <= range_end){
 #endif
   if(len == 1)
-	printf("write memory at addr 0x%08x\n", (word_t)addr);
+	sprintf(mb_tmp, "0x%08x write memory at addr 0x%08x", cpu.pc, (word_t)addr);
   else
-	printf("write memory from addr	0x%08x to 0x%08x\n", (word_t)addr, (word_t)(addr + len - 1));
+	sprintf(mb_tmp, "0x%08x write memory from addr	0x%08x to 0x%08x", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
+  mb_inQue(mb_tmp);
 #ifdef CONFIG_EN_MTRACE_RANGE
   }
 #endif
