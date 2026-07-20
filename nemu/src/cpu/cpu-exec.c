@@ -113,12 +113,10 @@ void init_elf(char *elf_file)
   }
 
   functs = fs;
-  /*
   for(int i = 0; i < fun_top; i++)
   {
-	printf("name: %s, addr: %08x, size: %d\n", functs
+	printf("name: %s, addr: %08x, size: %d\n", functs[i].func_name, functs[i].addr, functs[i].size);
   }
-  */
 #endif
 }
 
