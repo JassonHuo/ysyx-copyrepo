@@ -307,6 +307,10 @@ static void execute(uint64_t n) {
 #ifdef CONFIG_FTRACE
 	  display_ft_buffer();
 #endif
+#ifdef CONFIG_MTRACE
+	  extern void display_mt_buffer();
+	  display_mt_buffer();
+#endif
 	  break;
 	}
     IFDEF(CONFIG_DEVICE, device_update());
