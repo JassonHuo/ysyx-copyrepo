@@ -172,7 +172,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	}\
 	if(fun == fun_top)\
 	{\
-	  printf("Unknown function\n");\
+	  printf("Unknown function at pc: %08x\n", s->pc);\
 	  exit(1);\
 	} \
 }while(0)
