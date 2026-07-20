@@ -223,13 +223,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	if(imm == 0)\
 	{\
 	  layer--;\
-	  bool success;\
-	  uint32_t tar_addr = isa_reg_str2val("ra", &success);\
-	  if(!success)\
-	  {\
-		printf("Wrong Register\n");\
-		exit(1);\
-	  }\
+	  uint32_t tar_addr = s->pc;\
 	  FUNCTION_MATCH;\
 	  int p = 0;\
 	  p += sprintf(fb_tmp, "%08x:-", s->pc);\
