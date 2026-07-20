@@ -30,6 +30,7 @@
 #define FB_SIZE 300
 
 #define RED "\033[31m"
+#define BLUE "\033[33m"
 #define RESET "\033[0m"
 
 #ifdef CONFIG_FTRACE
@@ -241,6 +242,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 
 void display_ft_buffer()
 {
+  printf(BLUE "Function Tracer Log:\n" RESET);
   for(int i = fb_head; i != fb_tail; )
   {
 	printf("%s\n", ftrace_buffer[i]);
