@@ -227,10 +227,27 @@ static void exec_once(Decode *s, vaddr_t pc) {
   uint8_t rd = (full_inst >> 7) & 0x1f;
   uint8_t rs1 = (full_inst >> 15) & 0x1f;
   int fun = 0;
-  if(opcode == 0b1101111 && rd == 1)
+  if((opcode == 0b1101111 || opcode == 0b1100111) && rd == 1) //call
   {
-	uint32_t imm = (((int32_t)full_inst >> 30) << 20) | (((full_inst >> 12) & 0xff) << 12) | (((full_inst >> 20) & 0x1) << 11) | (((full_inst >> 21) & 0x3ff) << 1);
-	uint32_t tar_addr = imm + pc;
+	uint32_t imm;
+	uint32_t tar_addr;
+	if(opcode == 0b110111)
+	{
+	  imm = (((int32_t)full_inst >> 30) << 20) | (((full_inst >> 12) & 0xff) << 12) | (((full_inst >> 20) & 0x1) << 11) | (((full_inst >> 21) & 0x3ff) << 1);
+	  tar_addr = imm + pc;
+	}
+	else
+	{
+	  imm = (((int32_t)full_inst) >> 20);
+	  bool success;
+	  extern char *regs[];
+	  tar_addr = imm + isa_reg_str2val(regs[rs1], &success);
+	  if(!success)
+	  {
+		printf("Unknown Reg\n");
+		exit(1);
+	  }
+	}
 	/*
 	int fun = 0;
 	for(fun = 0; fun < fun_top; fun++)
@@ -253,9 +270,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	fb_inQue(fb_tmp);
 	printf("%s\n", fb_tmp);
   }
-  else if(opcode == 0b1100111 && rs1 == 1 && rd == 0)
+  else if(opcode == 0b1100111 && rs1 == 1 && rd == 0) // ret
   {
-	uint32_t imm = ((int32_t)full_inst >> 20) & 0xfff;
+	uint32_t imm = (((int32_t)full_inst) >> 20);
 	if(imm == 0)
 	{
 	  layer--;
