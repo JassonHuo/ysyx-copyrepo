@@ -30,7 +30,7 @@
 #define FB_SIZE 300
 
 #define RED "\033[31m"
-#define BLUE "\033[33m"
+#define BLUE "\033[32m"
 #define RESET "\033[0m"
 
 #ifdef CONFIG_FTRACE
