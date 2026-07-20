@@ -29,6 +29,21 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
+#ifdef CONFIG_MTRACE
+#define MB_SIZE 100;
+char mb_buffer[MB_SIZE][100];
+int head = 0, tail = 0;
+char mb_tmp[100];
+extern CPU_state cpu;
+void mb_inQue(char *str)
+{
+  memcpy(mb_buffer[tail], str, 100);
+  tail = (tail + 1) % MB_SIZE;
+  if(head == tail)
+	head = (head + 1) % MB_SIZE;
+}
+#endif
+
 uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
@@ -62,9 +77,9 @@ word_t paddr_read(paddr_t addr, int len) {
   if(addr >= range_start && addr <= range_end){
 #endif
   if(len == 1)
-	printf("read memory at addr 0x%08x\n", (word_t)addr);
+	sprintf(mb_tmp, "at pc: %08x: read memory at addr 0x%08x\n", cpu.pc, (word_t)addr);
   else
-	printf("read memory from addr 0x%08x to 0x%08x\n", (word_t)addr, (word_t)(addr + len - 1));
+	printf(mb_tmp, "at pc: %08x: read memory from addr 0x%08x to 0x%08x\n", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
 #ifdef CONFIG_EN_MTRACE_RANGE
   }
 #endif
@@ -81,9 +96,10 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   if(addr >= range_start && addr <= range_end){
 #endif
   if(len == 1)
-	printf("write memory at addr 0x%08x\n", (word_t)addr);
+	sprintf(mb_tmp, "at pc: %08x write memory at addr 0x%08x\n", cpu.pc, (word_t)addr);
   else
-	printf("write memory from addr	0x%08x to 0x%08x\n", (word_t)addr, (word_t)(addr + len - 1));
+	sprintf(mb_tmp, "at pc: %08x write memory from addr	0x%08x to 0x%08x\n", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
+  mb_inQue(mb_tmp);
 #ifdef CONFIG_EN_MTRACE_RANGE
   }
 #endif
