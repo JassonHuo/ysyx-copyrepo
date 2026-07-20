@@ -30,17 +30,17 @@ static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 
 #ifdef CONFIG_MTRACE
-#define MB_SIZE 100;
+#define MB_SIZE 100
 char mb_buffer[MB_SIZE][100];
-int head = 0, tail = 0;
+int mb_head = 0, mb_tail = 0;
 char mb_tmp[100];
 extern CPU_state cpu;
 void mb_inQue(char *str)
 {
-  memcpy(mb_buffer[tail], str, 100);
-  tail = (tail + 1) % MB_SIZE;
-  if(head == tail)
-	head = (head + 1) % MB_SIZE;
+  memcpy(mb_buffer[mb_tail], str, 100);
+  mb_tail = (mb_tail + 1) % MB_SIZE;
+  if(mb_head == mb_tail)
+	mb_head = (mb_head + 1) % MB_SIZE;
 }
 #endif
 
@@ -79,7 +79,8 @@ word_t paddr_read(paddr_t addr, int len) {
   if(len == 1)
 	sprintf(mb_tmp, "at pc: %08x: read memory at addr 0x%08x\n", cpu.pc, (word_t)addr);
   else
-	printf(mb_tmp, "at pc: %08x: read memory from addr 0x%08x to 0x%08x\n", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
+	sprintf(mb_tmp, "at pc: %08x: read memory from addr 0x%08x to 0x%08x\n", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
+  mb_inQue(mb_tmp);
 #ifdef CONFIG_EN_MTRACE_RANGE
   }
 #endif
