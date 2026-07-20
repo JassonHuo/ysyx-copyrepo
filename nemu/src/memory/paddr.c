@@ -18,6 +18,9 @@
 #include <device/mmio.h>
 #include <isa.h>
 
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
+
 #ifdef CONFIG_EN_MTRACE_RANGE
 extern uint32_t range_start;
 extern uint32_t range_end;
@@ -41,6 +44,16 @@ void mb_inQue(char *str)
   mb_tail = (mb_tail + 1) % MB_SIZE;
   if(mb_head == mb_tail)
 	mb_head = (mb_head + 1) % MB_SIZE;
+}
+
+void display_mbuffer()
+{
+  printf(YELLOW "Memory Tracer log:\n" RESET);
+  for(int i = mb_head; i != mb_tail; )
+  {
+	printf("%s\n", mb_buffer[i]);
+	i = (i + 1) % MB_SIZE;
+  }
 }
 #endif
 
