@@ -46,7 +46,7 @@ void mb_inQue(char *str)
 	mb_head = (mb_head + 1) % MB_SIZE;
 }
 
-void display_mbuffer()
+void display_mt_buffer()
 {
   printf(YELLOW "Memory Tracer log:\n" RESET);
   for(int i = mb_head; i != mb_tail; )
