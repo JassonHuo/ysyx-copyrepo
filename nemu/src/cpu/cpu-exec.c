@@ -251,6 +251,10 @@ void display_ft_buffer()
 }
 #endif
 
+#ifdef CONFIG_MTRACE
+  
+#endif
+
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
