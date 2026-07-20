@@ -240,7 +240,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 	{
 	  imm = (((int32_t)full_inst) >> 20);
 	  bool success;
-	  extern char *regs[];
+	  extern const char *regs[];
 	  tar_addr = imm + isa_reg_str2val(regs[rs1], &success);
 	  if(!success)
 	  {
