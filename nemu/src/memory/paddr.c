@@ -90,9 +90,9 @@ word_t paddr_read(paddr_t addr, int len) {
   if(addr >= range_start && addr <= range_end){
 #endif
   if(len == 1)
-	sprintf(mb_tmp, "at pc: %08x: read memory at addr 0x%08x", cpu.pc, (word_t)addr);
+	sprintf(mb_tmp, "0x%08x: read memory at addr 0x%08x", cpu.pc, (word_t)addr);
   else
-	sprintf(mb_tmp, "at pc: %08x: read memory from addr 0x%08x to 0x%08x", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
+	sprintf(mb_tmp, "0x%08x: read memory from addr 0x%08x to 0x%08x", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
   mb_inQue(mb_tmp);
 #ifdef CONFIG_EN_MTRACE_RANGE
   }
@@ -110,9 +110,9 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   if(addr >= range_start && addr <= range_end){
 #endif
   if(len == 1)
-	sprintf(mb_tmp, "at pc: %08x write memory at addr 0x%08x", cpu.pc, (word_t)addr);
+	sprintf(mb_tmp, "0x%08x write memory at addr 0x%08x", cpu.pc, (word_t)addr);
   else
-	sprintf(mb_tmp, "at pc: %08x write memory from addr	0x%08x to 0x%08x", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
+	sprintf(mb_tmp, "0x%08x write memory from addr	0x%08x to 0x%08x", cpu.pc, (word_t)addr, (word_t)(addr + len - 1));
   mb_inQue(mb_tmp);
 #ifdef CONFIG_EN_MTRACE_RANGE
   }
