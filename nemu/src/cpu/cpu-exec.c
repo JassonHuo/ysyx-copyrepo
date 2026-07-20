@@ -245,6 +245,7 @@ void display_ft_buffer()
 }
 #endif
 
+/*
 #ifdef CONFIG_MTRACE
 #define MB_SIZE 100;
 char mtrace_buffer[MB_SIZE][100];
@@ -266,8 +267,13 @@ void mb_inQue(char **strs, int n)
   }
 }
 
+void mb_tmp_inQue(char *str)
+{
+}
+
 void
 #endif
+*/
 
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
