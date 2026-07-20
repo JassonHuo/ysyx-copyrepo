@@ -246,7 +246,27 @@ void display_ft_buffer()
 #endif
 
 #ifdef CONFIG_MTRACE
-  
+#define MB_SIZE 100;
+char mtrace_buffer[MB_SIZE][100];
+static int head = 0;
+static int tail = 0;
+
+char mb_tmp[5][100] = {0};
+int mb_tmp_p = 0;
+bool mb_valid = false;
+
+void mb_inQue(char **strs, int n)
+{
+  for(int i = 0; i < n; i++)
+  {
+  memcpy(mtrace_buffer[tail], str, 100);
+  tail = (tail + 1) % MB_SIZE;
+  if(head == tail)
+	head = (head + 1) % MB_SIZE;
+  }
+}
+
+void
 #endif
 
 static void exec_once(Decode *s, vaddr_t pc) {
