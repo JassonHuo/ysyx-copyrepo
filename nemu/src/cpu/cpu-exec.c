@@ -306,7 +306,13 @@ static void execute(uint64_t n) {
     trace_and_difftest(&s, cpu.pc);
 	if (nemu_state.state == NEMU_ABORT || (nemu_state.state != NEMU_RUNNING && nemu_state.halt_ret))
 	  display_iring();
-    if (nemu_state.state != NEMU_RUNNING) break;
+    if (nemu_state.state != NEMU_RUNNING) 
+	{
+#ifdef CONFIG_FTRACE
+	  display_ft_buffer();
+#endif
+	  break;
+	}
     IFDEF(CONFIG_DEVICE, device_update());
   }
 }
