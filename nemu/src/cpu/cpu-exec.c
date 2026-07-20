@@ -27,9 +27,10 @@
  */
 #define MAX_INST_TO_PRINT 10
 #define IRING_SIZE 20
-#define FB_SIZE 100
+#define FB_SIZE 300
 
 #define RED "\033[31m"
+#define YELLOW "\033[33m"
 #define RESET "\033[0m"
 
 #ifdef CONFIG_FTRACE
@@ -113,12 +114,10 @@ void init_elf(char *elf_file)
   }
 
   functs = fs;
-  /*
   for(int i = 0; i < fun_top; i++)
   {
-	printf("name: %s, addr: %08x, size: %d\n", functs
+	Log("Read function: name: %s, addr: %08x, size: %d", functs[i].func_name, functs[i].addr, functs[i].size);
   }
-  */
 #endif
 }
 
@@ -166,6 +165,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
 }
 
+#ifdef CONFIG_FTRACE
 #define FUNCTION_MATCH do{\
 	for(fun = 0; fun < fun_top; fun++)\
 	{\
@@ -174,10 +174,86 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 	}\
 	if(fun == fun_top)\
 	{\
-	  printf("Unknown function\n");\
+	  printf("Unknown function at pc: %08x\n", s->pc);\
 	  exit(1);\
 	} \
 }while(0)
+#endif
+
+#ifdef CONFIG_FTRACE
+#define TRACE_FUNCTION do{\
+  uint32_t full_inst = s->isa.inst;\
+  uint8_t opcode = full_inst & 0x7f;\
+  char fb_tmp[100] = {0};\
+  uint8_t rd = (full_inst >> 7) & 0x1f;\
+  uint8_t rs1 = (full_inst >> 15) & 0x1f;\
+  int fun = 0;\
+  if((opcode == 0b1101111 || opcode == 0b1100111) && rd == 1) /*call*/\
+  {\
+	uint32_t imm;\
+	uint32_t tar_addr;\
+	if(opcode == 0b1101111)\
+	{\
+	  imm = (((int32_t)full_inst >> 30) << 20) | (((full_inst >> 12) & 0xff) << 12) | (((full_inst >> 20) & 0x1) << 11) | (((full_inst >> 21) & 0x3ff) << 1);\
+	  tar_addr = imm + pc;\
+	}\
+	else\
+	{\
+	  imm = (((int32_t)full_inst) >> 20);\
+	  bool success;\
+	  extern const char *regs[];\
+	  tar_addr = imm + isa_reg_str2val(regs[rs1], &success);\
+	  if(!success)\
+	  {\
+		printf("Unknown Reg\n");\
+		exit(1);\
+	  }\
+	}\
+	FUNCTION_MATCH;\
+	int p = 0;\
+	p += sprintf(fb_tmp, "%08x:-", s->pc);\
+	for(int i = 0; i < layer; i++) p += sprintf(fb_tmp + p, "--");\
+	p += sprintf(fb_tmp + p, "call [%s@%08x]", functs[fun].func_name, functs[fun].addr);\
+	layer ++;\
+	fb_inQue(fb_tmp);\
+  }\
+  else if(opcode == 0b1100111 && rs1 == 1 && rd == 0) /*ret*/\
+  {\
+	uint32_t imm = (((int32_t)full_inst) >> 20);\
+	if(imm == 0)\
+	{\
+	  layer--;\
+	  bool success;\
+	  uint32_t tar_addr = isa_reg_str2val("ra", &success);\
+	  if(!success)\
+	  {\
+		printf("Wrong Register\n");\
+		exit(1);\
+	  }\
+	  FUNCTION_MATCH;\
+	  int p = 0;\
+	  p += sprintf(fb_tmp, "%08x:-", s->pc);\
+	  for(int i = 0; i < layer; i ++) p += sprintf(fb_tmp + p,  "--");\
+	  p += sprintf(fb_tmp + p, "ret [%s]", functs[fun].func_name);\
+	  fb_inQue(fb_tmp);\
+	}\
+  }\
+} while(0);
+
+void display_ft_buffer()
+{
+  printf(YELLOW "Function Tracer Log:\n" RESET);
+  for(int i = fb_head; i != fb_tail; )
+  {
+	printf("%s\n", ftrace_buffer[i]);
+	i = (i + 1) % FB_SIZE;
+  }
+}
+#endif
+
+#ifdef CONFIG_MTRACE
+  
+#endif
 
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
@@ -223,60 +299,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 
 #ifdef CONFIG_FTRACE
-  uint32_t full_inst = s->isa.inst;
-  uint8_t opcode = full_inst & 0x7f;
-  char fb_tmp[100] = {0};
-  uint8_t rd = (full_inst >> 7) & 0x1f;
-  uint8_t rs1 = (full_inst >> 15) & 0x1f;
-  int fun = 0;
-  if(opcode == 0b1101111 && rd == 1)
-  {
-	uint32_t imm = (((int32_t)full_inst >> 30) << 20) | (((full_inst >> 12) & 0xff) << 12) | (((full_inst >> 20) & 0x1) << 11) | (((full_inst >> 21) & 0x3ff) << 1);
-	uint32_t tar_addr = imm + pc;
-	/*
-	int fun = 0;
-	for(fun = 0; fun < fun_top; fun++)
-	{
-	  if(tar_addr >= functs[fun].addr && tar_addr < functs[fun].addr + functs[fun].size)
-		break;
-	}
-	if(fun == fun_top)
-	{
-	  printf("Unknown function\n");
-	  exit(1);
-	} 
-	*/
-	FUNCTION_MATCH;
-	int p = 0;
-	p += sprintf(fb_tmp, "%08x:-", s->pc);
-	for(int i = 0; i < layer; i++) p += sprintf(fb_tmp + p, "--");
-	p += sprintf(fb_tmp + p, "call [%s@%08x]", functs[fun].func_name, functs[fun].addr);
-	layer ++;
-	fb_inQue(fb_tmp);
-	printf("%s\n", fb_tmp);
-  }
-  else if(opcode == 0b1100111 && rs1 == 1 && rd == 0)
-  {
-	uint32_t imm = ((int32_t)full_inst >> 20) & 0xfff;
-	if(imm == 0)
-	{
-	  layer--;
-	  bool success;
-	  uint32_t tar_addr = isa_reg_str2val("ra", &success);
-	  if(!success)
-	  {
-		printf("Wrong Register\n");
-		exit(1);
-	  }
-	  FUNCTION_MATCH;
-	  int p = 0;
-	  p += sprintf(fb_tmp, "%08x:-", s->pc);
-	  for(int i = 0; i < layer; i ++) p += sprintf(fb_tmp + p,  "--");
-	  p += sprintf(fb_tmp + p, "ret [%s]", functs[fun].func_name);
-	  fb_inQue(fb_tmp);
-	  printf("%s\n", fb_tmp);
-	}
-  }
+  TRACE_FUNCTION;
 #endif
 }
 
@@ -289,7 +312,13 @@ static void execute(uint64_t n) {
     trace_and_difftest(&s, cpu.pc);
 	if (nemu_state.state == NEMU_ABORT || (nemu_state.state != NEMU_RUNNING && nemu_state.halt_ret))
 	  display_iring();
-    if (nemu_state.state != NEMU_RUNNING) break;
+    if (nemu_state.state != NEMU_RUNNING) 
+	{
+#ifdef CONFIG_FTRACE
+	  display_ft_buffer();
+#endif
+	  break;
+	}
     IFDEF(CONFIG_DEVICE, device_update());
   }
 }
