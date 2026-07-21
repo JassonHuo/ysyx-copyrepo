@@ -33,10 +33,12 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
   else
 	assert(0);
 	*/
+  printf("memcpy test\n");
   ref_difftest_memcpy(addr, buf, n, direction);
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
+  printf("regcpy test\n");
   ref_difftest_regcpy(dut, direction);
   /*
   word_t *p = (word_t*)&cpu;
@@ -66,10 +68,12 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
 }
 
 __EXPORT void difftest_exec(uint64_t n) {
+  printf("exec test\n");
   ref_difftest_exec(n);
 }
 
 __EXPORT void difftest_raise_intr(word_t NO) {
+  printf("raisr intr test\n");
   assert(0);
 }
 
