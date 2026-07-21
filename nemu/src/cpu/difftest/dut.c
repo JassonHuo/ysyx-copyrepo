@@ -125,6 +125,15 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
   ref_difftest_exec(1);
   ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
 
+  /*
+  for(int i = 0; i < 16; i ++)
+	printf("%d ", *((word_t*)&ref_r + i));
+  printf("\n");
+  for(int i = 0; i < 16; i ++)
+	printf("%d ", cpu.gpr[i]);
+  printf("\n");
+  */
+
   checkregs(&ref_r, pc);
 }
 #else
