@@ -115,7 +115,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 110 ????? 01100 11", rem	   , R, R(rd) = (src2 != 0 ? ((int32_t)src1 - (int32_t)src1 / (int32_t)src2 * (int32_t)src2): (int32_t)src1));
   INSTPAT("0000001 ????? ????? 100 ????? 01100 11", div	   , R, R(rd) = (src2 == 0 ? (int32_t)-1: 
 																		((src1 == 0x80000000 && src2 == -1) ? src1:
-																		 (uint32_t)src1 / (uint32_t)src2)));
+																		 (int32_t)src1 / (int32_t)src2)));
   INSTPAT("0000001 ????? ????? 000 ????? 01100 11", mul	   , R, R(rd) = BITS(src1 * src2, 31, 0));
   INSTPAT("0000001 ????? ????? 001 ????? 01100 11", mulh   , R, R(rd) = BITS((int64_t)(int32_t)src1 * (int64_t)(int32_t)src2, 63, 32));
   INSTPAT("0000001 ????? ????? 011 ????? 01100 11", mulhu  , R, R(rd) = BITS((uint64_t)src1 * (uint64_t)src2, 63, 32));
