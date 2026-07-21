@@ -122,7 +122,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000001 ????? ????? 010 ????? 01100 11", mulhsu , R, R(rd) = BITS((int64_t)(int32_t)src1 * (uint64_t)src2, 63, 32));
   INSTPAT("0000001 ????? ????? 111 ????? 01100 11", remu   , R, R(rd) = (src2 != 0 ? ((uint32_t)src1 % (uint32_t)src2): (uint32_t)src1));
   INSTPAT("0000001 ????? ????? 110 ????? 01100 11", rem    , R, R(rd) = (src2 == 0 ? (int32_t)src1:
-																		(src1 == 0x80000000 && src2 == -1) ? 0:
+																		(src1 == 0x80000000 && (int32_t)src2 == -1) ? 0:
 																		(int32_t)src1 % (int32_t)src2));
   INSTPAT("0000001 ????? ????? 101 ????? 01100 11", divu   , R, R(rd) = (src2 != 0 ? ((uint32_t)src1 / (uint32_t)src2): (uint32_t)-1));
   
