@@ -29,10 +29,9 @@ static VerilatedVcdC* tracep = new VerilatedVcdC;
 static Vtop *top = new Vtop;
 
 static struct timeval tv;
-
 static uint8_t *serial_base = NULL;
-
 static uint64_t start_time;
+
 
 void ebreak()
 {
@@ -141,6 +140,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
   }
 }
 
+
 uint32_t hex2num(std::string &hex)
 {
   return std::stoul(hex, nullptr, 16);
@@ -158,13 +158,25 @@ void init_serial()
 }
 */
 
-int main(int argc, char** argv) {
-//  uint32_t mem[1024] = {0};
-//  mem[0] = 0x00400093;
- // mem[1] = 0x0100a103;
-  //mem[2] = 0x00100073;
-  //mem[5] = 0x90abcdef;
+int c_get_Reg(int idx)
+{
+  extern int get_Reg(int idx);
+  svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
+  return get_Reg(idx);
+}
 
+void run_cycle(int n)
+{
+  for(int i = 0; i < n && !ebreak_happened; i ++)
+  {
+	top->clk = 0;
+	top->eval();
+	if(ebreak_happened)break;
+	top->clk = 1;
+	top->eval();
+  }
+}
+int main(int argc, char** argv) {
   printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
   printf(BLUE "Open device serial at [0x10000000, 0x10000004]" RESET "\n");
   printf(BLUE "Open device rtc at [0x10000048, 0x1000004f]" RESET "\n");
@@ -240,7 +252,6 @@ int main(int argc, char** argv) {
 	int mem_top = 0;
 	while(file.read(reinterpret_cast<char*>(&mem[mem_top++]), 4))
 	{
-//	  printf("%d\n", mem_top);
 	  if(mem_top >= MEM_SIZE)
 	  {
 		printf("To many codes\n");
@@ -249,11 +260,6 @@ int main(int argc, char** argv) {
 	}
   }
   } 
-  /*
-  VerilatedContext *contextp = new VerilatedContext;
-  VerilatedVcdC* tracep = new VerilatedVcdC;
-  Vtop *top = new Vtop;
-  */
 
   top->rst = 1;
   for(int i = 0; i < 10; i ++)
@@ -265,43 +271,12 @@ int main(int argc, char** argv) {
   }
   top->rst = 0;
 
-//  contextp->traceEverOn(true);
- // top->trace(tracep, 99);
-//  tracep->open("wave.vcd");
   top->rst = 0;
-  uint64_t cycle_num = 0;
   time_init();
   while(!contextp->gotFinish() && !ebreak_happened)
   {
-//	printf("mem[82935] = %08x, before pc: %08x\n", mem[82935], top->pc);
-	top->clk = 0;
-//	printf("pc=%08x\n", top->pc);
-//	top->inst = pmem_read(top->pc);
-//	printf("%x\n", top->pc);
-	top->eval();
-//	tracep->dump(contextp->time());
-//	contextp->timeInc(1);
-	if(ebreak_happened)break;
-	top->clk = 1;
-	top->eval();
-//	tracep->dump(contextp->time());
-//	contextp->timeInc(1);
-//	printf("mem[82935] = %08x, after pc: %08x\n", mem[82935], top->pc);
-	/*
-	if(mem[top->inst_addr >> 2] == 0)
-	{
-	  top->clk = 0;
-	  top->eval();
-	  tracep->dump(contextp->time());
-	  contextp->timeInc(1);
-	  break;
-	}
-	*/
-	cycle_num ++;
-//	printf("%08x\n", top->pc);
+	run_cycle(1);
   }
- // tracep->close();
   delete top;
-//  std::cout << cycle_num <<std::endl;
   return top->a0;
 }
