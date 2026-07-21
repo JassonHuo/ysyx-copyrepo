@@ -29,7 +29,7 @@ int atoi(const char* nptr) {
   return x;
 }
 
-  static uint8_t* addr = NULL;
+//static uint8_t* addr = NULL;
 
 void *malloc(size_t size) {
   // On native, malloc() will be called during initializaion of C runtime.
@@ -37,6 +37,7 @@ void *malloc(size_t size) {
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
 //  panic("Not implemented");
+  static uint8_t* addr = NULL;
   int max_align_t = 8;
   if(addr == NULL)
 	addr = (uint8_t*)heap.start;
