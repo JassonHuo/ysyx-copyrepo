@@ -12,8 +12,6 @@
 #include <sstream>
 #include <time.h>
 #include <sys/time.h>
-//#include <device/map.h>
-//#include <am.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
