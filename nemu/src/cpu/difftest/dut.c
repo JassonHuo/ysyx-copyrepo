@@ -127,6 +127,10 @@ void difftest_step(vaddr_t pc, vaddr_t npc) {
 
   for(int i = 0; i < 16; i ++)
 	printf("%d ", *((word_t*)&ref_r + i));
+  printf("\n");
+  for(int i = 0; i < 16; i ++)
+	printf("%d ", cpu.gpr[i]);
+  printf("\n");
 
   checkregs(&ref_r, pc);
 }
