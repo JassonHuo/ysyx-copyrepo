@@ -35,14 +35,20 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
   if(direction == DIFFTEST_TO_DUT)
   {
 	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
+	{
+	  printf("to dut cpu: %d, dut: %d\n", *(p + i), *(((word_t*)dut) + i));
 	  *(p + i) = *(((word_t*)dut) + i);
+	}
 //	  cpu.gpr[i] = ctx->XPR[i];
 //	cpu.pc = ctx->pc;
   }
   else if(direction == DIFFTEST_TO_REF)
   {
 	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
+	{
+	  printf("to ref cpu: %d, dut: %d\n", *(p + i), *(((word_t*)dut) + i));
 	  *(((word_t*)dut) + i) = *(p + i);
+	}
   }
   else
 	assert(0);
