@@ -22,12 +22,9 @@ $(shell mkdir -p $(BUILD_DIR))
 #$(SRC_AUTO_BIND) : $(NXDC_FILE)
 #	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
-#CSRC = /home/jasonhuo/ysyx/ysyx-workbench/npc/csrc/nv_switch.cpp
 VSRC = $(NPC_HOME)/vsrc/*.v
-#VSRCS = $(shell find $(abspath ./vsrc) -name "*.v")
-#CSRC = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cpp")
-#CSRC += $(SRC_AUTO_BIND)
-CSRC = $(NPC_HOME)/csrc/main.cpp
+CSRC = $(NPC_HOME)/csrc/*.c
+CSRC += $(NPC_HOME)/csrc/*.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
@@ -48,7 +45,7 @@ all: default
 
 run: $(BIN)
 #	@$^
-	$(BIN) $(IMG)
+	$(BIN) -f $(IMG)
 
 clean: 
 	rm -rf $(BUILD_DIR)
