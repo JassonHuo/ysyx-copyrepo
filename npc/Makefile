@@ -27,7 +27,7 @@ CSRC += $(NPC_HOME)/csrc/*.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
-$(info INCFLAGS = $(INCFLAGS))
+#$(info INCFLAGS = $(INCFLAGS))
 
 
 $(BIN): $(VSRC) $(CSRC) #$(NVBOARD_ARCHIVE) 
