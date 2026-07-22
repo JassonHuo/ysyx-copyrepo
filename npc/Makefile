@@ -1,6 +1,5 @@
 TOPNAME = top
 NXDC_FILE = constr/top.nxdc
-#INC_PATH += $(AM_HOME)/am/src/riscv/riscv.h
 INC_PATH ?= 
 
 include ../Makefile 
@@ -38,6 +37,9 @@ $(BIN): $(VSRC) $(CSRC) #$(NVBOARD_ARCHIVE)
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
 		--trace-vcd -j 0 -I$(NPC_HOME)/vsrc \
+		-LDFLAGS "-lreadline"
+
+IMG ?= $(NPC_HOME)/csrc/dummy.bin
 
 
 all: default

@@ -12,6 +12,7 @@
 #include <sstream>
 #include <time.h>
 #include <sys/time.h>
+#include "sdb.h"
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -20,7 +21,7 @@
 #define BLUE "\033[34m"
 #define RESET "\033[0m"
 
-#define ARR_SIZE(arr) (int)(sizeof(arr) / sizeof(arr[0]))
+//#define ARR_SIZE(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
 bool ebreak_happened = false;
 uint32_t mem[MEM_SIZE] = {0};
@@ -189,12 +190,12 @@ int c_get_Reg(int idx)
 {
   extern int get_Reg(int idx);
   svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
-  return get_Reg(idx);
+  return (uint32_t)get_Reg(idx);
 }
 
-void run_cycle(int n)
+void run_cycle(uint64_t n)
 {
-  for(int i = 0; i < n && !ebreak_happened; i ++)
+  for(uint64_t i = 0; i < n && !ebreak_happened; i ++)
   {
 	top->clk = 0;
 	top->eval();
@@ -224,7 +225,8 @@ int main(int argc, char** argv) {
   time_init();
   while(!contextp->gotFinish() && !ebreak_happened)
   {
-	run_cycle(1);
+//	run_cycle(1);
+	sdb_mainloop();
   }
   delete top;
   return top->a0;
