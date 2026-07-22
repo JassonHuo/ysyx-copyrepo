@@ -12,6 +12,7 @@
 #include <sstream>
 #include <time.h>
 #include <sys/time.h>
+#include "sdb.h"
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -20,9 +21,10 @@
 #define BLUE "\033[34m"
 #define RESET "\033[0m"
 
-#define ARR_SIZE(arr) (int)(sizeof(arr) / sizeof(arr[0]))
+//#define ARR_SIZE(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
 bool ebreak_happened = false;
+bool npcsdb_quit = false;
 uint32_t mem[MEM_SIZE] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
 static VerilatedVcdC* tracep = new VerilatedVcdC;
@@ -189,13 +191,18 @@ int c_get_Reg(int idx)
 {
   extern int get_Reg(int idx);
   svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
-  return get_Reg(idx);
+  return (uint32_t)get_Reg(idx);
 }
 
-void run_cycle(int n)
+void run_cycle(uint64_t n)
 {
-  for(int i = 0; i < n && !ebreak_happened; i ++)
+  bool output_pc = false;
+  if(n != (uint64_t)-1)
+	output_pc = true;
+  for(uint64_t i = 0; i < n && !ebreak_happened; i ++)
   {
+	if(output_pc)
+	  printf("0x%08x\n", top->pc);
 	top->clk = 0;
 	top->eval();
 	if(ebreak_happened)break;
@@ -222,10 +229,13 @@ int main(int argc, char** argv) {
 
   top->rst = 0;
   time_init();
-  while(!contextp->gotFinish() && !ebreak_happened)
+  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
   {
-	run_cycle(1);
+//	run_cycle(1);
+	sdb_mainloop();
   }
   delete top;
+  if(npcsdb_quit)
+	return 0;
   return top->a0;
 }
