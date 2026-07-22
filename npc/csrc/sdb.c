@@ -89,6 +89,8 @@ int cmd_x(char *args)
 
 int cmd_q(char *args)
 {
+  extern bool npcsdb_quit;
+  npcsdb_quit = true;
   return 0;
 }
 

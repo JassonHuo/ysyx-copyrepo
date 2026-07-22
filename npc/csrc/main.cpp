@@ -24,6 +24,7 @@
 //#define ARR_SIZE(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
 bool ebreak_happened = false;
+bool npcsdb_quit = false;
 uint32_t mem[MEM_SIZE] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
 static VerilatedVcdC* tracep = new VerilatedVcdC;
@@ -223,7 +224,7 @@ int main(int argc, char** argv) {
 
   top->rst = 0;
   time_init();
-  while(!contextp->gotFinish() && !ebreak_happened)
+  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
   {
 //	run_cycle(1);
 	sdb_mainloop();
