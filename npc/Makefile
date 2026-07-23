@@ -3,7 +3,6 @@ NXDC_FILE = constr/top.nxdc
 INC_PATH ?= 
 
 include ../Makefile 
-#include $(NVBOARD_HOME)/scripts/nvboard.mk 
 
 
 VERILATOR = verilator
@@ -12,6 +11,19 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign fast \
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
+
+#include $(FILELIST_MK)
+LIBCAPSTONE = $(NPC_HOME)/capstone/repo/libcapstone.so.5
+LDFLAGS += -ldl
+INC_PATH += $(NPC_HOME)/capstone/repo/include
+INC_PATH += npc.h
+
+$(LIBCAPSTONE):
+	$(MAKE) -C $(NPC_HOME)/capstone
+
+csrc/disasm.c: $(LIBCAPSTONE)
+csrc/main.cpp: $(LIBCAPSTONE)
+
 
 default: $(BIN)
 
@@ -26,20 +38,23 @@ CSRC = $(NPC_HOME)/csrc/*.c
 CSRC += $(NPC_HOME)/csrc/*.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" -DCONFIG_ITRACE -DCONFIG_MTRACE
 #$(info INCFLAGS = $(INCFLAGS))
 
+LDFLAGS += -lreadline
 
-$(BIN): $(VSRC) $(CSRC) #$(NVBOARD_ARCHIVE) 
+
+$(BIN): $(VSRC) $(CSRC)
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
-		--trace-vcd -j 0 -I$(NPC_HOME)/vsrc \
-		-LDFLAGS "-lreadline"
+		-j 0 -I$(NPC_HOME)/vsrc 
+#		-LDFLAGS "-lreadline"
 
 IMG ?= $(NPC_HOME)/csrc/dummy.bin
+ELF ?= $(NPC_HOME)/csrc/dummy.elf
 
 
 all: default
@@ -47,7 +62,7 @@ all: default
 
 run: $(BIN)
 #	@$^
-	$(BIN) -f $(IMG)
+	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF)
 
 clean: 
 	rm -rf $(BUILD_DIR)

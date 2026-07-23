@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <Vtop.h>
 #include <verilated.h>
-#include <verilated_vcd_c.h>
 #include <stdint.h>
 #include "svdpi.h"
 #include "Vtop__Dpi.h"
@@ -13,6 +12,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include "sdb.h"
+#include <capstone/capstone.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -20,24 +20,147 @@
 #define RED "\033[31m"
 #define BLUE "\033[34m"
 #define RESET "\033[0m"
+#define IB_SIZE 30
+#define MB_SIZE 100
+#define FB_SIZE 300
+#define BUFFER_IRING 0
+#define BUFFER_MEMORY 1
+#define BUFFER_FUNCTION 2
+
+#define cat(a) a##buffer
+
+#define TRACE(a) CONFIG_##a##TRACE
+#define CONFIG_TRACES  \
+  defined(TRACE(I)) || \
+  defined(TRACE(M)) || \
+  defined(TRACE(F))
 
 //#define ARR_SIZE(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
-bool ebreak_happened = false;
-bool npcsdb_quit = false;
+//bool ebreak_happened = false;
+bool npc_abort = false;
 uint32_t mem[MEM_SIZE] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
-static VerilatedVcdC* tracep = new VerilatedVcdC;
 static Vtop *top = new Vtop;
 
 static struct timeval tv;
 static uint8_t *serial_base = NULL;
 static uint64_t start_time;
 
+void sdb_mainloop();
+int NPC_state;
+
+#ifdef CONFIG_TRACES
+
+#define INQUE(a, b) do{\
+  memcpy(a##_buffer[b##_tail], str, 100);\
+  b##_tail = (b##_tail + 1) % b##_SIZE;\
+  if(b##_tail == b##_head)\
+  b##_head = (b##_head + 1) % b##_SIZE;\
+}while(0)
+
+#define DISPLAY(a, b) do{\
+  for(int i = b##_head; i != b##_tail;)\
+  {\
+	if(i == (b##_tail - 1 + b##_SIZE) % b##_SIZE)\
+		printf(RED " -->");\
+	printf("%s" RESET "\n", a##_buffer[i]);\
+	i = (i + 1) % b##_SIZE;\
+  }\
+}while(0)
+
+#endif
+
+#ifdef CONFIG_ITRACE
+static char iring_buffer[IB_SIZE][100];
+static int IB_head = 0; 
+static int IB_tail = 0;
+
+static void ib_inQue(char *str)
+{
+  /*
+  memcpy(iring_buffer[ib_tail], str, 100);
+  ib_tail = (ib_tail + 1) % IB_SIZE;
+  if(ib_tail == ib_head)
+	ib_head = (ib_head + 1) % IB_SIZE;
+	*/
+  INQUE(iring, IB);
+}
+
+static void display_ib()
+{
+  /*
+  for(int i = ib_head; i != ib_tail;)
+  {
+	if(i == (ib_tail - 1 + IB_SIZE) % IB_SIZE)
+		printf(RED " -->");
+	printf("%s" RESET "\n", iring_buffer[i]);
+	i = (i + 1) % IB_SIZE;
+  }
+  */
+  DISPLAY(iring, IB);
+}
+#endif
+
+#ifdef CONFIG_MTRACE
+static char memory_buffer[MB_SIZE][100];
+static int MB_head = 0;
+static int MB_tail = 0;
+
+static void mb_inQue(char *str)
+{
+  /*
+  memcpy(memory_buffer[mb_tail], str, 100);
+  mb_tail = (mb_tail + 1) % MB_SIZE;
+  */
+  INQUE(memory, MB);
+}
+
+static void display_mb()
+{
+  /*
+  for(int i = mb_head; i != mb_tail; i ++)
+  {
+	printf("%s\n", memory_buffer[i]);
+	i = (i + 1) % MB_SIZE;
+  }
+  */
+  DISPLAY(memory, MB);
+}
+#endif
+
+#ifdef CONFIG_FTRACE
+static char function_buffer[FB_SIZE][100];
+static int FB_head = 0;
+static int FB_tail = 0;
+static void fb_inQue(char *str)
+{
+  INQUE(function, FB);
+}
+
+static void display_fb()
+{
+  DISPLAY(function, FB);
+}
+#endif
+
+
+void init_disasm();
+extern "C" void do_quitcheck();
+
 static void init_file(char *args);
 static void init_batch_mode(char *args);
+void init_elf(char *args);
+
+int batch_mode_open();
+uint32_t c_get_Pc();
 
 FILE *fp = NULL;
+
+void set_abort()
+{
+  npc_abort = true;
+}
 
 static struct {
   const char *signal;
@@ -46,6 +169,7 @@ static struct {
 } arg_table[] = {
   {"-f", 1, init_file},
   {"-b", 0, init_batch_mode},
+  {"-e", 1, init_elf},
 };
 
 int ARG_SIZE = ARR_SIZE(arg_table);
@@ -104,20 +228,24 @@ void init_file(char *args)
 
 void init_batch_mode(char *args)
 {
-  extern int batch_mode_open();
+//  int batch_mode_open();
   batch_mode_open();
 }
 
 
 void ebreak()
 {
-  ebreak_happened = true;
+//  ebreak_happened = true;
+  /*
   printf("[%s:%d %s] npc: ", __FILE__, __LINE__, __func__);
   if(!top->a0)
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
   printf("at pc = %08x\n", top->pc);
+  */
+  NPC_state = NPC_END;
+  do_quitcheck();
 }
 
 static inline void time_init()
@@ -134,16 +262,48 @@ static inline uint64_t get_time()
 
 extern "C" int pmem_read(int addr)
 {
+#ifdef CONFIG_MTRACE
+  char tmp[100];
+#ifdef MTRACE_RANGE
+  if(addr >= MTRACE_MIN && addr <= MTRACE_MAX)
+  {
+#endif
+  sprintf(tmp, "\t0x%08x: pmem_read  at %08x", c_get_Pc(), addr);
+  mb_inQue(tmp);
+#ifdef MTRACE_RANGE
+  }
+#endif
+#endif
   if(addr == 0x10000000) return 0;
   else if(addr == 0x10000048) return (uint32_t)get_time();
   else if(addr == 0x1000004c) return get_time() >> 32;
-  return mem[((uint32_t)addr - 0x80000000) >> 2];
+  else if(addr >= 0x80000000 && addr <= 0x87ffffff) return mem[((uint32_t)addr - 0x80000000) >> 2];
+  else 
+  {
+#ifdef CONFIG_MTRACE
+	display_mb();
+#endif
+	do_quitcheck();
+	return 1;
+  }
 }
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask)
 {
   if(top->clk)
   {
+#ifdef CONFIG_MTRACE
+	char tmp[100];
+#ifdef MTRACE_RANGE
+	if(waddr >= MTRACE_MIN && waddr <= MTRACE_MAX)
+	{
+#endif
+	sprintf(tmp, "\t0x%08x: pmem_write at %08x", c_get_Pc(), waddr);
+	mb_inQue(tmp);
+#ifdef MTRACE_RANGE
+	}
+#endif
+#endif
 	if(waddr == 0x10000048) return;
 	else if(waddr == 0x1000004c) return;
 	else if(waddr == 0x10000000)
@@ -176,8 +336,30 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	  }
 	  tmp = (tmp & ~mask) | (wdata & mask);
 	  mem[((uint32_t)waddr - 0x80000000) >> 2] = tmp;
-	  }
+	}
+	else
+	{
+#ifdef CONFIG_MTRACE
+	  display_mb();
+#endif
+	  do_quitcheck();
+	}
   }
+}
+
+extern "C" void do_quitcheck()
+{
+  printf("[%s:%d %s] npc: ", __FILE__, __LINE__, __func__);
+  if(NPC_state != NPC_END)
+  {
+	printf(RED "ABORT " RESET);
+	set_abort();
+  }
+  else if(!top->a0)
+	printf(GREEN "HIT GOOD TRAP " RESET);
+  else
+	printf(RED "HIT BAD TRAP " RESET);
+  printf("at pc = %08x\n", top->pc);
 }
 
 
@@ -187,11 +369,25 @@ uint32_t hex2num(std::string &hex)
 }
 
 
-int c_get_Reg(int idx)
+uint32_t c_get_Reg(int idx)
 {
   extern int get_Reg(int idx);
   svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
   return (uint32_t)get_Reg(idx);
+}
+
+uint32_t c_get_Inst()
+{
+  extern int get_Inst();
+  svSetScope(svGetScopeFromName("TOP.top.idu0"));
+  return (uint32_t)get_Inst();
+}
+
+uint32_t c_get_Pc()
+{
+  extern int get_Pc();
+  svSetScope(svGetScopeFromName("TOP.top.idu0"));
+  return (uint32_t)get_Pc();
 }
 
 void run_cycle(uint64_t n)
@@ -199,13 +395,35 @@ void run_cycle(uint64_t n)
   bool output_pc = false;
   if(n != (uint64_t)-1)
 	output_pc = true;
-  for(uint64_t i = 0; i < n && !ebreak_happened; i ++)
+  for(uint64_t i = 0; i < n && NPC_state != NPC_END; i ++)
   {
+#ifdef CONFIG_ITRACE
+	uint32_t isa_inst = c_get_Inst();
+	uint32_t pc = c_get_Pc();
+	int p = 0;
+	uint8_t* inst = (uint8_t*)&isa_inst;
+	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+	char inst_str[90];
+	char tmp[100];
+	p += sprintf(inst_str, "0x%08x: ", pc);
+	disassemble(inst_str + p, 100, (uint64_t)pc, inst, 4);
+	for(int i = 3; i >= 0; i --)
+	  p += sprintf(inst_str + strlen(inst_str), "%02x ", inst[i]);
+	sprintf(tmp, "\t%s", inst_str);
+	ib_inQue(tmp);
 	if(output_pc)
-	  printf("0x%08x\n", top->pc);
+	  printf("%s\n", inst_str);
+#endif
 	top->clk = 0;
 	top->eval();
-	if(ebreak_happened)break;
+	if(npc_abort)
+	{
+#ifdef CONFIG_ITRACE
+	 display_ib();
+#endif
+	  exit(1);
+  }
+	if(NPC_state = NPC_END)break;
 	top->clk = 1;
 	top->eval();
   }
@@ -216,6 +434,7 @@ int main(int argc, char** argv) {
   printf(BLUE "Open device rtc at [0x10000048, 0x1000004f]" RESET "\n");
 
   read_arg(argc, argv);
+  init_disasm();
 
   top->rst = 1;
   for(int i = 0; i < 10; i ++)
@@ -229,13 +448,15 @@ int main(int argc, char** argv) {
 
   top->rst = 0;
   time_init();
-  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
-  {
-//	run_cycle(1);
+//  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
+//  while(NPC_state != NPC_QUIT)
+//  {
 	sdb_mainloop();
-  }
+ // }
+  display_mb();
+  display_ib();
   delete top;
-  if(npcsdb_quit)
+  if(NPC_state == NPC_QUIT)
 	return 0;
   return top->a0;
 }

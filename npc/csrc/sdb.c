@@ -13,6 +13,7 @@ static int cmd_q(char *args);
 static int cmd_c(char *args);
 
 static bool batch_mode = false;
+extern int NPC_state;
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2", 
@@ -36,8 +37,8 @@ static struct {
 
 int CMD_SIZE = ARR_SIZE(cmd_table);
 
-extern void run_cycle(uint64_t n);
-extern int c_get_Reg(int idx);
+void run_cycle(uint64_t n);
+int c_get_Reg(int idx);
 
 static char* rl_gets()
 {
@@ -70,12 +71,22 @@ int cmd_help(char *args)
 
 int cmd_c(char *args)
 {
+  if(NPC_state == NPC_END)
+  {
+	printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
+	return 0;
+  }
   run_cycle(-1);
   return 0;
 }
 
 int cmd_si(char *args)
 {
+  if(NPC_state == NPC_END)
+  {
+	printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
+	return 0;
+  }
   char *arg = strtok(args, " ");
   int n = 1;
   if(arg)
@@ -145,13 +156,14 @@ int cmd_x(char *args)
 
 int cmd_q(char *args)
 {
-  extern bool npcsdb_quit;
-  npcsdb_quit = true;
+  NPC_state = NPC_QUIT;
   return 0;
 }
 
 void sdb_mainloop()
 {
+  while(1)
+  {
   if(batch_mode)
   {
 	cmd_c(NULL);
@@ -179,4 +191,6 @@ void sdb_mainloop()
 	  printf("Unknown command %s\n", cmd);
 	}
   }
+  }
+
 }
