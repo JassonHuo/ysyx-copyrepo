@@ -13,6 +13,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include "sdb.h"
+#include <capstone/capstone.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -196,8 +197,13 @@ int c_get_Reg(int idx)
 
 void run_cycle(uint64_t n)
 {
+  bool output_pc = false;
+  if(n != (uint64_t)-1)
+	output_pc = true;
   for(uint64_t i = 0; i < n && !ebreak_happened; i ++)
   {
+	if(output_pc)
+	  printf("0x%08x\n", top->pc);
 	top->clk = 0;
 	top->eval();
 	if(ebreak_happened)break;
@@ -230,5 +236,7 @@ int main(int argc, char** argv) {
 	sdb_mainloop();
   }
   delete top;
+  if(npcsdb_quit)
+	return 0;
   return top->a0;
 }

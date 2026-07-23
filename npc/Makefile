@@ -13,6 +13,19 @@ BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
 
+#FILELIST_MK = $(shell find -L ./ -name "filelist.mk")
+#include $(FILELIST_MK)
+LIBCAPSTONE = $(NPC_HOME)/capstone/repo/libcapstone.so.5
+INC_PATH += $(NPC_HOME)/capstone/repo/include
+LDFLAGS += -L$(NPC_HOME)/capstone/repo -lcapstone
+
+$(LIBCAPSTONE):
+	$(MAKE) -C $(NPC_HOME)/capstone
+
+csrc/disasm.c: $(LIBCAPSTONE)
+csrc/main.cpp: $(LIBCAPSTONE)
+
+
 default: $(BIN)
 
 $(shell mkdir -p $(BUILD_DIR))
@@ -29,6 +42,8 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 #$(info INCFLAGS = $(INCFLAGS))
 
+LDFLAGS += -lreadline
+
 
 $(BIN): $(VSRC) $(CSRC) #$(NVBOARD_ARCHIVE) 
 	@rm -rf $(OBJ_DIR)
@@ -36,8 +51,8 @@ $(BIN): $(VSRC) $(CSRC) #$(NVBOARD_ARCHIVE)
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
-		--trace-vcd -j 0 -I$(NPC_HOME)/vsrc \
-		-LDFLAGS "-lreadline"
+		--trace-vcd -j 0 -I$(NPC_HOME)/vsrc
+#		-LDFLAGS "-lreadline"
 
 IMG ?= $(NPC_HOME)/csrc/dummy.bin
 

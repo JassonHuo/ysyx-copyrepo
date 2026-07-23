@@ -112,6 +112,7 @@ void display_mem(int n, uint32_t addr)
 
 int cmd_info(char *args)
 {
+  if(args == NULL) return 0;
   char *arg = strtok(args, " ");
   if(!strcmp(arg, "r"))
 	display_regs();
