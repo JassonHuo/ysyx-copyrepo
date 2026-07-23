@@ -16,8 +16,9 @@ BIN = $(BUILD_DIR)/$(TOPNAME)
 #FILELIST_MK = $(shell find -L ./ -name "filelist.mk")
 #include $(FILELIST_MK)
 LIBCAPSTONE = $(NPC_HOME)/capstone/repo/libcapstone.so.5
+LDFLAGS += -ldl
 INC_PATH += $(NPC_HOME)/capstone/repo/include
-LDFLAGS += -L$(NPC_HOME)/capstone/repo -lcapstone
+#LDFLAGS += -L$(NPC_HOME)/capstone/repo -lcapstone
 
 $(LIBCAPSTONE):
 	$(MAKE) -C $(NPC_HOME)/capstone
@@ -62,7 +63,7 @@ all: default
 
 run: $(BIN)
 #	@$^
-	$(BIN) -f $(IMG)
+	$(BIN) -f $(IMG) $(NPCFLAGS)
 
 clean: 
 	rm -rf $(BUILD_DIR)
