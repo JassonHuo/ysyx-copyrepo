@@ -27,6 +27,7 @@
 
 bool ebreak_happened = false;
 bool npcsdb_quit = false;
+bool npc_abort = false;
 uint32_t mem[MEM_SIZE] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
 static VerilatedVcdC* tracep = new VerilatedVcdC;
@@ -36,12 +37,18 @@ static struct timeval tv;
 static uint8_t *serial_base = NULL;
 static uint64_t start_time;
 
+#ifdef CONFIG_ITRACE
 static char iring_buffer[IB_SIZE][100];
 static int ib_head = 0; 
 static int ib_tail = 0;
 
 void init_disasm();
 extern "C" void do_quitcheck();
+
+void set_abort()
+{
+  npc_abort = true;
+}
 
 static void ib_inQue(char *str)
 {
@@ -55,10 +62,13 @@ static void display_ib()
 {
   for(int i = ib_head; i != ib_tail;)
   {
-	printf("%s\n", iring_buffer[i]);
+	if(i == (ib_tail - 1 + IB_SIZE) % IB_SIZE)
+		printf(RED " -->");
+	printf("%s" RESET "\n", iring_buffer[i]);
 	i = (i + 1) % IB_SIZE;
   }
 }
+#endif
 
 static void init_file(char *args);
 static void init_batch_mode(char *args);
@@ -214,7 +224,10 @@ extern "C" void do_quitcheck()
 {
   printf("[%s:%d %s] npc: ", __FILE__, __LINE__, __func__);
   if(!ebreak_happened)
-	printf(RED "ABORT" RESET);
+  {
+	printf(RED "ABORT " RESET);
+	set_abort();
+  }
   else if(!top->a0)
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
@@ -263,7 +276,7 @@ void run_cycle(uint64_t n)
 	uint8_t* inst = (uint8_t*)&isa_inst;
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 	char tmp[100];
-	p += sprintf(tmp, "0x%08x: ", pc);
+	p += sprintf(tmp, "\t0x%08x: ", pc);
 	disassemble(tmp + p, 100, (uint64_t)pc, inst, 4);
 	for(int i = 3; i >= 0; i --)
 	  p += sprintf(tmp + strlen(tmp), "%02x ", inst[i]);
@@ -272,6 +285,13 @@ void run_cycle(uint64_t n)
 	  printf("%s\n", tmp);
 	top->clk = 0;
 	top->eval();
+	if(npc_abort)
+	{
+#ifdef CONFIG_ITRACE
+	 display_ib();
+#endif
+	  exit(1);
+  }
 	/*
 #ifdef CONFIG_ITRACE
 	uint32_t isa_inst = c_get_Inst();
@@ -304,12 +324,12 @@ int main(int argc, char** argv) {
 
   top->rst = 0;
   time_init();
-  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
+//  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
+  while(!npcsdb_quit)
   {
 //	run_cycle(1);
 	sdb_mainloop();
   }
-  display_ib();
   delete top;
   if(npcsdb_quit)
 	return 0;
