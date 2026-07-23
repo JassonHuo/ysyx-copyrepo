@@ -38,10 +38,12 @@ CSRC = $(NPC_HOME)/csrc/*.c
 CSRC += $(NPC_HOME)/csrc/*.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" -DCONFIG_ITRACE -DCONFIG_MTRACE
+CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" \
+			-DCONFIG_ITRACE -DCONFIG_MTRACE -DCONFIG_FTRACE \
+			-g
 #$(info INCFLAGS = $(INCFLAGS))
 
-LDFLAGS += -lreadline
+LDFLAGS += -lreadline -g
 
 
 $(BIN): $(VSRC) $(CSRC)
@@ -50,7 +52,7 @@ $(BIN): $(VSRC) $(CSRC)
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
-		-j 0 -I$(NPC_HOME)/vsrc 
+		-j 0 -I$(NPC_HOME)/vsrc
 #		-LDFLAGS "-lreadline"
 
 IMG ?= $(NPC_HOME)/csrc/dummy.bin
@@ -62,8 +64,10 @@ all: default
 
 run: $(BIN)
 #	@$^
-	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF)
+	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) -b
 
+gdb: $(BIN)
+	gdb $(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) 
 clean: 
 	rm -rf $(BUILD_DIR)
 

@@ -18,6 +18,21 @@ int func_top = 0;
 Elf32_Sym *sym = NULL;
 char *strarr = NULL;
 
+char *march_func(uint32_t addr)
+{
+  char *func_name = (char *)malloc(20 * sizeof(char));
+  for(int i = 0; i < func_top; i ++)
+  {
+	if(addr >= FUNC_table[i].addr && addr < FUNC_table[i].addr + FUNC_table[i].size)
+	{
+	  strcpy(func_name, FUNC_table[i].name);
+	  return func_name;
+	}
+  }
+  printf("Unknown function at %08x\n", addr);
+  return NULL;
+}
+
 void init_elf(char *file_name)
 {
   file_name = strtok(file_name, ",");
@@ -75,7 +90,7 @@ void init_elf(char *file_name)
 	  while(*p)
 		FUNC_table[func_top].name[tmp_pos ++] = *p++;
 	  FUNC_table[func_top].name[tmp_pos] = '\0';
-	  printf("%s\n", FUNC_table[func_top].name);
+//	  printf("%s\n", FUNC_table[func_top].name);
 	  func_top++;
 	}
   }

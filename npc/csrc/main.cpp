@@ -35,10 +35,12 @@
   defined(TRACE(M)) || \
   defined(TRACE(F))
 
-//#define ARR_SIZE(arr) (int)(sizeof(arr) / sizeof(arr[0]))
+#define FT_DISPLAY do{\
+  int p = 0;\
+  p += sprintf(tmp, "%08x:-", pc);\
+  for(int i = 0; i < layer; i ++) p += sprintf(tmp + p, "--");\
+}while(0)
 
-//bool ebreak_happened = false;
-bool npc_abort = false;
 uint32_t mem[MEM_SIZE] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
 static Vtop *top = new Vtop;
@@ -48,7 +50,8 @@ static uint8_t *serial_base = NULL;
 static uint64_t start_time;
 
 void sdb_mainloop();
-int NPC_state;
+char *march_func(uint32_t addr);
+int NPC_state = NPC_STOP;
 
 #ifdef CONFIG_TRACES
 
@@ -130,9 +133,10 @@ static void display_mb()
 #endif
 
 #ifdef CONFIG_FTRACE
-static char function_buffer[FB_SIZE][100];
+static char function_buffer[FB_SIZE][500];
 static int FB_head = 0;
 static int FB_tail = 0;
+static int layer = 0;
 static void fb_inQue(char *str)
 {
   INQUE(function, FB);
@@ -140,7 +144,12 @@ static void fb_inQue(char *str)
 
 static void display_fb()
 {
-  DISPLAY(function, FB);
+//  DISPLAY(function, FB);
+  for(int i = FB_head; i != FB_tail; )
+  {
+	printf("%s\n", function_buffer[i]);
+	i = (i + 1) % FB_SIZE;
+  }
 }
 #endif
 
@@ -157,10 +166,6 @@ uint32_t c_get_Pc();
 
 FILE *fp = NULL;
 
-void set_abort()
-{
-  npc_abort = true;
-}
 
 static struct {
   const char *signal;
@@ -283,6 +288,7 @@ extern "C" int pmem_read(int addr)
 #ifdef CONFIG_MTRACE
 	display_mb();
 #endif
+	NPC_state = NPC_ABORT;
 	do_quitcheck();
 	return 1;
   }
@@ -342,6 +348,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 #ifdef CONFIG_MTRACE
 	  display_mb();
 #endif
+	  NPC_state = NPC_ABORT;
 	  do_quitcheck();
 	}
   }
@@ -350,10 +357,9 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 extern "C" void do_quitcheck()
 {
   printf("[%s:%d %s] npc: ", __FILE__, __LINE__, __func__);
-  if(NPC_state != NPC_END)
+  if(NPC_state == NPC_ABORT)
   {
 	printf(RED "ABORT " RESET);
-	set_abort();
   }
   else if(!top->a0)
 	printf(GREEN "HIT GOOD TRAP " RESET);
@@ -390,6 +396,7 @@ uint32_t c_get_Pc()
   return (uint32_t)get_Pc();
 }
 
+
 void run_cycle(uint64_t n)
 {
   bool output_pc = false;
@@ -414,16 +421,77 @@ void run_cycle(uint64_t n)
 	if(output_pc)
 	  printf("%s\n", inst_str);
 #endif
+
+#ifdef CONFIG_FTRACE
+	uint32_t full_inst;
+#ifdef CONFIG_ITRACE
+	full_inst = isa_inst;
+#else
+	full_inst = c_get_Inst();
+#endif
+	uint8_t opcode = full_inst & 0x7f;
+	if(opcode == 0x6f || opcode == 0x67)
+	{
+	  uint8_t rd = (full_inst >> 7) & 0x1f;
+	  uint8_t rs1 = (full_inst >> 15) & 0x1f;
+	  int32_t imm;
+	  char tmp[500];
+	  if(opcode == 0x6f && rd == 1)
+	  {
+		imm = (((int32_t)full_inst >> 30) << 20) | 
+		  (((full_inst >> 12) & 0xff) << 12) | 
+		  (((full_inst >> 20) & 0x1) <<11) | 
+		  (((full_inst >> 21) & 0x3ff) << 1);
+		uint32_t tar_addr = pc + imm;
+		char *func_name = march_func(tar_addr);
+		int p = 0;
+		p += sprintf(tmp, "%08x:-", pc);
+		for(int i = 0; i < layer; i ++) p += sprintf(tmp + p, "--");
+		sprintf(tmp + p, "call[%s@%08x]", func_name, tar_addr);
+		free(func_name);
+		layer ++;
+		fb_inQue(tmp);
+	  }
+	  else if(opcode == 0x67)
+	  {
+		imm = (int32_t)full_inst >> 20;
+		if(imm == 0 && rd == 0 && rs1 == 1)
+		{
+		  uint32_t tar_addr = c_get_Reg(rs1);
+		  char *func_name = march_func(tar_addr);
+		  layer--;
+		  int p = 0;
+		  p += sprintf(tmp, "%08x:-", pc);
+		  for(int i = 0; i < layer; i ++) p += sprintf(tmp + p, "--");
+		  sprintf(tmp + p, "ret[%08x]", tar_addr);
+		  free(func_name);
+		  fb_inQue(tmp);
+		}
+		else if(rd == 1)
+		{
+		  uint32_t tar_addr = c_get_Reg(rs1) + imm;
+		  char *func_name = march_func(tar_addr);
+		  int p = 0;
+		  p += sprintf(tmp, "%08x:-", pc);
+		  for(int i = 0; i < layer; i ++) p += sprintf(tmp + p, "--");
+		  layer++;
+		  sprintf(tmp + p, "call[%s@%08x]", func_name, tar_addr);
+		  free(func_name);
+		  fb_inQue(tmp);
+		}
+	  }
+	}
+#endif
 	top->clk = 0;
 	top->eval();
-	if(npc_abort)
+	if(NPC_state == NPC_ABORT)
 	{
 #ifdef CONFIG_ITRACE
 	 display_ib();
 #endif
 	  exit(1);
   }
-	if(NPC_state = NPC_END)break;
+	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 	top->clk = 1;
 	top->eval();
   }
@@ -453,8 +521,9 @@ int main(int argc, char** argv) {
 //  {
 	sdb_mainloop();
  // }
-  display_mb();
-  display_ib();
+//  display_mb();
+ // display_ib();
+	display_fb();
   delete top;
   if(NPC_state == NPC_QUIT)
 	return 0;
