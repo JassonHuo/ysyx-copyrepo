@@ -1,5 +1,6 @@
 `include "global.vh"
 import "DPI-C" function void ebreak();
+import "DPI-C" function void do_quitcheck();
 module idu(
   input [31: 0] inst_in,
   input [31: 0] pc_in,
@@ -146,6 +147,7 @@ module idu(
 		  ebreak();
 	  end
 	  default begin
+		do_quitcheck();
 	  end
 	endcase
   end

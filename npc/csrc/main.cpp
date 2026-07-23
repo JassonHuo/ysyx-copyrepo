@@ -41,6 +41,7 @@ static int ib_head = 0;
 static int ib_tail = 0;
 
 void init_disasm();
+extern "C" void do_quitcheck();
 
 static void ib_inQue(char *str)
 {
@@ -50,9 +51,9 @@ static void ib_inQue(char *str)
 	ib_head = (ib_head + 1) % IB_SIZE;
 }
 
-static void diplay_ib()
+static void display_ib()
 {
-  for(int i = ib_head; i != ib_tail; i++)
+  for(int i = ib_head; i != ib_tail;)
   {
 	printf("%s\n", iring_buffer[i]);
 	i = (i + 1) % IB_SIZE;
@@ -138,12 +139,15 @@ void init_batch_mode(char *args)
 void ebreak()
 {
   ebreak_happened = true;
+  /*
   printf("[%s:%d %s] npc: ", __FILE__, __LINE__, __func__);
   if(!top->a0)
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
   printf("at pc = %08x\n", top->pc);
+  */
+  do_quitcheck();
 }
 
 static inline void time_init()
@@ -206,6 +210,18 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
   }
 }
 
+extern "C" void do_quitcheck()
+{
+  printf("[%s:%d %s] npc: ", __FILE__, __LINE__, __func__);
+  if(!ebreak_happened)
+	printf(RED "ABORT" RESET);
+  else if(!top->a0)
+	printf(GREEN "HIT GOOD TRAP " RESET);
+  else
+	printf(RED "HIT BAD TRAP " RESET);
+  printf("at pc = %08x\n", top->pc);
+}
+
 
 uint32_t hex2num(std::string &hex)
 {
@@ -241,17 +257,19 @@ void run_cycle(uint64_t n)
 	output_pc = true;
   for(uint64_t i = 0; i < n && !ebreak_happened; i ++)
   {
-#ifdef CONFIG_ITRACE
 	uint32_t isa_inst = c_get_Inst();
 	uint32_t pc = c_get_Pc();
+	int p = 0;
 	uint8_t* inst = (uint8_t*)&isa_inst;
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 	char tmp[100];
-	disassemble(tmp, 100, (uint64_t)pc, inst, 4);
-	printf("%s\n", tmp);
-#endif
+	p += sprintf(tmp, "0x%08x: ", pc);
+	disassemble(tmp + p, 100, (uint64_t)pc, inst, 4);
+	for(int i = 3; i >= 0; i --)
+	  p += sprintf(tmp + strlen(tmp), "%02x ", inst[i]);
+	ib_inQue(tmp);
 	if(output_pc)
-	  printf("0x%08x\n", top->pc);
+	  printf("%s\n", tmp);
 	top->clk = 0;
 	top->eval();
 	/*
@@ -291,6 +309,7 @@ int main(int argc, char** argv) {
 //	run_cycle(1);
 	sdb_mainloop();
   }
+  display_ib();
   delete top;
   if(npcsdb_quit)
 	return 0;

@@ -40,5 +40,7 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte)
   int ret = snprintf(str, size, "%-8s", insn->mnemonic);
   if(insn -> op_str[0] != '\0')
 	snprintf(str + ret, size - ret, "%-20s", insn->op_str);
+  else
+	snprintf(str + ret, size - ret, "%-20s", " ");
   cs_free_dl(insn, count);
 }

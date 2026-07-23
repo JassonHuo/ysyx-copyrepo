@@ -63,7 +63,7 @@ all: default
 
 run: $(BIN)
 #	@$^
-	$(BIN) -f $(IMG) $(NPCFLAGS) -b
+	$(BIN) -f $(IMG) $(NPCFLAGS)
 
 clean: 
 	rm -rf $(BUILD_DIR)
