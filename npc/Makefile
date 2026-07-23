@@ -40,7 +40,7 @@ CSRC = $(NPC_HOME)/csrc/*.c
 CSRC += $(NPC_HOME)/csrc/*.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
-CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" -DCONFIG_ITRACE
 #$(info INCFLAGS = $(INCFLAGS))
 
 LDFLAGS += -lreadline
@@ -52,7 +52,7 @@ $(BIN): $(VSRC) $(CSRC) #$(NVBOARD_ARCHIVE)
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
-		--trace-vcd -j 0 -I$(NPC_HOME)/vsrc
+		--trace-vcd -j 0 -I$(NPC_HOME)/vsrc 
 #		-LDFLAGS "-lreadline"
 
 IMG ?= $(NPC_HOME)/csrc/dummy.bin
@@ -63,7 +63,7 @@ all: default
 
 run: $(BIN)
 #	@$^
-	$(BIN) -f $(IMG) $(NPCFLAGS)
+	$(BIN) -f $(IMG) $(NPCFLAGS) -b
 
 clean: 
 	rm -rf $(BUILD_DIR)

@@ -21,6 +21,7 @@
 #define RED "\033[31m"
 #define BLUE "\033[34m"
 #define RESET "\033[0m"
+#define IB_SIZE 30
 
 //#define ARR_SIZE(arr) (int)(sizeof(arr) / sizeof(arr[0]))
 
@@ -35,8 +36,32 @@ static struct timeval tv;
 static uint8_t *serial_base = NULL;
 static uint64_t start_time;
 
+static char iring_buffer[IB_SIZE][100];
+static int ib_head = 0; 
+static int ib_tail = 0;
+
+void init_disasm();
+
+static void ib_inQue(char *str)
+{
+  memcpy(iring_buffer[ib_tail], str, 100);
+  ib_tail = (ib_tail + 1) % IB_SIZE;
+  if(ib_tail == ib_head)
+	ib_head = (ib_head + 1) % IB_SIZE;
+}
+
+static void diplay_ib()
+{
+  for(int i = ib_head; i != ib_tail; i++)
+  {
+	printf("%s\n", iring_buffer[i]);
+	i = (i + 1) % IB_SIZE;
+  }
+}
+
 static void init_file(char *args);
 static void init_batch_mode(char *args);
+int batch_mode_open();
 
 FILE *fp = NULL;
 
@@ -105,7 +130,7 @@ void init_file(char *args)
 
 void init_batch_mode(char *args)
 {
-  extern int batch_mode_open();
+//  int batch_mode_open();
   batch_mode_open();
 }
 
@@ -188,11 +213,25 @@ uint32_t hex2num(std::string &hex)
 }
 
 
-int c_get_Reg(int idx)
+uint32_t c_get_Reg(int idx)
 {
   extern int get_Reg(int idx);
   svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
   return (uint32_t)get_Reg(idx);
+}
+
+uint32_t c_get_Inst()
+{
+  extern int get_Inst();
+  svSetScope(svGetScopeFromName("TOP.top.idu0"));
+  return (uint32_t)get_Inst();
+}
+
+uint32_t c_get_Pc()
+{
+  extern int get_Pc();
+  svSetScope(svGetScopeFromName("TOP.top.idu0"));
+  return (uint32_t)get_Pc();
 }
 
 void run_cycle(uint64_t n)
@@ -202,10 +241,26 @@ void run_cycle(uint64_t n)
 	output_pc = true;
   for(uint64_t i = 0; i < n && !ebreak_happened; i ++)
   {
+#ifdef CONFIG_ITRACE
+	uint32_t isa_inst = c_get_Inst();
+	uint32_t pc = c_get_Pc();
+	uint8_t* inst = (uint8_t*)&isa_inst;
+	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+	char tmp[100];
+	disassemble(tmp, 100, (uint64_t)pc, inst, 4);
+	printf("%s\n", tmp);
+#endif
 	if(output_pc)
 	  printf("0x%08x\n", top->pc);
 	top->clk = 0;
 	top->eval();
+	/*
+#ifdef CONFIG_ITRACE
+	uint32_t isa_inst = c_get_Inst();
+	uint8_t* inst = (uint8_t*)&isa_inst;
+	void disassmble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+#endif
+*/
 	if(ebreak_happened)break;
 	top->clk = 1;
 	top->eval();
@@ -217,6 +272,7 @@ int main(int argc, char** argv) {
   printf(BLUE "Open device rtc at [0x10000048, 0x1000004f]" RESET "\n");
 
   read_arg(argc, argv);
+  init_disasm();
 
   top->rst = 1;
   for(int i = 0; i < 10; i ++)
