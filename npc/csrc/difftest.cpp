@@ -4,11 +4,14 @@
 #include <difftest-def.h>
 #include "sdb.h"
 
+#define RED "\033[31m"
+#define RESET "\033[0m"
+
 void (*difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*difftest_regcpy)(void *dut, bool directio) = NULL;
 void (*difftest_exec)(uint64_t n) = NULL;
-uint32_t ref_reg[DIFFTEST_REG_SIZE];
-uint32_t npc_reg[DIFFTEST_REG_SIZE];
+uint32_t ref_reg[33];
+uint32_t npc_reg[33];
 uint32_t c_get_Reg(int idx);
 uint32_t c_get_Pc();
 extern uint32_t mem[];
@@ -16,7 +19,7 @@ extern int NPC_state;
 
 void get_all_Regs()
 {
-  for(int i = 0; i < 33; i ++)
+  for(int i = 0; i < 32; i ++)
   {
 	npc_reg[i] = c_get_Reg(i);
   }
@@ -25,9 +28,19 @@ void get_all_Regs()
 
 bool reg_check()
 {
-  for(int i = 0; i < DIFFTEST_REG_SIZE - 1; i ++)
+  for(int i = 0; i < 33; i ++)
+  {
 	if(npc_reg[i] != ref_reg[i])
+	{
+	  for(int j = 0; j < 33; j ++)
+	  {
+		if(i == j)
+		  printf(RED);
+		printf("nemu_reg[%2d]: %08x, npc_reg[%2d]:: %08x" RESET "\n", j, ref_reg[j], j, npc_reg[j]);
+	  }
 	  return false;
+	}
+  }
   return true;
 }
 

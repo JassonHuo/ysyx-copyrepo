@@ -404,7 +404,6 @@ void run_cycle(uint64_t n)
   bool output_pc = false;
   if(n != (uint64_t)-1)
 	output_pc = true;
-  printf("%x\n", c_get_Pc());
   for(uint64_t i = 0; i < n && NPC_state != NPC_END; i ++)
   {
 #ifdef CONFIG_ITRACE
@@ -487,9 +486,6 @@ void run_cycle(uint64_t n)
 #endif
 	top->clk = 0;
 	top->eval();
-#ifdef CONFIG_DIFFTEST
-	difftest_step();
-#endif
 	if(NPC_state == NPC_ABORT)
 	{
 #ifdef CONFIG_ITRACE
@@ -500,6 +496,9 @@ void run_cycle(uint64_t n)
 	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 	top->clk = 1;
 	top->eval();
+#ifdef CONFIG_DIFFTEST
+	difftest_step();
+#endif
   }
 }
 int main(int argc, char** argv) {
@@ -522,7 +521,6 @@ int main(int argc, char** argv) {
 
   time_init();
 //  printf("PC: %08x, get_PC: %08x\n", top->pc, c_get_Pc());
-  printf("Inst: %08x\n", c_get_Inst());
   init_difftest();
 //  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
 //  while(NPC_state != NPC_QUIT)
