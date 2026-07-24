@@ -48,7 +48,6 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
 	  *(((word_t*)dut) + i) = *(p + i);
 //  printf("Reg copy complite\n");
 	}
-	printf("pc: %08x\n", cpu.pc);
   }
   else if(direction == DIFFTEST_TO_REF)
   {
@@ -58,6 +57,7 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
 	  *(p + i) = *(((word_t*)dut) + i);
 //  printf("Reg copy complite\n");
 	}
+  printf("pc: %08x\n", cpu.pc);
   }
   else
 	assert(0);
