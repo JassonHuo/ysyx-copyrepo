@@ -127,7 +127,6 @@ module idu(
 		  alu_src = `ALU_IMM;
 		  alu_op = `ALU_ADD;
 		  reg_src = `RD_ALU;
-		  $display("%x", rd);
 		  wen = 1;
 		end
 		else begin

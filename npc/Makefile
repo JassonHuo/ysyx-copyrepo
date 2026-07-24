@@ -40,9 +40,7 @@ CSRC += $(NPC_HOME)/csrc/*.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" \
-			-DCONFIG_ITRACE -DCONFIG_MTRACE -DCONFIG_FTRACE \
 			-DCONFIG_DIFFTEST\
-			-g
 #$(info INCFLAGS = $(INCFLAGS))
 
 LDFLAGS += -lreadline -g
@@ -62,7 +60,7 @@ ELF ?= $(NPC_HOME)/csrc/dummy.elf
 
 
 all: default
-	@echo "Write this Makefile by your self."
+#	@echo "Write this Makefile by your self."
 
 run: $(BIN)
 #	@$^

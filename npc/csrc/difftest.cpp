@@ -15,6 +15,7 @@ uint32_t ref_reg[33];
 uint32_t npc_reg[33];
 uint32_t c_get_Reg(int idx);
 uint32_t c_get_Pc();
+const char *get_reg_name(int i);
 extern uint32_t mem[];
 extern int NPC_state;
 
@@ -39,7 +40,9 @@ bool reg_check()
 		  printf(RED);
 		else if(ref_reg[j])
 		  printf(YELLOW);
-		printf("nemu_reg[%2d]: %08x, npc_reg[%2d]:: %08x" RESET "\n", j, ref_reg[j], j, npc_reg[j]);
+		if(j == 32) printf("pc: ");
+		else printf("%s: ", get_reg_name(j));
+		printf("nemu: %08x, npc: %08x" RESET "\n", ref_reg[j], npc_reg[j]);
 	  }
 	  return false;
 	}

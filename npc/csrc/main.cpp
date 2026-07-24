@@ -362,6 +362,7 @@ extern "C" void do_quitcheck()
   if(NPC_state == NPC_ABORT)
   {
 	printf(RED "ABORT " RESET);
+	exit(1);
   }
   else if(!top->a0)
 	printf(GREEN "HIT GOOD TRAP " RESET);
@@ -529,9 +530,12 @@ int main(int argc, char** argv) {
  // }
 //  display_mb();
  // display_ib();
-	display_fb();
   delete top;
+#ifdef CONFIG_FTRACE
+  display_fb();
+#endif
   if(NPC_state == NPC_QUIT)
 	return 0;
+  do_quitcheck();
   return top->a0;
 }
