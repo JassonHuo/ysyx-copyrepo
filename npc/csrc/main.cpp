@@ -522,6 +522,7 @@ int main(int argc, char** argv) {
 
   time_init();
 //  printf("PC: %08x, get_PC: %08x\n", top->pc, c_get_Pc());
+  printf("Inst: %08x\n", c_get_Inst());
   init_difftest();
 //  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
 //  while(NPC_state != NPC_QUIT)
