@@ -291,6 +291,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #ifdef CONFIG_FTRACE
   TRACE_FUNCTION;
 #endif
+  isa_reg_display();
 }
 
 

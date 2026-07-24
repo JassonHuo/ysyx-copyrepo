@@ -5,6 +5,7 @@
 #include "sdb.h"
 
 #define RED "\033[31m"
+#define YELLOW "\033[33m"
 #define RESET "\033[0m"
 
 void (*difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
@@ -36,6 +37,8 @@ bool reg_check()
 	  {
 		if(i == j)
 		  printf(RED);
+		else if(ref_reg[j])
+		  printf(YELLOW);
 		printf("nemu_reg[%2d]: %08x, npc_reg[%2d]:: %08x" RESET "\n", j, ref_reg[j], j, npc_reg[j]);
 	  }
 	  return false;

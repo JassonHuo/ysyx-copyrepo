@@ -40,19 +40,23 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
   char *p = (char*)&cpu;
   if(direction == DIFFTEST_TO_DUT)
   {
+	memcpy(dut, p, DIFFTEST_REG_SIZE);
+		/*
 	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
 	{
 	  *(((char*)dut) + i) = *(p + i);
-	  if(*(p + i) != 0)
-		printf("in data: %x\n", *(p + i));
 	}
+	*/
   }
   else if(direction == DIFFTEST_TO_REF)
   {
+	memcpy(p, dut, DIFFTEST_REG_SIZE);
+	/*
 	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
 	{
 	  *(p + i) = *(((char*)dut) + i);
 	}
+	*/
   }
   else
 	assert(0);
