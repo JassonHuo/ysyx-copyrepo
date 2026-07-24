@@ -51,6 +51,7 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
   }
   else if(direction == DIFFTEST_TO_REF)
   {
+	printf("DIFFTEST_REG_SIZE: %ld\n", DIFFTEST_REG_SIZE);
 	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
 	{
 	  printf("%d to ref cpu: %d, dut: %d\n", i, *(p + i), *(((word_t*)dut) + i));
