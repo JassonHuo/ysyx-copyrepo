@@ -13,6 +13,8 @@ static int cmd_q(char *args);
 static int cmd_c(char *args);
 
 static bool batch_mode = false;
+extern int NPC_state;
+extern uint32_t c_get_Pc();
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2", 
@@ -70,17 +72,30 @@ int cmd_help(char *args)
 
 int cmd_c(char *args)
 {
+  if(NPC_state == NPC_END)
+  {
+	printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
+	return 0;
+  }
+  NPC_state = NPC_RUNNING;
   run_cycle(-1);
   return 0;
 }
 
 int cmd_si(char *args)
 {
+  if(NPC_state == NPC_END)
+  {
+	printf("Program execution has ended. To restart the program, exit NPC and run again.\n");
+	return 0;
+  }
   char *arg = strtok(args, " ");
   int n = 1;
+  NPC_state = NPC_RUNNING;
   if(arg)
 	n = atoi(arg);
   run_cycle(n);
+  NPC_state = NPC_STOP;
   return 0;
 }
 
@@ -145,16 +160,18 @@ int cmd_x(char *args)
 
 int cmd_q(char *args)
 {
-  extern bool npcsdb_quit;
-  npcsdb_quit = true;
+  NPC_state = NPC_QUIT;
   return 0;
 }
 
 void sdb_mainloop()
 {
+  while(NPC_state != NPC_QUIT)
+  {
   if(batch_mode)
   {
 	cmd_c(NULL);
+	run_cycle(-1);
 	return;
   }
 
@@ -162,7 +179,7 @@ void sdb_mainloop()
   char *str_end = str + strlen(str);
   char *cmd = strtok(str, " ");
   if(cmd == NULL)
-	return;
+	continue;
   char *args = cmd + strlen(cmd) + 1;
   if(args >= str_end)
 	args = NULL;
@@ -172,11 +189,13 @@ void sdb_mainloop()
 	if(!strcmp(cmd_table[i].name, cmd))
 	{
 	  cmd_table[i].handler(args);
-	  return;
+	  break;
 	}
 	if(i == CMD_SIZE - 1)
 	{
 	  printf("Unknown command %s\n", cmd);
 	}
   }
+  }
+
 }
