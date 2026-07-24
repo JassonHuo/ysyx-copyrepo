@@ -34,7 +34,7 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
   }
   else
 	assert(0);
-//  ref_difftest_memcpy(addr, buf, n, direction);
+  printf("program copy complish\n");
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {

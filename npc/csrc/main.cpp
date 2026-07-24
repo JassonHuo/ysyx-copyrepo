@@ -394,7 +394,7 @@ uint32_t c_get_Inst()
 uint32_t c_get_Pc()
 {
   extern int get_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.idu0"));
+  svSetScope(svGetScopeFromName("TOP.top.pc0"));
   return (uint32_t)get_Pc();
 }
 
@@ -404,6 +404,7 @@ void run_cycle(uint64_t n)
   bool output_pc = false;
   if(n != (uint64_t)-1)
 	output_pc = true;
+  printf("%x\n", c_get_Pc());
   for(uint64_t i = 0; i < n && NPC_state != NPC_END; i ++)
   {
 #ifdef CONFIG_ITRACE
@@ -508,7 +509,6 @@ int main(int argc, char** argv) {
 
   read_arg(argc, argv);
   init_disasm();
-  init_difftest();
 
   top->rst = 1;
   for(int i = 0; i < 10; i ++)
@@ -520,8 +520,9 @@ int main(int argc, char** argv) {
   }
   top->rst = 0;
 
-  top->rst = 0;
   time_init();
+//  printf("PC: %08x, get_PC: %08x\n", top->pc, c_get_Pc());
+  init_difftest();
 //  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
 //  while(NPC_state != NPC_QUIT)
 //  {
