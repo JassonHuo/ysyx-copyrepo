@@ -155,12 +155,14 @@ module idu(
 	return inst_in;
   endfunction
 
+  /*
   function int get_Pc();
 	return pc_in;
   endfunction
+  */
 
 
   export "DPI-C" function get_Inst;
-  export "DPI-C" function get_Pc;
+//  export "DPI-C" function get_Pc;
 
 endmodule

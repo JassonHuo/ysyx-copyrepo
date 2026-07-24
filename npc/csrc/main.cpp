@@ -51,6 +51,7 @@ static uint64_t start_time;
 
 void sdb_mainloop();
 char *march_func(uint32_t addr);
+void difftest_step();
 int NPC_state = NPC_STOP;
 
 #ifdef CONFIG_TRACES
@@ -155,6 +156,7 @@ static void display_fb()
 
 
 void init_disasm();
+void init_difftest();
 extern "C" void do_quitcheck();
 
 static void init_file(char *args);
@@ -392,7 +394,7 @@ uint32_t c_get_Inst()
 uint32_t c_get_Pc()
 {
   extern int get_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.idu0"));
+  svSetScope(svGetScopeFromName("TOP.top.pc0"));
   return (uint32_t)get_Pc();
 }
 
@@ -494,6 +496,9 @@ void run_cycle(uint64_t n)
 	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 	top->clk = 1;
 	top->eval();
+#ifdef CONFIG_DIFFTEST
+	difftest_step();
+#endif
   }
 }
 int main(int argc, char** argv) {
@@ -514,8 +519,9 @@ int main(int argc, char** argv) {
   }
   top->rst = 0;
 
-  top->rst = 0;
   time_init();
+//  printf("PC: %08x, get_PC: %08x\n", top->pc, c_get_Pc());
+  init_difftest();
 //  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
 //  while(NPC_state != NPC_QUIT)
 //  {
@@ -523,8 +529,10 @@ int main(int argc, char** argv) {
  // }
 //  display_mb();
  // display_ib();
-	display_fb();
   delete top;
+#ifdef CONFIG_FTRACE
+  display_fb();
+#endif
   if(NPC_state == NPC_QUIT)
 	return 0;
   return top->a0;

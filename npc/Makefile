@@ -16,7 +16,8 @@ BIN = $(BUILD_DIR)/$(TOPNAME)
 LIBCAPSTONE = $(NPC_HOME)/capstone/repo/libcapstone.so.5
 LDFLAGS += -ldl
 INC_PATH += $(NPC_HOME)/capstone/repo/include
-INC_PATH += npc.h
+LIBNEMUDIFF = $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
+INC_PATH += $(NEMU_HOME)/include
 
 $(LIBCAPSTONE):
 	$(MAKE) -C $(NPC_HOME)/capstone
@@ -39,8 +40,7 @@ CSRC += $(NPC_HOME)/csrc/*.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\"" \
-			-DCONFIG_ITRACE -DCONFIG_MTRACE -DCONFIG_FTRACE \
-			-g
+			-DCONFIG_DIFFTEST\
 #$(info INCFLAGS = $(INCFLAGS))
 
 LDFLAGS += -lreadline -g
@@ -60,7 +60,7 @@ ELF ?= $(NPC_HOME)/csrc/dummy.elf
 
 
 all: default
-	@echo "Write this Makefile by your self."
+#	@echo "Write this Makefile by your self."
 
 run: $(BIN)
 #	@$^

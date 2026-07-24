@@ -19,6 +19,10 @@ module pc(
 	else
 	  pc <= pc_sync;
   end
+  function int get_Pc();
+	return pc;
+  endfunction
+  export "DPI-C" function get_Pc;
 
   assign pc_out = pc;
 
