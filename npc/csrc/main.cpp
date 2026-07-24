@@ -51,6 +51,7 @@ static uint64_t start_time;
 
 void sdb_mainloop();
 char *march_func(uint32_t addr);
+void difftest_step();
 int NPC_state = NPC_STOP;
 
 #ifdef CONFIG_TRACES
@@ -155,6 +156,7 @@ static void display_fb()
 
 
 void init_disasm();
+void init_difftest();
 extern "C" void do_quitcheck();
 
 static void init_file(char *args);
@@ -484,6 +486,9 @@ void run_cycle(uint64_t n)
 #endif
 	top->clk = 0;
 	top->eval();
+#ifdef CONFIG_DIFFTEST
+	difftest_step();
+#endif
 	if(NPC_state == NPC_ABORT)
 	{
 #ifdef CONFIG_ITRACE
@@ -503,6 +508,7 @@ int main(int argc, char** argv) {
 
   read_arg(argc, argv);
   init_disasm();
+  init_difftest();
 
   top->rst = 1;
   for(int i = 0; i < 10; i ++)
