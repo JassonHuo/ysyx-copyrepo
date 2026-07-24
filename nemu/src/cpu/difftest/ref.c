@@ -53,11 +53,10 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
   {
 	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
 	{
-//	  printf("to ref cpu: %d, dut: %d\n", *(p + i), *(((word_t*)dut) + i));
+	  printf("%d to ref cpu: %d, dut: %d\n", i, *(p + i), *(((word_t*)dut) + i));
 	  *(p + i) = *(((word_t*)dut) + i);
 //  printf("Reg copy complite\n");
 	}
-  printf("pc: %08x\n", cpu.pc);
   }
   else
 	assert(0);
