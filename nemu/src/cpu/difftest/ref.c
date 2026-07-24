@@ -37,15 +37,14 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
-//  ref_difftest_regcpy(dut, direction);
   char *p = (char*)&cpu;
   if(direction == DIFFTEST_TO_DUT)
   {
 	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
 	{
-//	  printf("to dut cpu: %d, dut: %d\n", *(p + i), *(((word_t*)dut) + i));
 	  *(((char*)dut) + i) = *(p + i);
-//  printf("Reg copy complite\n");
+	  if(*(p + i) != 0)
+		printf("in data: %x\n", *(p + i));
 	}
   }
   else if(direction == DIFFTEST_TO_REF)
@@ -53,7 +52,6 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
 	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
 	{
 	  *(p + i) = *(((char*)dut) + i);
-//  printf("Reg copy complite\n");
 	}
   }
   else
