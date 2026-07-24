@@ -16,11 +16,11 @@ extern int NPC_state;
 
 void get_all_Regs()
 {
-  for(int i = 0; i < DIFFTEST_REG_SIZE - 1; i ++)
+  for(int i = 0; i < 33; i ++)
   {
 	npc_reg[i] = c_get_Reg(i);
   }
-  npc_reg[DIFFTEST_REG_SIZE - 1] = c_get_Pc();
+  npc_reg[32] = c_get_Pc();
 }
 
 bool reg_check()
