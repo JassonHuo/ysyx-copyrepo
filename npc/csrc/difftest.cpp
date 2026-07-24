@@ -43,7 +43,7 @@ void init_difftest()
   difftest_exec = (void(*)(uint64_t))dlsym(dl_handle, "difftest_exec");
   assert(difftest_exec);
 
-  difftest_memcpy(0x80000000, (void*)mem, 4 * MEM_SIZE, DIFFTEST_TO_REF);
+  difftest_memcpy(0x80000000, (void*)mem, 0x7ffffff, DIFFTEST_TO_REF);
   printf("test\n");
   get_all_Regs();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);

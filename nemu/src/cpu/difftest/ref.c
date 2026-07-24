@@ -32,7 +32,7 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 	for(int i = 0; i < n; i ++)
 	{
 	  paddr_write(addr + i, 1, *(char*)(buf + i));
-  	  printf("copy memory at %08x\n", addr + i);
+//  	  printf("copy memory at %08x\n", addr + i);
 	}
   }
   else
