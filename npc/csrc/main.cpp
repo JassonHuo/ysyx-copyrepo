@@ -280,6 +280,7 @@ extern "C" int pmem_read(int addr)
   }
 #endif
 #endif
+
   if(addr == 0x10000000) return 0;
   else if(addr == 0x10000048) return (uint32_t)get_time();
   else if(addr == 0x1000004c) return get_time() >> 32;

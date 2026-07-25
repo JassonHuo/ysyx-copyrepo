@@ -133,8 +133,10 @@ module idu(
 		  is_signed = 1'b0;
 		  alu_op = `ALU_LAREQ;
 		end
-		else
+		else begin
+		  $display("branch abort");
 		  npc_abort();
+		end
 	  end
 	  7'b0000011:begin   //lb - lhu
 		imm = Iimm;
@@ -161,8 +163,10 @@ module idu(
 		  width = `MEM_HALF;
 		  is_signed = 0;
 		end
-		else
+		else begin
+		  $display("load abort");
 		  npc_abort();
+		end
 	  end
 	  7'b0100011:begin    //sb - sw
 		imm = Simm;
@@ -181,8 +185,10 @@ module idu(
 		else if(funct3 == 3'b010)begin	  //SW
 		  width = `MEM_WORD;
 		end
-		else
+		else begin
+		  $display("store abort");
 		  npc_abort();
+		end
 	  end
 	  7'b0010011:begin				//addi - srai
 		imm = Iimm;
@@ -221,6 +227,7 @@ module idu(
 		  alu_op = `ALU_RIGHT;
 		end
 		else begin
+		  $display("immi abort");
 		  npc_abort();
 		end
 	  end
@@ -262,14 +269,17 @@ module idu(
 		else if(funct3 == 3'b111 && funct7 == 7'b0000000)begin  //and
 		  alu_op = `ALU_AND;
 		end
-		else
+		else begin
+		  $display("reg abort");
 		  npc_abort();
+		end
 	  end
 	  7'b1110011:begin		//EBREAK
 		if(Iimm == 32'b1)
 		  ebreak();
 	  end
 	  default begin
+		$display("default abort");
 		npc_abort();
 	  end
 	endcase
