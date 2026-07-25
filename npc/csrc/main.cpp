@@ -252,7 +252,6 @@ void ebreak()
   printf("at pc = %08x\n", top->pc);
   */
   NPC_state = NPC_END;
-  do_quitcheck();
 }
 
 static inline void time_init()
@@ -281,6 +280,7 @@ extern "C" int pmem_read(int addr)
   }
 #endif
 #endif
+
   if(addr == 0x10000000) return 0;
   else if(addr == 0x10000048) return (uint32_t)get_time();
   else if(addr == 0x1000004c) return get_time() >> 32;
@@ -362,15 +362,21 @@ extern "C" void do_quitcheck()
   if(NPC_state == NPC_ABORT)
   {
 	printf(RED "ABORT " RESET);
-	exit(1);
   }
   else if(!top->a0)
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
   printf("at pc = %08x\n", top->pc);
+  if(NPC_state == NPC_ABORT)
+	exit(1);
 }
 
+extern "C" void npc_abort()
+{
+  NPC_state = NPC_ABORT;
+  do_quitcheck();
+}
 
 uint32_t hex2num(std::string &hex)
 {
@@ -487,6 +493,7 @@ void run_cycle(uint64_t n)
 #endif
 	top->clk = 0;
 	top->eval();
+	/*
 	if(NPC_state == NPC_ABORT)
 	{
 #ifdef CONFIG_ITRACE
@@ -494,12 +501,20 @@ void run_cycle(uint64_t n)
 #endif
 	  exit(1);
   }
+  */
 	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 	top->clk = 1;
 	top->eval();
 #ifdef CONFIG_DIFFTEST
 	difftest_step();
 #endif
+	if(NPC_state == NPC_ABORT)
+	{
+#ifdef CONFIG_ITRACE
+	 display_ib();
+#endif
+	  do_quitcheck();
+	}
   }
 }
 int main(int argc, char** argv) {

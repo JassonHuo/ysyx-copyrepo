@@ -40,8 +40,8 @@ bool reg_check()
 		  printf(RED);
 		else if(ref_reg[j])
 		  printf(YELLOW);
-		if(j == 32) printf("pc: ");
-		else printf("%s: ", get_reg_name(j));
+		if(j == 32) printf("pc : ");
+		else printf("%-3s: ", get_reg_name(j));
 		printf("nemu: %08x, npc: %08x" RESET "\n", ref_reg[j], npc_reg[j]);
 	  }
 	  return false;
@@ -73,6 +73,6 @@ void difftest_step()
   difftest_regcpy((void*)ref_reg, DIFFTEST_TO_DUT);
   get_all_Regs();
   bool ret = reg_check();
-  if(!ret)
+  if(ret == false)
 	NPC_state = NPC_ABORT;
 }
