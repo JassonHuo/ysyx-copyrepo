@@ -52,6 +52,7 @@ bool reg_check()
 
 void init_difftest()
 {
+#ifdef CONFIG_DIFFTEST
   void *dl_handle = dlopen("../nemu/build/riscv32-nemu-interpreter-so", RTLD_LAZY);
   assert(dl_handle);
 
@@ -65,6 +66,7 @@ void init_difftest()
   difftest_memcpy(0x80000000, (void*)mem, 0x7ffffff, DIFFTEST_TO_REF);
   get_all_Regs();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
+#endif
 }
 
 void difftest_step()

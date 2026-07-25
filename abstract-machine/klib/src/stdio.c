@@ -151,6 +151,10 @@ int PRINT(const char* fmt, va_list args)
 		buffer[buffer_pos++] = (char)va_arg(args, int);
       else
       {
+		char out[100] = "Unknown signal: ";
+		for(int i = 0; i < strlen(out);  i++)
+		  putch(out[i]);
+		putch(fmt[fmt_pos]);
         halt(1);
       }
     }

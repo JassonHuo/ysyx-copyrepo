@@ -51,7 +51,10 @@ static uint64_t start_time;
 
 void sdb_mainloop();
 char *march_func(uint32_t addr);
+#ifdef CONFIG_DIFFTEST
 void difftest_step();
+void init_difftest();
+#endif
 int NPC_state = NPC_STOP;
 
 #ifdef CONFIG_TRACES
@@ -156,7 +159,6 @@ static void display_fb()
 
 
 void init_disasm();
-void init_difftest();
 extern "C" void do_quitcheck();
 
 static void init_file(char *args);
@@ -537,7 +539,9 @@ int main(int argc, char** argv) {
 
   time_init();
 //  printf("PC: %08x, get_PC: %08x\n", top->pc, c_get_Pc());
+#ifdef CONFIG_DIFFTEST
   init_difftest();
+#endif
 //  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
 //  while(NPC_state != NPC_QUIT)
 //  {
