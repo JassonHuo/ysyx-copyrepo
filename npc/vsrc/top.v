@@ -18,7 +18,7 @@ module top(
   wire [31: 0] src2_idu_exu;
   wire [3: 0] alu_op_idu_exu;
   wire [1: 0] pc_src_idu_exu;
-  wire [1: 0] reg_src_idu_exu;
+  wire [2: 0] reg_src_idu_exu;
   wire alu_src_idu_exu;
   wire [3: 0] rd_addr_idu_exu;
   wire wen_idu_exu;
@@ -42,7 +42,7 @@ module top(
   wire [31: 0] pc_sync_exu_lsu;
   wire [31: 0] pc_exu_lsu;
   wire [1: 0] pc_src_exu_lsu;
-  wire [1: 0] reg_src_exu_lsu;
+  wire [2: 0] reg_src_exu_lsu;
   wire [3: 0] rd_addr_exu_lsu;
   wire wen_exu_lsu;
   wire [31: 0] imm_exu_lsu;
@@ -51,7 +51,7 @@ module top(
   wire [31: 0] pc_lsu_wbu;
   wire [31: 0] alu_lsu_wbu;
   wire [1: 0] pc_src_lsu_wbu;
-  wire [1: 0] reg_src_lsu_wbu;
+  wire [2: 0] reg_src_lsu_wbu;
   wire [3: 0] rd_addr_lsu_wbu;
   wire wen_lsu_wbu;
   wire [31: 0] imm_lsu_wbu;
@@ -71,6 +71,9 @@ module top(
 
   wire [1: 0] width_idu_exu;
   wire [1: 0] width_exu_lsu;
+  wire is_signed_idu_exu;
+  wire is_branch_idu_exu;
+  wire is_signed_exu_lsu;
 
   pc pc0(
 	.pc_en(pc_en_wb_pc),
@@ -105,6 +108,8 @@ module top(
 	.alu_src(alu_src_idu_exu),
 	.rd_addr(rd_addr_idu_exu),
 	.wen(wen_idu_exu),
+	.is_signed(is_signed_idu_exu),
+	.is_branch(is_branch_idu_exu),
 
 	.raddr1(raddr1_idu_gpr),
 	.raddr2(raddr2_idu_gpr),
@@ -161,7 +166,10 @@ module top(
 	.valid_out(valid_exu_lsu),
 	.src2_out(src2_exu_lsu),
 	.width(width_idu_exu),
-	.width_out(width_exu_lsu)
+	.width_out(width_exu_lsu),
+	.is_signed(is_signed_idu_exu),
+	.is_branch(is_branch_idu_exu),
+	.is_signed_out(is_signed_exu_lsu)
   );
 
   lsu lsu0(
@@ -188,7 +196,8 @@ module top(
 	.valid(valid_exu_lsu),
 	.rdata(rdata_lsu_wbu),
 	.src2(src2_exu_lsu),
-	.width(width_exu_lsu)
+	.width(width_exu_lsu),
+	.is_signed(is_signed_exu_lsu)
   );
 
   wbu wbu0(

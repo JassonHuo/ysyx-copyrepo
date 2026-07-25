@@ -8,7 +8,7 @@ module exu(
   input [31: 0] src2,
   input [3: 0] alu_op,
   input [1: 0] pc_src,
-  input [1: 0] reg_src,
+  input [2: 0] reg_src,
   input alu_src,
   input [3: 0] rd_addr,
   input wen,
@@ -17,13 +17,15 @@ module exu(
   input [7: 0] wmask,
   input valid,
   input [1: 0] width,
+  input is_signed,
+  input is_branch,
 
   output [31: 0] alu_out,
   output [31: 0] pc_sync_out,
   output [31: 0] pc_out,
 
   output [1: 0] pc_src_out,
-  output [1: 0] reg_src_out,
+  output [2: 0] reg_src_out,
   output [3: 0] rd_addr_out,
   output wen_out,
 
@@ -35,7 +37,9 @@ module exu(
   output [7: 0] wmask_out,
   output valid_out,
   output [31: 0] src2_out,
-  output [1: 0] width_out
+  output [1: 0] width_out,
+  output is_signed_out
+
 );
 
   assign pc_sync_out = pc_sync_in;
@@ -44,6 +48,7 @@ module exu(
   assign reg_src_out = reg_src;
   assign rd_addr_out = rd_addr;
   assign wen_out = wen;
+  assign is_signed_out = is_signed;
 
   assign imm_out = imm;
 
@@ -64,7 +69,8 @@ module exu(
 	.y((alu_src == `ALU_IMM ? imm: src2)),
 	.alu_op(alu_op),
 	.z(alu_out),
-	.zero(zero)
+	.zero(zero),
+	.is_signed(is_signed)
   );
 
 

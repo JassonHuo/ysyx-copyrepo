@@ -1,6 +1,6 @@
 `include "global.vh"
 import "DPI-C" function void ebreak();
-import "DPI-C" function void do_quitcheck();
+import "DPI-C" function void npc_abort();
 module idu(
   input [31: 0] inst_in,
   input [31: 0] pc_in,
@@ -11,10 +11,12 @@ module idu(
   output [31: 0] src2,
   output reg [3: 0] alu_op,
   output reg [1: 0] pc_src,
-  output reg [1: 0] reg_src,
+  output reg [2: 0] reg_src,
   output reg alu_src,
   output reg [3: 0] rd_addr,
   output reg wen,
+  output is_branch,
+  output is_signed,
 
   output [3: 0] raddr1,
   output [3: 0] raddr2,
@@ -76,11 +78,25 @@ module idu(
 	mem_wen = 0;
 	valid = 0;
 	width = 0;
+	is_branch = 0;
+	is_signed = 0;
 	case(opcode)
 	  7'b0110111:begin   //LUI
 		imm = Uimm;
 		pc_src = `PC_NEXT;
 		reg_src = `RD_IMM;
+		wen = 1;
+	  end
+	  7'b0010111:begin   //AUIPC
+		imm = Uimm;
+		pc_src = `PC_NEXT;
+		reg_src = `RD_AUIPC;
+		wen = 1;
+	  end
+	  7'b1101111:begin  //JAL
+		pc_src = `PC_JAL;
+		imm = Jimm;
+		reg_src = `RD_PC;
 		wen = 1;
 	  end
 	  7'b1100111:begin   //JALR
@@ -91,21 +107,64 @@ module idu(
 		reg_src = `RD_PC;
 		wen = 1;
 	  end
-	  7'b0000011:begin
+	  7'b1100011:begin  //beq - bgeu
+		imm = Bimm;
+		is_branch = 1'b1;
+		pc_src = `PC_BRANCH;
+		is_signed = 1;
+		alu_src = `ALU_RS2;
+		if(funct3 == 3'b000)begin //beq
+		  alu_op = `ALU_EQUAL;
+		end
+		else if(funct3 == 3'b001)begin //bne
+		  alu_op = `ALU_NEQUAL;
+		end
+		else if(funct3 == 3'b100)begin //blt
+		  alu_op = `ALU_SMALL;
+		end
+		else if(funct3 == 3'b101)begin //bge
+		  alu_op = `ALU_LAREQ;
+		end
+		else if(funct3 == 3'b110)begin //bltu
+		  is_signed = 1'b0;
+		  alu_op = `ALU_SMALL;
+		end
+		else if(funct3 == 3'b111)begin //bgeu
+		  is_signed = 1'b0;
+		  alu_op = `ALU_LAREQ;
+		end
+		else
+		  npc_abort();
+	  end
+	  7'b0000011:begin   //lb - lhu
 		imm = Iimm;
 		alu_src = `ALU_IMM;
 		alu_op = `ALU_ADD;
 		reg_src = `RD_MEM;
 		wen = 1;
 		valid = 1;
-		if(funct3 == 3'b010)begin   //LW
+		is_signed = 1;
+		if(funct3 == 3'b000)begin   //lb
+		  width = `MEM_BYTE;
+		end
+		else if(funct3 == 3'b001)begin //lh
+		  width = `MEM_HALF;
+		end
+		else if(funct3 == 3'b010)begin   //LW
 		  width = `MEM_WORD;
 		end
 		else if(funct3 == 3'b100)begin  //LBU
 		  width = `MEM_BYTE;
+		  is_signed = 0;
 		end
+		else if(funct3 == 3'b101)begin  //lhu
+		  width = `MEM_HALF;
+		  is_signed = 0;
+		end
+		else
+		  npc_abort();
 	  end
-	  7'b0100011:begin
+	  7'b0100011:begin    //sb - sw
 		imm = Simm;
 		alu_src = `ALU_IMM;
 		alu_op = `ALU_ADD;
@@ -116,37 +175,102 @@ module idu(
 		if(funct3 == 3'b000)begin   //SB
 		  width = `MEM_BYTE;
 		end
+		else if(funct3 == 3'b001)begin    //sh
+		  width = `MEM_HALF;
+		end
 		else if(funct3 == 3'b010)begin	  //SW
 		  width = `MEM_WORD;
 		end
+		else
+		  npc_abort();
 	  end
-	  7'b0010011:begin
+	  7'b0010011:begin				//addi - srai
+		imm = Iimm;
+		pc_src = `PC_NEXT;
+		alu_src = `ALU_IMM;
+		reg_src = `RD_ALU;
+		wen = 1;
+		is_signed = 1;
 		if(funct3 == 3'b000)begin   //ADDI
-		  imm = Iimm;
-		  pc_src = `PC_NEXT;
-		  alu_src = `ALU_IMM;
 		  alu_op = `ALU_ADD;
-		  reg_src = `RD_ALU;
-		  wen = 1;
+		end
+		else if(funct3 == 3'b010)begin   //slti
+		  alu_op = `ALU_SMALL;
+		end
+		else if(funct3 == 3'b011)begin   //sltiu
+		  alu_op = `ALU_SMALL;
+		  is_signed = 0;
+		end
+		else if(funct3 == 3'b100)begin	//xori
+		  alu_op = `ALU_XOR;
+		end
+		else if(funct3 == 3'b110)begin	//ori
+		  alu_op = `ALU_OR;
+		end
+		else if(funct3 == 3'b111)begin  //andi
+		  alu_op = `ALU_AND;
+		end
+		else if(funct3 == 3'b001 && funct7 == 7'b00000000)begin  //slli
+		  alu_op = `ALU_LEFT;
+		end
+		else if(funct3 == 3'b101 && funct7 == 7'b00000000)begin  //srli
+		  alu_op = `ALU_RIGHT;
+		  is_signed = 0;
+		end
+		else if(funct3 == 3'b101 && funct7 == 7'b0100000)begin //srai
+		  alu_op = `ALU_RIGHT;
 		end
 		else begin
+		  npc_abort();
 		end
 	  end
-	  7'b0110011:begin
+	  7'b0110011:begin       //add - and
+		pc_src = `PC_NEXT;
+		alu_src = `ALU_RS2;
+		reg_src = `RD_ALU;
+		wen = 1;
+		is_signed = 1;
 		if(funct3 == 3'b000 && funct7 == 7'b0000000)begin //ADD
-		  pc_src = `PC_NEXT;
-		  alu_src = `ALU_RS2;
 		  alu_op = `ALU_ADD;
-		  reg_src = `RD_ALU;
-		  wen = 1;
 		end
+		else if(funct3 == 3'b000 && funct7 == 7'b0100000)begin  //sub
+		  alu_op = `ALU_SUB;
+		end
+		else if(funct3 == 3'b001 && funct7 == 7'b0000000)begin  //sll
+		  alu_op = `ALU_LEFT;
+		end
+		else if(funct3 == 3'b010 && funct7 == 7'b0000000)begin	//slt
+		  alu_op = `ALU_SMALL;
+		end
+		else if(funct3 == 3'b011 && funct7 == 7'b0000000)begin  //sltu
+		  alu_op = `ALU_SMALL;
+		  is_signed = 0;
+		end
+		else if(funct3 == 3'b100 && funct7 == 7'b0000000)begin	//xor
+		  alu_op = `ALU_XOR;
+		end
+		else if(funct3 == 3'b101 && funct7 == 7'b0000000)begin  //srl
+		  alu_op = `ALU_RIGHT;
+		  is_signed = 0;
+		end
+		else if(funct3 == 3'b101 && funct7 == 7'b0100000)begin  //sra
+		  alu_op = `ALU_RIGHT;
+		end
+		else if(funct3 == 3'b110 && funct7 == 7'b0000000)begin  //or
+		  alu_op = `ALU_OR;
+		end
+		else if(funct3 == 3'b111 && funct7 == 7'b0000000)begin  //and
+		  alu_op = `ALU_AND;
+		end
+		else
+		  npc_abort();
 	  end
 	  7'b1110011:begin		//EBREAK
 		if(Iimm == 32'b1)
 		  ebreak();
 	  end
 	  default begin
-		do_quitcheck();
+		npc_abort();
 	  end
 	endcase
   end

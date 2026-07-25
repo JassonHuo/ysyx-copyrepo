@@ -7,7 +7,7 @@ module lsu(
 
   input [31: 0] alu,
   input [1: 0] pc_src,
-  input [1: 0] reg_src,
+  input [2: 0] reg_src,
   input [3: 0] rd_addr,
   input wen,
 
@@ -21,12 +21,13 @@ module lsu(
   input [31: 0] src2,
 
   input [1: 0] width,
+  input is_signed,
 
   output [31: 0] pc_sync_out,
   output [31: 0] pc_out,
   output [31: 0] alu_out,
   output [1: 0] pc_src_out,
-  output [1: 0] reg_src_out,
+  output [2: 0] reg_src_out,
   output [3: 0] rd_addr_out,
   output wen_out,
 
@@ -57,6 +58,8 @@ module lsu(
 	  rdata = (pmem_read(alu) >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
+	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
+		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
 //	  $display("lsu load %08x, pc: %08x", rdata, pc_in);
 //	  $display("lsu store: %08x, mem_wen = %d, pc: %08x", src2, mem_wen, pc_in);
 //	  $display("addr: %x", src2);
