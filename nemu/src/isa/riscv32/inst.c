@@ -113,7 +113,7 @@ static int decode_exec(Decode *s) {
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
   INSTPAT("0000000 00000 00000 000 00000 11100 11", ecall  , N, s->dnpc = isa_raise_intr(11, s->pc));
-  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, s->dnpc = CSR(0x341) + 4);
+  INSTPAT("0011000 00010 00000 000 00000 11100 11", mret   , N, s->dnpc = CSR(0x341));
 
   //RV32M
 //  INSTPAT("0000001 ????? ????? 110 ????? 01100 11", rem	   , R, R(rd) = (src2 != 0 ? ((int32_t)src1 - (int32_t)src1 / (int32_t)src2 * (int32_t)src2): (int32_t)src1));
