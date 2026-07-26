@@ -97,7 +97,7 @@ void init_elf(char *elf_file)
 	}
   }
 
-  FUNC* fs = (FUNC*)malloc(2 * sym_length * sizeof(FUNC));
+  FUNC* fs = (FUNC*)malloc(sym_length * sizeof(FUNC));
   for(int i = 0; i < sym_length; i++)
   {
 	if(ELF32_ST_TYPE(sym[i].st_info) == STT_FUNC)
