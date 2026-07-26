@@ -134,14 +134,11 @@ static int iring_p = 0;
 
 void display_iring()
 {
-  int flag = 1;
-  for(int i = 0; (flag && i < IRING_SIZE); i++)
+  for(int i = 0;  i < IRING_SIZE; i++)
   {
 	if(i == (iring_p - 1 + IRING_SIZE) % IRING_SIZE)
 	{
 	  printf(RED " -->");
-	if(i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
-	  flag = 0;
 	}
 	printf("%s" RESET "\n", iringbuf[i]);
   }
