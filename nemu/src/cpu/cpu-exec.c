@@ -26,7 +26,7 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10
-#define IRING_SIZE 20
+#define IRING_SIZE 100
 #define FB_SIZE 300
 
 #define RED "\033[31m"
@@ -121,27 +121,26 @@ void init_elf(char *elf_file)
 #endif
 }
 
-CPU_state cpu = {};
+CPU_state cpu = {.csr ={[0x300] = 0x1800}};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
+#ifdef CONFIG_WATCHPOINT
 uint32_t trace_wp();
+#endif
 
 static char iringbuf[IRING_SIZE][100] = {0};
 static int iring_p = 0;
 
 void display_iring()
 {
-  int flag = 1;
-  for(int i = 0; (flag && i < IRING_SIZE); i++)
+  for(int i = 0;  i < IRING_SIZE; i++)
   {
 	if(i == (iring_p - 1 + IRING_SIZE) % IRING_SIZE)
 	{
 	  printf(RED " -->");
-	if(i != IRING_SIZE - 1 && iringbuf[i + 1] != 0)
-	  flag = 0;
 	}
 	printf("%s" RESET "\n", iringbuf[i]);
   }
@@ -310,6 +309,10 @@ static void execute(uint64_t n) {
 #ifdef CONFIG_MTRACE
 	  extern void display_mt_buffer();
 	  display_mt_buffer();
+#endif
+#ifdef CONFIG_ETRACE
+	  void display_et();
+	  display_et();
 #endif
 	  break;
 	}
