@@ -308,6 +308,10 @@ static void execute(uint64_t n) {
 	  extern void display_mt_buffer();
 	  display_mt_buffer();
 #endif
+#ifdef CONFIG_ETRACE
+	  void display_et();
+	  display_et();
+#endif
 	  break;
 	}
     IFDEF(CONFIG_DEVICE, device_update());

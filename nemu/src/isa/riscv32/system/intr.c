@@ -15,12 +15,44 @@
 
 #include <isa.h>
 
+#ifdef CONFIG_ETRACE
+#define ET_SIZE 100
+#define YELLOW "\033[33m"
+#define RESET "\033[0m"
+static char excep_buffer[ET_SIZE][100];
+static int et_head = 0;
+static int et_tail = 0;
+
+static void et_inQue(char *str)
+{
+  strcpy(excep_buffer[et_tail], str);
+  et_tail = (et_tail + 1) % ET_SIZE;
+  if(et_tail == et_head) 
+	et_head = (et_head + 1) % ET_SIZE;
+}
+
+void display_et()
+{
+  printf(YELLOW "Exception trace log: \n" RESET);
+  for(int i = et_head; i != et_tail; )
+  {
+	printf("%s\n", excep_buffer[i]);
+	i = (i + 1) % ET_SIZE;
+  }
+}
+#endif
+
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   /* TODO: Trigger an interrupt/exception with ``NO''.
    * Then return the address of the interrupt/exception vector.
    */
   cpu.csr[0x341] = epc;	  //mepc
   cpu.csr[0x342] = NO;	  //mcause	 
+#ifdef CONFIG_ETRACE
+  char tmp[100] = "";
+  sprintf(tmp, "Trap happened at mepc: %08x, mcause: %d, targetPc: %08x", epc, NO, cpu.csr[0x305]);
+  et_inQue(tmp);
+#endif
   return cpu.csr[0x305];  //mtvec
 }
 
