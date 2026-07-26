@@ -26,7 +26,7 @@
  * You can modify this value as you want.
  */
 #define MAX_INST_TO_PRINT 10
-#define IRING_SIZE 20
+#define IRING_SIZE 100
 #define FB_SIZE 300
 
 #define RED "\033[31m"
