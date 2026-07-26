@@ -30,14 +30,17 @@ typedef struct watchpoint {
 } WP;
 */
 
+#ifdef CONFIG_WATCHPOINT
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
 enum {
   HW_WP = 255, SW_WP, READ_WP, ACC_WP, DISP_KEEP, DISP_DEL, DISP_DIS, ENB_Y, ENB_N, 
 };
+#endif
 
 void init_wp_pool() {
+#ifdef CONFIG_WATCHPOINT
   int i;
   for (i = 0; i < NR_WP; i ++) {
     wp_pool[i].NO = i;
@@ -49,11 +52,13 @@ void init_wp_pool() {
 
   head = NULL;
   free_ = wp_pool;
+#endif
 }
 
 /* TODO: Implement the functionality of watchpoint */
 WP* new_wp(char *expr, word_t result)
 {
+#ifdef CONFIG_WATCHPOINT
   Assert(free_ != NULL,  "%s %s %d Memory Error: Watch Point Pool Overflow", __FILE__, __func__, __LINE__);
   WP *wp = free_;
   free_ = free_->next;
@@ -82,10 +87,14 @@ WP* new_wp(char *expr, word_t result)
   }
   */
   return wp;
+#else
+  return NULL;
+#endif
 }
 
 void free_wp(WP* wp)
 {
+#ifdef CONFIG_WATCHPOINT
   Assert(wp != NULL, "%s %s %d: wp is NULL", __FILE__, __func__, __LINE__);
   Assert(head != NULL, "%s %s %d Memory Error: Watch Point Pool Overflow", __FILE__, __func__, __LINE__);
   if(wp == head)
@@ -118,10 +127,12 @@ void free_wp(WP* wp)
 	  free_ = wp;
 	}
   }
+#endif
 }
 
 void delete_wp(int num)
 {
+#ifdef CONFIG_WATCHPOINT
   WP *p = head;
   while(p)
   {
@@ -134,10 +145,12 @@ void delete_wp(int num)
 	  p = p->next;
   }
   printf("Don't have watch point NO%d\n", num);
+#endif
 }
 
 void display_wp()
 {
+#ifdef CONFIG_WATCHPOINT
   /*
   for(int i = 0; i < 32; i ++)
   {
@@ -161,10 +174,12 @@ void display_wp()
 	printf("%d\t%s\t%s\t%s\t%s\t%s\n", num, "watchpoint", "keep", "y", "", p->expr);
 	p = p->next;
   }
+#endif
 }
 
 uint32_t trace_wp()
 {
+#ifdef CONFIG_WATCHPOINT
   WP *p = head;
   uint32_t flag = 0;
   bool success;
@@ -179,4 +194,7 @@ uint32_t trace_wp()
 	p = p->next;
   }
   return flag;
+#else
+  return 0;
+#endif
 }

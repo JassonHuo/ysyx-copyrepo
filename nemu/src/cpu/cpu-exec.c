@@ -127,7 +127,9 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
+#ifdef CONFIG_WATCHPOINT
 uint32_t trace_wp();
+#endif
 
 static char iringbuf[IRING_SIZE][100] = {0};
 static int iring_p = 0;
