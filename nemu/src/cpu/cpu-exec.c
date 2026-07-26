@@ -121,7 +121,7 @@ void init_elf(char *elf_file)
 #endif
 }
 
-CPU_state cpu = {};
+CPU_state cpu = {.csr ={[0x300] = 0x1800}};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
@@ -315,6 +315,7 @@ static void execute(uint64_t n) {
 	}
     IFDEF(CONFIG_DEVICE, device_update());
   }
+  display_iring();
 }
 
 static void statistic() {
