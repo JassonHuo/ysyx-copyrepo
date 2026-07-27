@@ -35,6 +35,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
 //  return NULL;
   Context* c = (Context*)(kstack.end - sizeof(Context));
   c->mepc = (uintptr_t)entry;
+  c->mcause = 11;
   return c;
 }
 
