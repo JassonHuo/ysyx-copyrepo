@@ -8,25 +8,6 @@
 char buffer[1000];
 int buffer_top;
 
-
-/*
-int printf(const char *fmt, ...) {
-//  panic("Not implemented");
-  char *tmp = NULL;
-#define STD_PRINTF
-  int ret = sprintf(tmp, fmt, __VA_ARGS__);
-#undef STD_PRINTF
-  return ret;
-}
-
-int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
-}
-
-//int sprintf(char *out, const char *fmt, ...)
-//{
-*/
-
 #define MATCH_WIDTH(left, right) do{\
   int scale = 1;\
   width = 0;\
@@ -151,12 +132,6 @@ int PRINT(const char* fmt, va_list args)
 		buffer[buffer_pos++] = (char)va_arg(args, int);
       else
       {
-		/*
-		char out[20] = "Unknown signal: ";
-		for(int i = 0; i < 20 && out[i] != '\0';  i++)
-		  putch(out[i]);
-		putch(fmt[fmt_pos]);
-		*/
         halt(1);
       }
     }
