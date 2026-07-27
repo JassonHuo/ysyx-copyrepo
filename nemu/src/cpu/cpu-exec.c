@@ -318,6 +318,7 @@ static void execute(uint64_t n) {
 	}
     IFDEF(CONFIG_DEVICE, device_update());
   }
+  display_iring();
 }
 
 static void statistic() {
