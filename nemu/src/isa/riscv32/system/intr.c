@@ -50,8 +50,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   cpu.csr[0x342] = NO;	  //mcause	 
 #ifdef CONFIG_ETRACE
   char tmp[100] = "";
-  extern CPU_state cpu;
-  sprintf(tmp, "Trap happened at pc: %08x, mepc: %08x, mcause: %d, targetPc: %08x", cpu.pc, epc, NO, cpu.csr[0x305]);
+  sprintf(tmp, "Trap happened, mepc: %08x, mcause: %d, targetPc: %08x", epc, NO, cpu.csr[0x305]);
   et_inQue(tmp);
 #endif
   return cpu.csr[0x305];  //mtvec
