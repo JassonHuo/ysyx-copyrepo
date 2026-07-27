@@ -14,7 +14,6 @@ struct Context {
   uintptr_t mstatus;
   uintptr_t mepc;
   void *pdir;
-  
 };
 
 #ifdef __riscv_e
