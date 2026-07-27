@@ -136,6 +136,7 @@ static int iring_p = 0;
 
 void display_iring()
 {
+  printf(YELLOW "Instruction Ring Tracer Log:\n" RESET);
   for(int i = 0;  i < IRING_SIZE; i++)
   {
 	if(i == (iring_p - 1 + IRING_SIZE) % IRING_SIZE)
@@ -299,8 +300,10 @@ static void execute(uint64_t n) {
     exec_once(&s, cpu.pc);
     g_nr_guest_inst ++;
     trace_and_difftest(&s, cpu.pc);
+	/*
 	if (nemu_state.state == NEMU_ABORT || (nemu_state.state != NEMU_RUNNING && nemu_state.halt_ret))
 	  display_iring();
+	  */
     if (nemu_state.state != NEMU_RUNNING) 
 	{
 #ifdef CONFIG_FTRACE
@@ -314,11 +317,13 @@ static void execute(uint64_t n) {
 	  void display_et();
 	  display_et();
 #endif
+#ifdef CONFIG_ITRACE
+	  display_iring();
+#endif
 	  break;
 	}
     IFDEF(CONFIG_DEVICE, device_update());
   }
-  display_iring();
 }
 
 static void statistic() {
