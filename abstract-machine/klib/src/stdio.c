@@ -17,6 +17,7 @@ int PRINT(const char *fmt, va_list args)
 	int zero_pad = 0;
 	int width = 0;
 	int total_len = 0;
+	int point_acc = 0;
 	char fill_char = '\0';
 	if(fmt[fmt_pos] != '%')
 	{
@@ -40,7 +41,10 @@ int PRINT(const char *fmt, va_list args)
 	{
 	  fmt_pos ++;
 	  while(fmt[fmt_pos] >= '0' && fmt[fmt_pos] <= '9')
+	  {
+		point_acc = point_acc * 10 + fmt[fmt_pos] - '0';
 		fmt_pos ++;
+	  }
 	}
 	if(fmt[fmt_pos] == 'c')
 	  buffer[buffer_top++] = va_arg(args, int);
@@ -85,7 +89,7 @@ int PRINT(const char *fmt, va_list args)
 		  abs_num /= scale;
 		}
 	  }
-	  total_len = len + sign;
+	  total_len = len + sign + point_acc + (point_acc ? 1: 0);
 	  fill_char = (zero_pad && !left_align) ? '0' : ' ';
 	  if(!left_align)
 	  {
@@ -98,6 +102,10 @@ int PRINT(const char *fmt, va_list args)
 		buffer[buffer_top++] = '-';
 	  for(int j = len - 1; j >= 0; j --)
 		buffer[buffer_top++] = tmp[j];
+	  if(point_acc)
+		buffer[buffer_top++] = '.';
+	  for(int i = 0; i < point_acc; i++)
+		buffer[buffer_top++] = '0';
 	  if(left_align)
 		for(int i = total_len; i < width; i ++)
 		  buffer[buffer_top++] = ' ';
