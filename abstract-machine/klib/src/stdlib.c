@@ -37,6 +37,7 @@ void *malloc(size_t size) {
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
 //  panic("Not implemented");
+  /*
   static uint8_t* addr = NULL;
   int max_align_t = 8;
   if(addr == NULL)
@@ -52,6 +53,18 @@ void *malloc(size_t size) {
 	return NULL;
   }
   addr += size;
+  return ret_addr;
+  */
+  static uint8_t *addr = NULL;
+  if(addr == NULL)
+	addr = (uint8_t*)heap.start;
+  if(size == 0)
+	return NULL;
+  uint8_t *ret_addr = addr;
+  size = (size + 7) & ~7;
+  addr += size;
+  if(addr > (uint8_t*)heap.end)
+	return NULL;
   return ret_addr;
 #else
   extern void *__libc_malloc(size_t);
