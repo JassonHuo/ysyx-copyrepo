@@ -54,26 +54,34 @@ int PRINT(const char *fmt, va_list args)
 	  while(*s)
 		buffer[buffer_top ++] = *s++;
 	}
-	else if(fmt[fmt_pos] == 'd'|| fmt[fmt_pos] == 'x' || (fmt[fmt_pos] == 'l' && fmt[fmt_pos + 1] == 'd'))
+	else if(fmt[fmt_pos] == 'd'|| fmt[fmt_pos] == 'x' || (fmt[fmt_pos] == 'l' && fmt[fmt_pos + 1] == 'd') || fmt[fmt_pos] == 'p' || fmt[fmt_pos] == 'b')
 	{
 	  long long num;
 	  unsigned long long abs_num;
 	  int sign = 0;
+	  int x0 = 0;
 	  char tmp[100] = "";
-	  if(fmt[fmt_pos] == 'd' || fmt[fmt_pos] == 'x')
+	  if(fmt[fmt_pos] == 'd' || fmt[fmt_pos] == 'x' || fmt[fmt_pos] == 'b')
 		num = (long long)va_arg(args, int);
 	  else if(fmt[fmt_pos] == 'l')
 	  {
 		num = (long long)va_arg(args, long);
 		fmt_pos ++;
 	  }
-	  if(fmt[fmt_pos] != 'x' && num < 0)
+	  else if(fmt[fmt_pos] == 'p')
+		num = (long long)(uintptr_t)va_arg(args, void*);
+	  if(fmt[fmt_pos] != 'b' && fmt[fmt_pos] != 'p' && fmt[fmt_pos] != 'x' && num < 0)
 	  {
 		sign = 1;
 		abs_num = (unsigned long long)-num;
 	  }
-	  else if(fmt[fmt_pos] == 'x')
+	  else if(fmt[fmt_pos] == 'x' || fmt[fmt_pos] == 'b')
 		abs_num = (unsigned long long)(unsigned int)num;
+	  else if(fmt[fmt_pos] == 'p')
+	  {
+		x0 = 1;
+		abs_num = (unsigned long long)num;
+	  }
 	  else
 		abs_num = (unsigned long long)num;
 	  int len = 0;
@@ -82,11 +90,17 @@ int PRINT(const char *fmt, va_list args)
 	  else
 	  {
 		char digits[] = "0123456789abcdef";
-		int scale = (fmt[fmt_pos] == 'x' ? 16: 10);
+		int scale = (fmt[fmt_pos] == 'p' || fmt[fmt_pos] == 'x' ? 16: 
+			(fmt[fmt_pos] == 'b' ? 2: 10));
 		while(abs_num > 0)
 		{
 		  tmp[len ++] = digits[abs_num % scale];
 		  abs_num /= scale;
+		}
+		if(x0)
+		{
+		  tmp[len ++] = 'x';
+		  tmp[len ++] = '0';
 		}
 	  }
 	  total_len = len + sign + point_acc + (point_acc ? 1: 0);
