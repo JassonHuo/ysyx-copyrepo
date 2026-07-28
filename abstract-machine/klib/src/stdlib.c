@@ -46,6 +46,7 @@ void *malloc(size_t size) {
   uint8_t *ret_addr = addr;
 //  printf("%08d\n", ret_addr);
   size = (size % max_align_t == 0 ? size: (((size / max_align_t) + 1) * max_align_t));
+  printf("test\n");
   if(addr + size > (uint8_t*)heap.end)
 	return NULL;
   addr += size;
