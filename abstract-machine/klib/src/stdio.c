@@ -8,141 +8,105 @@
 char buffer[1000];
 int buffer_top;
 
-#define MATCH_WIDTH(left, right) do{\
-  int scale = 1;\
-  width = 0;\
-  if(left == right) break;\
-  for(int i = right - 1; ; i--)\
-  {\
-	width += scale * (fmt[i] - '0');\
-	scale *= 10;\
-	if(i <= left)\
-	  break;\
-  }\
-}while(0)
-
-int PRINT(const char* fmt, va_list args)
+int PRINT(const char *fmt, va_list args)
 {
-  int fmt_pos = 0;
-  int buffer_pos = 0;
-  while(fmt[fmt_pos] != '\0')
+  buffer_top = 0;
+  for(int fmt_pos = 0; fmt[fmt_pos]; fmt_pos ++)
   {
-    if(fmt[fmt_pos] == '%')
-    {
-      fmt_pos ++;
-	  int full_width = 0;
-//	  int float_prec = 0;
-	  int right_align = 0;
-	  int full_zero = 0;
-	  int width = 0;
-	  int is_nega = 0;
-	  if (fmt[fmt_pos] == '-')
+	int left_align = 0;
+	int zero_pad = 0;
+	int width = 0;
+	int total_len = 0;
+	char fill_char = '\0';
+	if(fmt[fmt_pos] != '%')
+	{
+	  buffer[buffer_top ++] = fmt[fmt_pos];
+	  continue;
+	}
+	fmt_pos ++;
+	if(fmt[fmt_pos] == '-')
+	{
+	  left_align = 1;
+	  fmt_pos ++;
+	}
+	else if(fmt[fmt_pos] == '0')
+	{
+	  zero_pad = 1;
+	  fmt_pos++;
+	}
+	while(fmt[fmt_pos] >= '0' && fmt[fmt_pos] <= '9')
+	  width = width * 10 + fmt[fmt_pos++] - '0';
+	if(fmt[fmt_pos] == '.')
+	{
+	  fmt_pos ++;
+	  while(fmt[fmt_pos] >= '0' && fmt[fmt_pos] <= '9')
+		fmt_pos ++;
+	}
+	if(fmt[fmt_pos] == 'c')
+	  buffer[buffer_top++] = va_arg(args, int);
+	else if(fmt[fmt_pos] == 's')
+	{
+	  char *s = va_arg(args, char*);
+	  while(*s)
+		buffer[buffer_top ++] = *s++;
+	}
+	else if(fmt[fmt_pos] == 'd'|| fmt[fmt_pos] == 'x' || (fmt[fmt_pos] == 'l' && fmt[fmt_pos + 1] == 'd'))
+	{
+	  long long num;
+	  unsigned long long abs_num;
+	  int sign = 0;
+	  char tmp[100] = "";
+	  if(fmt[fmt_pos] == 'd' || fmt[fmt_pos] == 'x')
+		num = (long long)va_arg(args, int);
+	  else if(fmt[fmt_pos] == 'l')
 	  {
-		right_align = 0;
+		num = (long long)va_arg(args, long);
 		fmt_pos ++;
 	  }
+	  if(fmt[fmt_pos] != 'x' && num < 0)
+	  {
+		sign = 1;
+		abs_num = (unsigned long long)-num;
+	  }
+	  else if(fmt[fmt_pos] == 'x')
+		abs_num = (unsigned long long)(unsigned int)num;
+	  else
+		abs_num = (unsigned long long)num;
+	  int len = 0;
+	  if(abs_num == 0)
+		tmp[len ++] = '0';
 	  else
 	  {
-		right_align = 1;
+		char digits[] = "0123456789abcdef";
+		int scale = (fmt[fmt_pos] == 'x' ? 16: 10);
+		while(abs_num > 0)
+		{
+		  tmp[len ++] = digits[abs_num % scale];
+		  abs_num /= scale;
+		}
 	  }
-	  if (fmt[fmt_pos] == '0')
+	  total_len = len + sign;
+	  fill_char = (zero_pad && !left_align) ? '0' : ' ';
+	  if(!left_align)
 	  {
-		full_zero = 1;
-		fmt_pos++;
+		if(sign && zero_pad)
+		  buffer[buffer_top++] = '-';
+		for(int i = total_len; i < width; i ++)
+		  buffer[buffer_top++] = fill_char;
 	  }
-	  int point_pos = fmt_pos;
-	  while (fmt[point_pos] >= '0' && fmt[point_pos] <= '9')
-		point_pos ++;
-	  MATCH_WIDTH(fmt_pos, point_pos);
-	  full_width = width;
-	  if(fmt[point_pos] == '.')
-	  {
-		int end_pos = point_pos + 1;
-		while(fmt[end_pos] >= '0' && fmt[end_pos] <= '9')
-		  end_pos ++;
-		MATCH_WIDTH(point_pos + 1, end_pos);
-//		float_prec = width;
-		fmt_pos = end_pos;
-	  }
-	  else
-		fmt_pos = point_pos;
-      if(fmt[fmt_pos] == 's')
-      {
-        char *tmp = va_arg(args, char*);
-        while(*tmp != '\0')
-        {
-          buffer[buffer_pos++] = *(tmp++);
-        }
-	  }
-	  else if(fmt[fmt_pos] == 'd' || fmt[fmt_pos] == 'x')
-      {
-        char tmp[13];
-        int tmp_pos = 0;
-        int num = va_arg(args, int);
-		unsigned int abs_num = num;
-		int num_sys = (fmt[fmt_pos] == 'd' ? 10: 16);
-        if(fmt[fmt_pos] == 'd' && num < 0)
-		{
-		  abs_num = ~((unsigned int)num) + 1;
-		  is_nega = 1;
-		}
-		else if(num == 0)
-		{
-		  tmp[0] = '0';
-		  tmp[1] = '\0';
-		  tmp_pos = 1;
-		}
-        while(abs_num != 0)
-        {
-		  int digit = abs_num % num_sys;
-		  if(digit >= 0 && digit <= 9)
-			tmp [tmp_pos++] = '0' + digit;
-		  else
-			tmp [tmp_pos++] = 'a' + digit - 10;
-          abs_num /= num_sys;
-        }
-		if(is_nega)
-		  tmp[tmp_pos ++] = '-';
-		tmp[tmp_pos] = '\0';
-		if(is_nega && full_zero)
-		  buffer[buffer_pos++] = '-';
-		if(tmp_pos < full_width && right_align)
-		{
-		  for(int i = 0; i < (full_width - tmp_pos); i++)
-		  {
-			if(full_zero)
-			  buffer[buffer_pos++] = '0';
-			else
-			  buffer[buffer_pos++] = ' ';
-		  }
-		}
-        for(int i = 0; i < tmp_pos - (is_nega&&full_zero) ; i ++)
-		{
-          buffer[buffer_pos++] = tmp[tmp_pos - 1 - i - (is_nega&&full_zero)];
-		}
-		if(tmp_pos < full_width && !right_align)
-		{
-		  for(int i = 0; i < (full_width - tmp_pos); i++)
-		  {
-			buffer[buffer_pos++] = ' ';
-		  }
-		}
-      }
-	  else if(fmt[fmt_pos] == 'c')
-		buffer[buffer_pos++] = (char)va_arg(args, int);
-      else
-      {
-        halt(1);
-      }
-    }
-    else
-    {
-      buffer[buffer_pos++] = fmt[fmt_pos];
-    }
-    fmt_pos++;
+	  if(sign && (!zero_pad || left_align))
+		buffer[buffer_top++] = '-';
+	  for(int j = len - 1; j >= 0; j --)
+		buffer[buffer_top++] = tmp[j];
+	  if(left_align)
+		for(int i = total_len; i < width; i ++)
+		  buffer[buffer_top++] = ' ';
+	}
+	else
+	  halt(1);
   }
-  buffer[buffer_pos] = '\0';
-  return buffer_pos;
+  buffer[buffer_top] = '\0';
+  return buffer_top;
 }
 
 int printf(const char *fmt, ...) {
