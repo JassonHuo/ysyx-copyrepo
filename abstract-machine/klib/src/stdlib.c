@@ -44,9 +44,9 @@ void *malloc(size_t size) {
 	return NULL;
   uint8_t *ret_addr = addr;
   size = (size + 7) & ~7;
-  addr += size;
-  if(addr > (uint8_t*)heap.end)
+  if(addr + size > (uint8_t*)heap.end)
 	return NULL;
+  addr += size;
   return ret_addr;
 #else
   extern void* __libc_malloc(size_t);
