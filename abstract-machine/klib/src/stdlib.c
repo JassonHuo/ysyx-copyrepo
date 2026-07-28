@@ -48,6 +48,9 @@ void *malloc(size_t size) {
   if(addr > (uint8_t*)heap.end)
 	return NULL;
   return ret_addr;
+#else
+  extern void* __libc_malloc(size_t);
+  return __libc_malloc(size);
 #endif
   return NULL;
 }
