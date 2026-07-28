@@ -41,6 +41,7 @@ void *malloc(size_t size) {
   {
 	addr = (uint8_t*)heap.start;
 //	addr = (uint8_t*)(((uintptr_t)addr + 7) & ~7);
+	addr = (uint8_t*)(((uint32_t)addr + 7) & ~7);
   }
   if(size == 0)
 	return NULL;
