@@ -1,4 +1,3 @@
-#include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
 
@@ -39,7 +38,10 @@ void *malloc(size_t size) {
 //  panic("Not implemented");
   static uint8_t *addr = NULL;
   if(addr == NULL)
+  {
 	addr = (uint8_t*)heap.start;
+//	addr = (uint8_t*)(((uintptr_t)addr + 7) & ~7);
+  }
   if(size == 0)
 	return NULL;
   uint8_t *ret_addr = addr;
