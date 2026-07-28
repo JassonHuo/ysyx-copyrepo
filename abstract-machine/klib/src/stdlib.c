@@ -1,4 +1,3 @@
-#include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
 
@@ -37,19 +36,24 @@ void *malloc(size_t size) {
   //   panic() -> putchar() -> (glibc) -> malloc() -> panic()
 #if !(defined(__ISA_NATIVE__) && defined(__NATIVE_USE_KLIB__))
 //  panic("Not implemented");
-  static uint8_t* addr = NULL;
-  int max_align_t = 8;
+  static uint8_t *addr = NULL;
   if(addr == NULL)
+  {
 	addr = (uint8_t*)heap.start;
+//	addr = (uint8_t*)(((uintptr_t)addr + 7) & ~7);
+	addr = (uint8_t*)(((uint32_t)addr + 7) & ~7);
+  }
   if(size == 0)
-	return addr;
+	return NULL;
   uint8_t *ret_addr = addr;
-//  printf("%08d\n", ret_addr);
-  size = (size % max_align_t == 0 ? size: (((size / max_align_t) + 1) * max_align_t));
+  size = (size + 7) & ~7;
   if(addr + size > (uint8_t*)heap.end)
 	return NULL;
   addr += size;
   return ret_addr;
+#else
+  extern void* __libc_malloc(size_t);
+  return __libc_malloc(size);
 #endif
   return NULL;
 }

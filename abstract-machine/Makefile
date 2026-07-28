@@ -55,21 +55,10 @@ IMAGE_REL = build/$(NAME)-$(ARCH)
 IMAGE     = $(abspath $(IMAGE_REL))
 ARCHIVE   = $(WORK_DIR)/build/$(NAME)-$(ARCH).a
 
-### Ramdisk generator
-ifneq ($(MAKECMDGOALS),archive)
-ifdef diskfilelist
-RAMDISK_SRC = $(WORK_DIR)/build/$(NAME).ramdisk.c
-$(RAMDISK_SRC): $(diskfilelist)
-	python $(AM_HOME)/tools/gen-ramdisk.py $@ $^
-
-SRCS += $(RAMDISK_SRC)
-endif
-endif
-
 ### Collect the files to be linked: object files (`.o`) and libraries (`.a`)
 OBJS      = $(addprefix $(DST_DIR)/, $(addsuffix .o, $(basename $(SRCS))))
 LIBS     := $(sort $(LIBS) am klib) # lazy evaluation ("=") causes infinite recursions
-LINKAGE  += $(OBJS)  # library archives are added by LIB_TEMPLATE below
+LINKAGE   = $(OBJS)  # library archives are added by LIB_TEMPLATE below
 
 ## 3. General Compilation Flags
 
@@ -109,7 +98,7 @@ LDFLAGS  += -z noexecstack $(addprefix -T, $(LDSCRIPTS))
 ### Rule (compile): a single `.c` -> `.o` (gcc)
 $(DST_DIR)/%.o: %.c
 	@mkdir -p $(dir $@) && echo + CC $<
-	@$(CC) -std=gnu17 $(CFLAGS) -c -o $@ $(realpath $<)
+	@$(CC) -std=gnu11 $(CFLAGS) -c -o $@ $(realpath $<)
 
 ### Rule (compile): a single `.cc` -> `.o` (g++)
 $(DST_DIR)/%.o: %.cc
