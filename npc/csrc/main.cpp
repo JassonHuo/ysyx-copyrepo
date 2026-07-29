@@ -495,15 +495,12 @@ void run_cycle(uint64_t n)
 #endif
 	top->clk = 0;
 	top->eval();
-	/*
-	if(NPC_state == NPC_ABORT)
+	if(NPC_state != NPC_RUNNING)
 	{
 #ifdef CONFIG_ITRACE
 	 display_ib();
 #endif
-	  exit(1);
   }
-  */
 	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 	top->clk = 1;
 	top->eval();
