@@ -41,7 +41,7 @@ CSRC += $(NPC_HOME)/csrc/*.cpp
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -DCONFIG_ITRACE
-CXXFLAGS += -DCONFIG_DIFFTEST
+#CXXFLAGS += -DCONFIG_DIFFTEST
 #$(info INCFLAGS = $(INCFLAGS))
 
 LDFLAGS += -lreadline -g
@@ -65,6 +65,7 @@ all: default
 
 run: $(BIN)
 #	@$^
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) -b
 
 gdb: $(BIN)

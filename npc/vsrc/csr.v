@@ -8,8 +8,8 @@ module csr(
   output reg [31: 0] csr_rdata_out
 );
 
-  reg [31: 0] mcycle;
-  reg [31: 0] mcycleh;
+  reg [31: 0] mcycle = 32'b0;
+  reg [31: 0] mcycleh = 32'b0;
 
   always@(*)begin
 	case(csr_raddr)
