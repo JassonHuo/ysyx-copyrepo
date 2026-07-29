@@ -27,7 +27,7 @@ module csr(
 	else begin
 	  mcycle <= mcycle + 1;
 	  mcycleh <= (mcycle == 32'hffffffff ? mcycleh + 1: mcycleh);
-	  $display("%x", mcycle);
+	  $display("mcycle: %x, mcycleh: %x", mcycle, mcycleh);
 	  if(csr_en)begin
 		case(csr_waddr)
 		  default:begin
