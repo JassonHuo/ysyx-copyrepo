@@ -32,7 +32,9 @@ module wbu(
   output [31: 0] mepc_out,
   output [31: 0] mcause_out,
   input [31: 0] mtvec_in,
-  input [31: 0] mepc_in
+  input [31: 0] mepc_in,
+
+  output yield_csren
 );
 
   assign rd_addr_out = rd_addr;
@@ -42,6 +44,7 @@ module wbu(
   always@(*)begin
 	pc_wen = 1'b0;
 	csr_en = |csr_type;
+	yield_csren = 1'b1;
 	case(pc_src)
 	  `PC_NEXT: begin
 		pc_dync_out = pc_sync;
@@ -64,18 +67,17 @@ module wbu(
 		mepc_out = pc_in;
 		mcause_out = 32'd11;
 		pc_wen = 1'b1;
-		csr_en = 1'b1;
+		yield_csren = 1'b1;
 		csr_waddr = 12'b0;
 	  end
 	  `PC_MEPC:begin
 		pc_dync_out = mepc_in;
 		pc_wen = 1'b1;
-		csr_en = 1'b1;
 		csr_waddr = 12'b0;
 	  end
 	  default: begin
 		pc_dync_out = pc_sync;
-		pc_wen = 1'b0;
+		pc_wen = 1'b1;
 	  end
 	endcase
 

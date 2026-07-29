@@ -101,6 +101,8 @@ module top(
   wire [31: 0] mtvec_csr_wbu;
   wire [31: 0] mepc_csr_wbu;
 
+  wire yield_csren_wbu_csr;
+
   pc pc0(
 	.pc_en(pc_en_wb_pc),
 	.pc_in(pc_wb_pc),
@@ -284,7 +286,8 @@ module top(
 	.mepc_out(mepc_wbu_csr),
 	.mcause_out(mcause_wbu_csr),
 	.mtvec_in(mtvec_csr_wbu),
-	.mepc_in(mepc_csr_wbu)
+	.mepc_in(mepc_csr_wbu),
+	.yield_csren(yield_csren_wbu_csr)
   );
 
   csr csr0(
@@ -299,7 +302,8 @@ module top(
 	.mepc_in(mepc_wbu_csr),
 	.mcause_in(mcause_wbu_csr),
 	.mtvec_out(mtvec_csr_wbu),
-	.mepc_out(mepc_csr_wbu)
+	.mepc_out(mepc_csr_wbu),
+	.yield_csren(yield_csren_wbu_csr)
   );
 
 endmodule

@@ -7,6 +7,7 @@ module csr(
   input clk,
   input csr_en,
   input rst,
+  input yield_csren,
   output reg [31: 0] csr_rdata_out,
   output [31: 0] mtvec_out,
   output [31: 0] mepc_out
@@ -52,15 +53,13 @@ module csr(
 	  mcycle <= mcycle + 1;
 	  mcycleh <= (mcycle == 32'hffffffff ? mcycleh + 1: mcycleh);
 	  if(csr_en)begin
-		mcause <= mcause_in;
-		mepc <= mepc_in;
 		case(csr_waddr)
 		  12'hb00: mcycle <= csr_wdata;
 		  12'hb80: mcycleh <= csr_wdata;
 		  12'hf11: mvendorid <= csr_wdata;
 		  12'hf12: marchid <= csr_wdata;
-		  12'h341: mepc <= csr_wdata;
-		  12'h342: mcause <= csr_wdata;
+		  12'h341: mepc <= (yield_csren ? mepc_in: csr_wdata);
+		  12'h342: mcause <= (yield_csren ? mcause_in: csr_wdata);
 		  12'h300: mstatus <= csr_wdata;
 		  12'h305: mtvec <= csr_wdata;
 		  default:begin
