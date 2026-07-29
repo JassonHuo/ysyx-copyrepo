@@ -91,6 +91,7 @@ module idu(
 	is_branch = 0;
 	is_signed = 0;
 	csr_type = `CSR_NO;
+	$display("%x", inst_in);
 	case(opcode)
 	  7'b0110111:begin   //LUI
 		imm = Uimm;
