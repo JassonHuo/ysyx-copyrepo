@@ -42,6 +42,8 @@ module wbu(
   assign csr_waddr = csr_addr;
 
   always@(*)begin
+	if(csr_type != `CSR_NO)
+	  $display("pc: %08x", pc_in);
 	pc_wen = 1'b0;
 	csr_en = |csr_type;
 	yield_csren = 1'b1;
