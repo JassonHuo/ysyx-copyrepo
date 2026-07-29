@@ -21,13 +21,12 @@ module csr(
 
   always@(posedge clk)begin
 	if(rst)begin
-	  mcycle <= 32'hfffffffa;
-	  mcycleh <= 0;
+	  mcycle <= 32'b0;
+	  mcycleh <= 32'b0;
 	end
 	else begin
 	  mcycle <= mcycle + 1;
 	  mcycleh <= (mcycle == 32'hffffffff ? mcycleh + 1: mcycleh);
-	  $display("mcycle: %x, mcycleh: %x", mcycle, mcycleh);
 	  if(csr_en)begin
 		case(csr_waddr)
 		  default:begin
