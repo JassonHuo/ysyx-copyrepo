@@ -21,13 +21,6 @@ void halt(int code) {
 }
 
 void _trm_init() {
-  uint32_t mcycle, mcycleh
-  asm volatile("csrr %0, 0xb00": "=r"(mcycle));
-  asm volatile("csrr %0, 0xb80": "=r"(mcycleh));
-  printf("mcycle: %d, mcycleh: %d\n", mcycle, mcycleh);
   int ret = main(mainargs);
-  asm volatile("csrr %0, 0xb00": "=r"(mcycle));
-  asm volatile("csrr %0, 0xb80": "=r"(mcycleh));
-  printf("mcycle: %d, mcycleh: %d\n", mcycle, mcycleh);
   halt(ret);
 }
