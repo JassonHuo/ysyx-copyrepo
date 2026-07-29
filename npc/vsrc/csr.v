@@ -12,6 +12,7 @@ module csr(
   reg [31: 0] mcycleh = 32'b0;
 
   always@(*)begin
+	$display("%x", csr_raddr);
 	case(csr_raddr)
 	  12'hb00: csr_rdata_out = mcycle;
 	  12'hb80: csr_rdata_out = mcycleh;
