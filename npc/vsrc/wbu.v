@@ -64,7 +64,6 @@ module wbu(
 	  end
 	  `PC_MTVEC:begin
 		pc_dync_out = mtvec_in;
-		$display("%08x", pc_dync_out);
 		mepc_out = pc_in;
 		mcause_out = 32'd11;
 		pc_wen = 1'b1;

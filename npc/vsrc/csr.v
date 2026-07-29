@@ -37,7 +37,10 @@ module csr(
 	  12'h341: csr_rdata_out = mepc;
 	  12'h342: csr_rdata_out = mcause;
 	  12'h300: csr_rdata_out = mstatus;
-	  12'h305: csr_rdata_out = mtvec;
+	  12'h305: begin
+		csr_rdata_out = mtvec;
+		$display("mtvec: %08x", mtvec);
+	  end
 	  default: csr_rdata_out = 32'b0;
 	endcase
   end
