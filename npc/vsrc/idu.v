@@ -317,10 +317,12 @@ module idu(
 			else if(csr_addr == 12'h000)begin  //ecall
 			  wen = 0;
 			  csr_type = `CSR_NO;
+			  pc_src = `PC_MTVEC;
 			end
 			else if(csr_addr == 12'h302)begin  //mret
 			  wen = 0;
 			  csr_type = `CSR_NO;
+			  pc_src = `PC_MEPC;
 			end
 		  end
 		  3'b001:begin  //csrrw
