@@ -310,6 +310,7 @@ module idu(
 		reg_src = `RD_CSR;
 		wen = 1;
 		is_signed = 0;
+		$display("csr_addr: %08x", csr_addr);
 		case(funct3)
 		  3'b000:begin
 			if(csr_addr == 12'h001)  //ebreak
