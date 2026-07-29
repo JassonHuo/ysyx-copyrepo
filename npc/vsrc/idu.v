@@ -329,7 +329,7 @@ module idu(
 			csr_type = `CSR_RW;
 		  end
 		  3'b010:begin  //csrrs
-			$display("src addr: %08x, src1: %08x", csr_addr, src1);
+			$display("src addr: %08x, src1: %08x", csr_addr, rs1);
 			csr_type = `CSR_RS;
 			alu_op = `ALU_OR;
 		  end
