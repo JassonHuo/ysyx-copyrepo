@@ -37,10 +37,7 @@ module csr(
 	  12'h341: csr_rdata_out = mepc;
 	  12'h342: csr_rdata_out = mcause;
 	  12'h300: csr_rdata_out = mstatus;
-	  12'h305: begin
-		csr_rdata_out = mtvec;
-		$display("mtvec: %08x", mtvec);
-	  end
+	  12'h305: csr_rdata_out = mtvec;
 	  default: csr_rdata_out = 32'b0;
 	endcase
   end
@@ -64,7 +61,10 @@ module csr(
 		  12'h341: mepc <= (yield_csren ? mepc_in: csr_wdata);
 		  12'h342: mcause <= (yield_csren ? mcause_in: csr_wdata);
 		  12'h300: mstatus <= csr_wdata;
-		  12'h305: mtvec <= csr_wdata;
+		  12'h305: begin
+			$display("mtvec: %08x", mtvec);
+			mtvec <= csr_wdata;
+		  end
 		  default:begin
 			mcycle <= mcycle;
 			mcycleh <= mcycleh;
