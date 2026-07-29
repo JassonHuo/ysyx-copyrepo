@@ -9,9 +9,19 @@ module wbu(
   input wen,
 
   input [31: 0] imm,
+  input [31: 0] src1,
 
   input [31: 0] pc_plus_imm,
   input [31: 0] rdata,
+
+  input [2: 0] csr_type,
+  input [31: 0] csr_imm,
+  input [31: 0] csr_data_in,
+  input [11: 0] csr_addr,
+
+  output csr_en,
+  output reg [31: 0] csr_wdata_out,
+  output [11: 0] csr_waddr,
 
   output reg pc_wen,
   output reg [31: 0] pc_dync_out,
@@ -22,6 +32,8 @@ module wbu(
 
   assign rd_addr_out = rd_addr;
   assign wen_out = wen;
+  assign csr_waddr = csr_addr;
+  assign csr_en = |csr_type;
 
   always@(*)begin
 	pc_wen = 1'b0;
@@ -64,8 +76,32 @@ module wbu(
 	  `RD_AUIPC:begin
 		wdata_out = pc_plus_imm;
 	  end
+	  `RD_CSR:begin
+		wdata_out = csr_data_in;
+	  end
 	  default:begin
 		wdata_out = 32'b0;
+	  end
+	endcase
+
+	case(csr_type)
+	  `CSR_RW: begin
+		csr_wdata_out = src1;
+	  end
+	  `CSR_RWI: begin
+		csr_wdata_out = csr_imm;
+	  end
+	  `CSR_RC: begin
+		csr_wdata_out = alu;
+	  end
+	  `CSR_RCI: begin
+		csr_wdata_out = alu;
+	  end
+	  `CSR_RS: begin
+		csr_wdata_out = alu;
+	  end
+	  `CSR_RSI: begin
+		csr_wdata_out = alu;
 	  end
 	endcase
   end

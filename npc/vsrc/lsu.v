@@ -23,6 +23,19 @@ module lsu(
   input [1: 0] width,
   input is_signed,
 
+  
+  input [2: 0] csr_type,
+  input [31: 0] csr_imm,
+  input [31: 0] csr_data_in,
+  input [11: 0] csr_addr,
+  input [31: 0] src1,
+
+  output [2: 0] csr_type_out,
+  output [31: 0] csr_imm_out,
+  output [31: 0] csr_data_out,
+  output [11: 0] csr_addr_out,
+  output [31: 0] src1_out,
+
   output [31: 0] pc_sync_out,
   output [31: 0] pc_out,
   output [31: 0] alu_out,
@@ -47,6 +60,11 @@ module lsu(
   assign imm_out = imm;
 
   assign pc_plus_imm_out = pc_plus_imm;
+
+  assign csr_type_out = csr_type;
+  assign csr_imm_out = csr_imm;
+  assign csr_data_out = csr_data_in;
+  assign csr_addr_out = csr_addr;
 
   reg [1: 0] mem_data;
   wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:

@@ -20,6 +20,17 @@ module exu(
   input is_signed,
   input is_branch,
 
+  input [2: 0] csr_type,
+  input [31: 0] csr_imm,
+  input [31: 0] csr_data_in,
+  input [11: 0] csr_addr,
+
+  output [2: 0] csr_type_out,
+  output [31: 0] csr_imm_out,
+  output [31: 0] csr_data_out,
+  output [11: 0] csr_addr_out,
+  output [31: 0] src1_out,
+
   output [31: 0] alu_out,
   output [31: 0] pc_sync_out,
   output [31: 0] pc_out,
@@ -62,11 +73,45 @@ module exu(
 
   assign width_out = width;
 
+
+  assign csr_type_out = csr_type;
+  assign csr_imm_out = csr_imm;
+  assign csr_data_out = csr_data_in;
+  assign csr_addr_out = csr_addr;
+  assign src1_out = src1;
+
   wire zero;
+  reg [31: 0] alu_num1;
+  reg [31: 0] alu_num2;
+
+  always@(*)begin
+	case(csr_type)
+	  `CSR_RC: begin
+		alu_num1 = ~src1;
+		alu_num2 = csr_data_in;
+	  end
+	  `CSR_RS: begin
+		alu_num1 = src1;
+		alu_num2 = csr_data_in;
+	  end
+	  `CSR_RCI: begin
+		alu_num1 = ~csr_imm;
+		alu_num2 = csr_data_in;
+	  end
+	  `CSR_RSI: begin
+		alu_num1 = csr_imm;
+		alu_num2 = csr_data_in;
+	  end
+	  default: begin
+		alu_num1 = src1;
+		alu_num2 = (alu_src == `ALU_IMM ? imm: src2);
+	  end
+	endcase
+  end
 
   alu alu0(
-	.x(src1),
-	.y((alu_src == `ALU_IMM ? imm: src2)),
+	.x(alu_num1),
+	.y(alu_num2),
 	.alu_op(alu_op),
 	.z(alu_out),
 	.zero(zero),

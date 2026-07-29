@@ -71,6 +71,10 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 }
 
 static void out_of_bound(paddr_t addr) {
+#ifdef CONFIG_ITRACE
+  extern void display_iring();
+  display_iring();
+#endif
 #ifdef CONFIG_MTRACE
   display_mt_buffer();
 #endif

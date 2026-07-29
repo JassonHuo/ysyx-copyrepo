@@ -75,6 +75,28 @@ module top(
   wire is_branch_idu_exu;
   wire is_signed_exu_lsu;
 
+  wire [31: 0] csr_data_csr_idu;
+  wire [2: 0] csr_type_idu_exu;
+  wire [11: 0] csr_addr_iduout;
+  wire [31: 0] csr_imm_idu_exu;
+  wire [31: 0] csr_data_idu_exu;
+  
+  wire [2: 0] csr_type_exu_lsu;
+  wire [31: 0] csr_imm_exu_lsu;
+  wire [31: 0] csr_data_exu_lsu;
+  wire [11: 0] csr_addr_exu_lsu;
+  wire [31: 0] src1_exu_lsu;
+
+  wire [2: 0] csr_type_lsu_wbu;
+  wire [31: 0] csr_imm_lsu_wbu;
+  wire [31: 0] csr_data_lsu_wbu;
+  wire [11: 0] csr_addr_lsu_wbu;
+  wire [31: 0] src1_lsu_wbu;
+  
+  wire csr_en_wbu_csr;
+  wire [31: 0] csr_wdata_wbu_csr;
+  wire [11: 0] csr_waddr_wbu_csr;
+
   pc pc0(
 	.pc_en(pc_en_wb_pc),
 	.pc_in(pc_wb_pc),
@@ -122,7 +144,13 @@ module top(
 	.mem_wen(mem_wen_idu_exu),
 	.wmask(wmask_idu_exu),
 	.valid(valid_idu_exu),
-	.width(width_idu_exu)
+	.width(width_idu_exu),
+
+	.csr_data_in(csr_data_csr_idu),
+	.csr_type(csr_type_idu_exu),
+	.csr_addr(csr_addr_iduout),
+	.csr_imm(csr_imm_idu_exu),
+	.csr_data_out(csr_data_idu_exu)
   );
 
   gpr gpr0(
@@ -169,7 +197,18 @@ module top(
 	.width_out(width_exu_lsu),
 	.is_signed(is_signed_idu_exu),
 	.is_branch(is_branch_idu_exu),
-	.is_signed_out(is_signed_exu_lsu)
+	.is_signed_out(is_signed_exu_lsu),
+
+	.csr_type(csr_type_idu_exu),
+	.csr_imm(csr_imm_idu_exu),
+	.csr_data_in(csr_data_idu_exu),
+	.csr_addr(csr_addr_iduout),
+
+	.csr_type_out(csr_type_exu_lsu),
+	.csr_imm_out(csr_imm_exu_lsu),
+	.csr_data_out(csr_data_exu_lsu),
+	.csr_addr_out(csr_addr_exu_lsu),
+	.src1_out(src1_exu_lsu)
   );
 
   lsu lsu0(
@@ -197,7 +236,19 @@ module top(
 	.rdata(rdata_lsu_wbu),
 	.src2(src2_exu_lsu),
 	.width(width_exu_lsu),
-	.is_signed(is_signed_exu_lsu)
+	.is_signed(is_signed_exu_lsu),
+
+	.csr_type(csr_type_exu_lsu),
+	.csr_imm(csr_imm_exu_lsu),
+	.csr_data_in(csr_data_exu_lsu),
+	.csr_addr(csr_addr_exu_lsu),
+	.src1(src1_exu_lsu),
+
+	.csr_type_out(csr_type_lsu_wbu),
+	.csr_imm_out(csr_imm_lsu_wbu),
+	.csr_data_out(csr_data_lsu_wbu),
+	.csr_addr_out(csr_addr_lsu_wbu),
+	.src1_out(src1_lsu_wbu)
   );
 
   wbu wbu0(
@@ -215,7 +266,26 @@ module top(
 	.rd_addr_out(waddr_wbu_gpr),
 	.wdata_out(wdata_wbu_gpr),
 	.wen_out(wen_wb_gpr),
-	.rdata(rdata_lsu_wbu)
+	.rdata(rdata_lsu_wbu),
+
+	.csr_type(csr_type_lsu_wbu),
+	.csr_imm(csr_imm_lsu_wbu),
+	.csr_data_in(csr_data_lsu_wbu),
+	.csr_addr(csr_addr_lsu_wbu),
+	.src1(src1_lsu_wbu),
+	.csr_en(csr_en_wbu_csr),
+	.csr_wdata_out(csr_wdata_wbu_csr),
+	.csr_waddr(csr_waddr_wbu_csr)
+  );
+
+  csr csr0(
+	.csr_raddr(csr_addr_iduout),
+	.csr_waddr(csr_waddr_wbu_csr),
+	.csr_wdata(csr_wdata_wbu_csr),
+	.clk(clk),
+	.csr_en(csr_en_wbu_csr),
+	.rst(rst),
+	.csr_rdata_out(csr_data_csr_idu)
   );
 
 endmodule
