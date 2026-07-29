@@ -315,7 +315,7 @@ module idu(
 			if(csr_addr == 12'b1)
 			  ebreak();
 			else if(csr_addr == 12'b0)begin
-			  
+
 			end
 		  end
 		  3'b001:begin  //csrrw

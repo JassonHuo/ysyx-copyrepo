@@ -40,7 +40,7 @@ module wbu(
 	case(pc_src)
 	  `PC_NEXT: begin
 		pc_dync_out = pc_sync;
-		pc_wen = 1'b0;
+		pc_wen = 1'b1;
 	  end
 	  `PC_JALR: begin
 		pc_dync_out = alu;

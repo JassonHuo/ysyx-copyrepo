@@ -18,6 +18,7 @@ module csr(
   reg [31: 0] mepc = 32'b0;
   reg [31: 0] mstatus = 32'h1800;
   reg [31: 0] mcause = 32'b0;
+  reg [31: 0] mtvec = 32'b0;
 
   always@(*)begin
 	case(csr_raddr)
@@ -28,6 +29,7 @@ module csr(
 	  12'h341: csr_rdata_out = mepc;
 	  12'h342: csr_rdata_out = mcause;
 	  12'h300: csr_rdata_out = mstatus;
+	  12'h305: csr_rdata_out = mtvec;
 	  default: csr_rdata_out = 32'b0;
 	endcase
   end
@@ -51,6 +53,7 @@ module csr(
 		  12'h341: mepc <= csr_wdata;
 		  12'h342: mcause <= csr_wdata;
 		  12'h300: mstatus <= csr_wdata;
+		  12'h305: mtvec <= csr_wdata;
 		  default:begin
 			npc_abort();
 		  end

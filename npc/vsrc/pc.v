@@ -16,8 +16,8 @@ module pc(
 	  pc <= 32'h80000000;
 	else if(pc_en)
 	  pc <= pc_in;
-	else
-	  pc <= pc_sync;
+	else 
+	  pc <= pc;
   end
   function int get_Pc();
 	return pc;
