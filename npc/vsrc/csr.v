@@ -15,6 +15,9 @@ module csr(
   reg [31: 0] mcycleh = 32'b0;
   reg [31: 0] mvendorid = ysyx_ascii;
   reg [31: 0] marchid = ysyx_code;
+  reg [31: 0] mepc = 32'b0;
+  reg [31: 0] mstatus = 32'h1800;
+  reg [31: 0] mcause = 32'b0;
 
   always@(*)begin
 	case(csr_raddr)
@@ -22,6 +25,9 @@ module csr(
 	  12'hb80: csr_rdata_out = mcycleh;
 	  12'hf11: csr_rdata_out = mvendorid;
 	  12'hf12: csr_rdata_out = marchid;
+	  12'h341: csr_rdata_out = mepc;
+	  12'h342: csr_rdata_out = mcause;
+	  12'h300: csr_rdata_out = mstatus;
 	  default: csr_rdata_out = 32'b0;
 	endcase
   end
@@ -38,8 +44,15 @@ module csr(
 	  mcycleh <= (mcycle == 32'hffffffff ? mcycleh + 1: mcycleh);
 	  if(csr_en)begin
 		case(csr_waddr)
+		  12'hb00: mcycle <= csr_wdata;
+		  12'hb80: mcycleh <= csr_wdata;
+		  12'hf11: mvendorid <= csr_wdata;
+		  12'hf12: marchid <= csr_wdata;
+		  12'h341: mepc <= csr_wdata;
+		  12'h342: mcause <= csr_wdata;
+		  12'h300: mstatus <= csr_wdata;
 		  default:begin
-
+			npc_abort();
 		  end
 		endcase
 	  end
