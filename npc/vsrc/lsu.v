@@ -6,7 +6,7 @@ module lsu(
   input [31: 0] pc_in,
 
   input [31: 0] alu,
-  input [1: 0] pc_src,
+  input [2: 0] pc_src,
   input [2: 0] reg_src,
   input [3: 0] rd_addr,
   input wen,
@@ -39,7 +39,7 @@ module lsu(
   output [31: 0] pc_sync_out,
   output [31: 0] pc_out,
   output [31: 0] alu_out,
-  output [1: 0] pc_src_out,
+  output [2: 0] pc_src_out,
   output [2: 0] reg_src_out,
   output [3: 0] rd_addr_out,
   output wen_out,

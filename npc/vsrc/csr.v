@@ -2,10 +2,14 @@ module csr(
   input [11: 0] csr_raddr,
   input [11: 0] csr_waddr,
   input [31: 0] csr_wdata,
+  input [31: 0] mepc_in,
+  input [31: 0] mcause_in,
   input clk,
   input csr_en,
   input rst,
-  output reg [31: 0] csr_rdata_out
+  output reg [31: 0] csr_rdata_out,
+  output [31: 0] mtvec_out,
+  output [31: 0] mepc_out
 );
 
   parameter ysyx_ascii = 32'h79737978;
@@ -20,6 +24,9 @@ module csr(
   reg [31: 0] mcause = 32'b0;
   reg [31: 0] mtvec = 32'b0;
 
+
+  assign mtvec_out = mtvec;
+  assign mepc_out = mepc;
   always@(*)begin
 	case(csr_raddr)
 	  12'hb00: csr_rdata_out = mcycle;
@@ -45,6 +52,8 @@ module csr(
 	  mcycle <= mcycle + 1;
 	  mcycleh <= (mcycle == 32'hffffffff ? mcycleh + 1: mcycleh);
 	  if(csr_en)begin
+		mcause <= mcause_in;
+		mepc <= mepc_in;
 		case(csr_waddr)
 		  12'hb00: mcycle <= csr_wdata;
 		  12'hb80: mcycleh <= csr_wdata;
@@ -55,7 +64,14 @@ module csr(
 		  12'h300: mstatus <= csr_wdata;
 		  12'h305: mtvec <= csr_wdata;
 		  default:begin
-			npc_abort();
+			mcycle <= mcycle;
+			mcycleh <= mcycleh;
+			mvendorid <= mvendorid;
+			marchid <= marchid;
+			mepc <= mepc;
+			mcause <= mcause;
+			mstatus <= mstatus;
+			mtvec <= mtvec;
 		  end
 		endcase
 	  end
