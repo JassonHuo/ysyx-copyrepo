@@ -17,7 +17,7 @@ module top(
   wire [31: 0] src1_idu_exu;
   wire [31: 0] src2_idu_exu;
   wire [3: 0] alu_op_idu_exu;
-  wire [2: 0] pc_src_idu_exu;
+  wire [1: 0] pc_src_idu_exu;
   wire [2: 0] reg_src_idu_exu;
   wire alu_src_idu_exu;
   wire [3: 0] rd_addr_idu_exu;
@@ -41,7 +41,7 @@ module top(
   wire [31: 0] alu_exu_lsu;
   wire [31: 0] pc_sync_exu_lsu;
   wire [31: 0] pc_exu_lsu;
-  wire [2: 0] pc_src_exu_lsu;
+  wire [1: 0] pc_src_exu_lsu;
   wire [2: 0] reg_src_exu_lsu;
   wire [3: 0] rd_addr_exu_lsu;
   wire wen_exu_lsu;
@@ -50,7 +50,7 @@ module top(
   wire [31: 0] pc_sync_lsu_wbu;
   wire [31: 0] pc_lsu_wbu;
   wire [31: 0] alu_lsu_wbu;
-  wire [2: 0] pc_src_lsu_wbu;
+  wire [1: 0] pc_src_lsu_wbu;
   wire [2: 0] reg_src_lsu_wbu;
   wire [3: 0] rd_addr_lsu_wbu;
   wire wen_lsu_wbu;
@@ -96,12 +96,6 @@ module top(
   wire csr_en_wbu_csr;
   wire [31: 0] csr_wdata_wbu_csr;
   wire [11: 0] csr_waddr_wbu_csr;
-  wire [31: 0] mepc_wbu_csr;
-  wire [31: 0] mcause_wbu_csr;
-  wire [31: 0] mtvec_csr_wbu;
-  wire [31: 0] mepc_csr_wbu;
-
-  wire yield_csren_wbu_csr;
 
   pc pc0(
 	.pc_en(pc_en_wb_pc),
@@ -281,13 +275,7 @@ module top(
 	.src1(src1_lsu_wbu),
 	.csr_en(csr_en_wbu_csr),
 	.csr_wdata_out(csr_wdata_wbu_csr),
-	.csr_waddr(csr_waddr_wbu_csr),
-
-	.mepc_out(mepc_wbu_csr),
-	.mcause_out(mcause_wbu_csr),
-	.mtvec_in(mtvec_csr_wbu),
-	.mepc_in(mepc_csr_wbu),
-	.yield_csren(yield_csren_wbu_csr)
+	.csr_waddr(csr_waddr_wbu_csr)
   );
 
   csr csr0(
@@ -297,13 +285,7 @@ module top(
 	.clk(clk),
 	.csr_en(csr_en_wbu_csr),
 	.rst(rst),
-	.csr_rdata_out(csr_data_csr_idu),
-	
-	.mepc_in(mepc_wbu_csr),
-	.mcause_in(mcause_wbu_csr),
-	.mtvec_out(mtvec_csr_wbu),
-	.mepc_out(mepc_csr_wbu),
-	.yield_csren(yield_csren_wbu_csr)
+	.csr_rdata_out(csr_data_csr_idu)
   );
 
 endmodule

@@ -7,7 +7,7 @@ module exu(
   input [31: 0] src1,
   input [31: 0] src2,
   input [3: 0] alu_op,
-  input [2: 0] pc_src,
+  input [1: 0] pc_src,
   input [2: 0] reg_src,
   input alu_src,
   input [3: 0] rd_addr,
@@ -35,7 +35,7 @@ module exu(
   output [31: 0] pc_sync_out,
   output [31: 0] pc_out,
 
-  output [2: 0] pc_src_out,
+  output [1: 0] pc_src_out,
   output [2: 0] reg_src_out,
   output [3: 0] rd_addr_out,
   output wen_out,

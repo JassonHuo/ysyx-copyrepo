@@ -13,7 +13,6 @@
 #include <sys/time.h>
 #include "sdb.h"
 #include <capstone/capstone.h>
-#include <verilated_vcd_c.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -45,7 +44,6 @@
 uint32_t mem[MEM_SIZE] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
 static Vtop *top = new Vtop;
-VerilatedVcdC* tfp = new VerilatedVcdC;
 
 static struct timeval tv;
 static uint8_t *serial_base = NULL;
@@ -355,7 +353,6 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	  display_mb();
 #endif
 	  NPC_state = NPC_ABORT;
-	  tfp->close();
 	  do_quitcheck();
 	}
   }
@@ -498,15 +495,22 @@ void run_cycle(uint64_t n)
 #endif
 	top->clk = 0;
 	top->eval();
+	/*
+	if(NPC_state == NPC_ABORT)
+	{
+#ifdef CONFIG_ITRACE
+	 display_ib();
+#endif
+	  exit(1);
+  }
+  */
 	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 	top->clk = 1;
 	top->eval();
-	tfp->dump(contextp->time());
-	contextp->timeInc(1);
 #ifdef CONFIG_DIFFTEST
 	difftest_step();
 #endif
-	if(NPC_state != NPC_RUNNING)
+	if(NPC_state == NPC_ABORT)
 	{
 #ifdef CONFIG_ITRACE
 	 display_ib();
@@ -516,9 +520,6 @@ void run_cycle(uint64_t n)
   }
 }
 int main(int argc, char** argv) {
-  Verilated::traceEverOn(true);
-  top->trace(tfp, 99);
-  tfp->open("wave.vcd");
   printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
   printf(BLUE "Open device serial at [0x10000000, 0x10000004]" RESET "\n");
   printf(BLUE "Open device rtc at [0x10000048, 0x1000004f]" RESET "\n");

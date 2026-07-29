@@ -10,7 +10,7 @@ module idu(
   output [31: 0] src1,
   output [31: 0] src2,
   output reg [3: 0] alu_op,
-  output reg [2: 0] pc_src,
+  output reg [1: 0] pc_src,
   output reg [2: 0] reg_src,
   output reg alu_src,
   output reg [3: 0] rd_addr,
@@ -312,17 +312,9 @@ module idu(
 		is_signed = 0;
 		case(funct3)
 		  3'b000:begin
-			if(csr_addr == 12'h001)  //ebreak
+			if(csr_addr == 12'b1)
 			  ebreak();
-			else if(csr_addr == 12'h000)begin  //ecall
-			  wen = 0;
-			  csr_type = `CSR_NO;
-			  pc_src = `PC_MTVEC;
-			end
-			else if(csr_addr == 12'h302)begin  //mret
-			  wen = 0;
-			  csr_type = `CSR_NO;
-			  pc_src = `PC_MEPC;
+			else if(csr_addr == 12'b0)begin
 			end
 		  end
 		  3'b001:begin  //csrrw
