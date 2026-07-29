@@ -308,6 +308,8 @@ module idu(
 	  7'b1110011:begin
 		csr_imm = Zimm;
 		reg_src = `RD_CSR;
+		wen = 1;
+		is_signed = 0;
 		case(funct3)
 		  3'b000:begin
 			if(csr_addr == 12'b1)

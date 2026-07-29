@@ -1,6 +1,7 @@
 #include <am.h>
 #include <klib-macros.h>
 #include <riscv/riscv.h>
+#include <klib.h>
 
 extern char _heap_start;
 int main(const char *args);
@@ -23,21 +24,16 @@ void putch(char ch) {
 }
 
 void halt(int code) {
-  /*
-  if(!code)
-  {
-	printf(GREEN "HIT GOOD TRAP" RESET "\n");
-  }
-  else
-  {
-	printf(RED "HIT BAD TRAP" RESET "\n");
-  }
-  */
   asm volatile("mv a0, %0; ebreak": :"r"(code));
   while(1);
 }
 
 void _trm_init() {
+  uint32_t ascii, code;
+  asm volatile("csrr %0, 0xf11;": "=r"(ascii));
+  asm volatile("csrr %0, 0xf12;": "=r"(code));
+  uint8_t *p = (uint8_t*)&ascii;
+  printf("mcycle: %c%c%c%c, mcycleh: %d\n", p[3], p[2], p[1], p[0], code);
   int ret = main(mainargs);
   halt(ret);
 }
