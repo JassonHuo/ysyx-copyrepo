@@ -20,7 +20,6 @@ module csr(
   end
 
   always@(posedge clk)begin
-	$display("%x", mcycle);
 	if(rst)begin
 	  mcycle <= 32'b0;
 	  mcycleh <= 32'b0;
