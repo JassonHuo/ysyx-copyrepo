@@ -29,11 +29,6 @@ void halt(int code) {
 }
 
 void _trm_init() {
-  uint32_t ascii, code;
-  asm volatile("csrr %0, 0xf11;": "=r"(ascii));
-  asm volatile("csrr %0, 0xf12;": "=r"(code));
-  uint8_t *p = (uint8_t*)&ascii;
-  printf("mcycle: %c%c%c%c, mcycleh: %d\n", p[3], p[2], p[1], p[0], code);
   int ret = main(mainargs);
   halt(ret);
 }
