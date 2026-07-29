@@ -62,6 +62,7 @@ module wbu(
 	  `PC_MTVEC:begin
 		pc_dync_out = mtvec_in;
 		mepc_out = pc_in;
+		mcause_out = 32'd11;
 		pc_wen = 1'b1;
 		csr_en = 1'b1;
 		csr_waddr = 12'b0;
