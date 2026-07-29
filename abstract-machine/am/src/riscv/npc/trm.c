@@ -29,11 +29,11 @@ void halt(int code) {
 }
 
 void _trm_init() {
-  int a = 32;
-  int b = 0;
-  asm volatile("csrw 0x305, %0": :"r"(a));
-  asm volatile("csrr %0, 0x305":"=r"(b));
-  printf("a = %d, b = %d\n", a, b);
+  uint32_t ascii, code;
+  asm volatile("csrr %0, 0xf11;": "=r"(ascii));
+  asm volatile("csrr %0, 0xf12;": "=r"(code));
+  uint8_t *p = (uint8_t*)&ascii;
+  printf("mcycle: %c%c%c%c, mcycleh: %d\n", p[3], p[2], p[1], p[0], code);
   int ret = main(mainargs);
   halt(ret);
 }

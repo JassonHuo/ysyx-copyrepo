@@ -11,13 +11,13 @@ module pc(
   assign pc_sync = pc + 32'h4;
 
   always@(posedge clk)begin
-//	$display("%08x", pc);
+//	$display("%8x", pc);
 	if(rst)
 	  pc <= 32'h80000000;
 	else if(pc_en)
 	  pc <= pc_in;
-	else 
-	  pc <= pc;
+	else
+	  pc <= pc_sync;
   end
   function int get_Pc();
 	return pc;
