@@ -21,7 +21,7 @@ module csr(
 
   always@(posedge clk)begin
 	if(rst)begin
-	  mcycle <= 0;
+	  mcycle <= 32'hfffffffa;
 	  mcycleh <= 0;
 	end
 	else begin
