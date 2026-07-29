@@ -23,6 +23,12 @@ module idu(
   input [31: 0] rdata1,
   input [31: 0] rdata2,
 
+  input [31: 0] csr_data_in,
+  output [2: 0] csr_type,
+  output [11: 0] csr_addr,
+  output [31: 0] csr_imm,
+  output [31: 0] csr_data_out,
+
   output [31: 0] pc_out,
   output [31: 0] pc_sync_out,
 
@@ -48,6 +54,7 @@ module idu(
   wire [31: 0] Bimm;
   wire [31: 0] Uimm;
   wire [31: 0] Jimm;
+  wire [31: 0] Zimm;
 
   assign opcode = inst_in[6: 0];
   assign rd = inst_in[11: 7];
@@ -60,6 +67,9 @@ module idu(
   assign Uimm = {inst_in[31: 12], 12'b0};
   assign Bimm = {{20{inst_in[31]}}, inst_in[7], inst_in[30: 25], inst_in[11: 8], 1'b0};
   assign Jimm = {{11{inst_in[31]}}, inst_in[31], inst_in[19: 12], inst_in[20], inst_in[30: 21], 1'b0};
+  assign csr_addr = inst_in[31: 20];
+  assign Zimm = {27'b0, inst_in[19: 15]};
+  assign csr_data_out = csr_data_in;
 
   assign raddr1 = rs1[3: 0];
   assign raddr2 = rs2[3: 0];
@@ -80,6 +90,7 @@ module idu(
 	width = 0;
 	is_branch = 0;
 	is_signed = 0;
+	csr_type = `CSR_NO;
 	case(opcode)
 	  7'b0110111:begin   //LUI
 		imm = Uimm;
@@ -113,30 +124,32 @@ module idu(
 		pc_src = `PC_BRANCH;
 		is_signed = 1;
 		alu_src = `ALU_RS2;
-		if(funct3 == 3'b000)begin //beq
-		  alu_op = `ALU_EQUAL;
-		end
-		else if(funct3 == 3'b001)begin //bne
-		  alu_op = `ALU_NEQUAL;
-		end
-		else if(funct3 == 3'b100)begin //blt
-		  alu_op = `ALU_SMALL;
-		end
-		else if(funct3 == 3'b101)begin //bge
-		  alu_op = `ALU_LAREQ;
-		end
-		else if(funct3 == 3'b110)begin //bltu
-		  is_signed = 1'b0;
-		  alu_op = `ALU_SMALL;
-		end
-		else if(funct3 == 3'b111)begin //bgeu
-		  is_signed = 1'b0;
-		  alu_op = `ALU_LAREQ;
-		end
-		else begin
-		  $display("branch abort");
-		  npc_abort();
-		end
+		case(funct3)
+		  3'b000:begin //beq
+			alu_op = `ALU_EQUAL;
+		  end
+		  3'b001:begin //bne
+			alu_op = `ALU_NEQUAL;
+		  end
+		  3'b100:begin //blt
+			alu_op = `ALU_SMALL;
+		  end
+		  3'b101:begin //bge
+			alu_op = `ALU_LAREQ;
+		  end
+		  3'b110:begin //bltu
+			is_signed = 1'b0;
+			alu_op = `ALU_SMALL;
+		  end
+		  3'b111:begin //bgeu
+			is_signed = 1'b0;
+			alu_op = `ALU_LAREQ;
+		  end
+		  default:begin
+			$display("branch abort");
+			npc_abort();
+		  end
+		endcase
 	  end
 	  7'b0000011:begin   //lb - lhu
 		imm = Iimm;
@@ -146,27 +159,29 @@ module idu(
 		wen = 1;
 		valid = 1;
 		is_signed = 1;
-		if(funct3 == 3'b000)begin   //lb
-		  width = `MEM_BYTE;
-		end
-		else if(funct3 == 3'b001)begin //lh
-		  width = `MEM_HALF;
-		end
-		else if(funct3 == 3'b010)begin   //LW
-		  width = `MEM_WORD;
-		end
-		else if(funct3 == 3'b100)begin  //LBU
-		  width = `MEM_BYTE;
-		  is_signed = 0;
-		end
-		else if(funct3 == 3'b101)begin  //lhu
-		  width = `MEM_HALF;
-		  is_signed = 0;
-		end
-		else begin
-		  $display("load abort");
-		  npc_abort();
-		end
+		case(funct3)
+		  3'b000:begin   //lb
+			width = `MEM_BYTE;
+		  end
+		  3'b001:begin //lh
+			width = `MEM_HALF;
+		  end
+		  3'b010:begin   //LW
+			width = `MEM_WORD;
+		  end
+		  3'b100:begin  //LBU
+			width = `MEM_BYTE;
+			is_signed = 0;
+		  end
+		  3'b101:begin  //lhu
+			width = `MEM_HALF;
+			is_signed = 0;
+		  end
+		  default: begin
+			$display("load abort");
+			npc_abort();
+		  end
+		endcase 
 	  end
 	  7'b0100011:begin    //sb - sw
 		imm = Simm;
@@ -176,19 +191,21 @@ module idu(
 		valid = 1;
 		mem_wen = 1;
 //		$display("idu store: %08x, pc: %08x", src2, pc_in);
-		if(funct3 == 3'b000)begin   //SB
-		  width = `MEM_BYTE;
-		end
-		else if(funct3 == 3'b001)begin    //sh
-		  width = `MEM_HALF;
-		end
-		else if(funct3 == 3'b010)begin	  //SW
-		  width = `MEM_WORD;
-		end
-		else begin
-		  $display("store abort");
-		  npc_abort();
-		end
+		case(funct3)
+		  3'b000:begin   //SB
+			width = `MEM_BYTE;
+		  end
+		  3'b001:begin    //sh
+			width = `MEM_HALF;
+		  end
+		  3'b010:begin	  //SW
+			width = `MEM_WORD;
+		  end
+		  default begin
+			$display("store abort");
+			npc_abort();
+		  end
+		endcase
 	  end
 	  7'b0010011:begin				//addi - srai
 		imm = Iimm;
@@ -197,39 +214,53 @@ module idu(
 		reg_src = `RD_ALU;
 		wen = 1;
 		is_signed = 1;
-		if(funct3 == 3'b000)begin   //ADDI
-		  alu_op = `ALU_ADD;
-		end
-		else if(funct3 == 3'b010)begin   //slti
-		  alu_op = `ALU_SMALL;
-		end
-		else if(funct3 == 3'b011)begin   //sltiu
-		  alu_op = `ALU_SMALL;
-		  is_signed = 0;
-		end
-		else if(funct3 == 3'b100)begin	//xori
-		  alu_op = `ALU_XOR;
-		end
-		else if(funct3 == 3'b110)begin	//ori
-		  alu_op = `ALU_OR;
-		end
-		else if(funct3 == 3'b111)begin  //andi
-		  alu_op = `ALU_AND;
-		end
-		else if(funct3 == 3'b001 && funct7 == 7'b00000000)begin  //slli
-		  alu_op = `ALU_LEFT;
-		end
-		else if(funct3 == 3'b101 && funct7 == 7'b00000000)begin  //srli
-		  alu_op = `ALU_RIGHT;
-		  is_signed = 0;
-		end
-		else if(funct3 == 3'b101 && funct7 == 7'b0100000)begin //srai
-		  alu_op = `ALU_RIGHT;
-		end
-		else begin
-		  $display("immi abort");
-		  npc_abort();
-		end
+		case(funct3)
+		  3'b000:begin   //ADDI
+			alu_op = `ALU_ADD;
+		  end
+		  3'b010:begin   //slti
+			alu_op = `ALU_SMALL;
+		  end
+		  3'b011:begin   //sltiu
+			alu_op = `ALU_SMALL;
+			is_signed = 0;
+		  end
+		  3'b100:begin	//xori
+			alu_op = `ALU_XOR;
+		  end
+		  3'b110:begin	//ori
+			alu_op = `ALU_OR;
+		  end
+		  3'b111:begin  //andi
+			alu_op = `ALU_AND;
+		  end
+		  3'b001: begin
+			if(funct7 == 7'b00000000)begin  //slli
+			  alu_op = `ALU_LEFT;
+			end
+			else begin
+			  $display("immi abort");
+			  npc_abort();
+			end
+		  end
+		  3'b101:begin
+			if(funct7 == 7'b00000000)begin  //srli
+			  alu_op = `ALU_RIGHT;
+			  is_signed = 0;
+			end
+			else if(funct7 == 7'b0100000)begin //srai
+			  alu_op = `ALU_RIGHT;
+			end
+			else begin
+			  $display("immi abort");
+			  npc_abort();
+			end
+		  end
+		  default: begin
+			$display("immi abort");
+			npc_abort();
+		  end
+		endcase
 	  end
 	  7'b0110011:begin       //add - and
 		pc_src = `PC_NEXT;
@@ -274,9 +305,43 @@ module idu(
 		  npc_abort();
 		end
 	  end
-	  7'b1110011:begin		//EBREAK
-		if(Iimm == 32'b1)
-		  ebreak();
+	  7'b1110011:begin
+		csr_imm = Zimm;
+		reg_src = `RD_CSR;
+		case(funct3)
+		  3'b000:begin
+			if(csr_addr == 12'b1)
+			  ebreak();
+			else if(csr_addr == 12'b0)begin
+			end
+		  end
+		  3'b001:begin  //csrrw
+			csr_type = `CSR_RW;
+		  end
+		  3'b010:begin  //csrrs
+			csr_type = `CSR_RS;
+			alu_op = `ALU_OR;
+		  end
+		  3'b011:begin  //csrrc
+			csr_type = `CSR_RC;
+			alu_op = `ALU_AND;
+		  end
+		  3'b101:begin  //csrrwi
+			csr_type = `CSR_RWI;
+		  end
+		  3'b110:begin  //csrrsi
+			csr_type = `CSR_RSI;
+			alu_op = `ALU_OR;
+		  end
+		  3'b111:begin  //csrrci
+			csr_type = `CSR_RCI;
+			alu_op = `ALU_AND;
+		  end
+		  default:begin
+			$display("csr abort");
+			npc_abort();
+		  end
+		endcase
 	  end
 	  default begin
 		$display("default abort");
