@@ -63,6 +63,7 @@ module csr(
 		  12'h300: mstatus <= csr_wdata;
 		  12'h305: begin
 			$display("mtvec: %08x", mtvec);
+			$display("wcsrdata: %08x", csr_wdata);
 			mtvec <= csr_wdata;
 		  end
 		  default:begin
