@@ -43,6 +43,8 @@ module csr(
   end
 
   always@(posedge clk)begin
+	if(csr_en)
+	  $display("mtvec: %08x, csr_wdata: %08x", mtvec, csr_wdata);
 	if(rst)begin
 	  mcycle <= 32'b0;
 	  mcycleh <= 32'b0;
@@ -80,5 +82,6 @@ module csr(
 	  end
 	end
   end
+
 
 endmodule
