@@ -11,7 +11,7 @@ module pc(
   assign pc_sync = pc + 32'h4;
 
   always@(posedge clk)begin
-	$display("%08x", pc);
+//	$display("%08x", pc);
 	if(rst)
 	  pc <= 32'h80000000;
 	else if(pc_en)
