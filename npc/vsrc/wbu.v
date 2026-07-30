@@ -3,7 +3,7 @@ module wbu(
   input [31: 0] pc_sync,
   input [31: 0] pc_in,
   input [31: 0] alu,
-  input [1: 0] pc_src,
+  input [2: 0] pc_src,
   input [2: 0] reg_src,
   input [3: 0] rd_addr,
   input wen,
@@ -19,7 +19,7 @@ module wbu(
   input [31: 0] csr_data_in,
   input [11: 0] csr_addr,
 
-  output csr_en,
+  output reg csr_en,
   output reg [31: 0] csr_wdata_out,
   output [11: 0] csr_waddr,
 
@@ -27,20 +27,28 @@ module wbu(
   output reg [31: 0] pc_dync_out,
   output [3: 0] rd_addr_out,
   output reg [31: 0] wdata_out,
-  output wen_out
+  output wen_out,
+
+  output [31: 0] mepc_out,
+  output [31: 0] mcause_out,
+  input [31: 0] mtvec_in,
+  input [31: 0] mepc_in,
+
+  output yield_csren
 );
 
   assign rd_addr_out = rd_addr;
   assign wen_out = wen;
   assign csr_waddr = csr_addr;
-  assign csr_en = |csr_type;
 
   always@(*)begin
 	pc_wen = 1'b0;
+	csr_en = |csr_type;
+	yield_csren = 1'b0;
 	case(pc_src)
 	  `PC_NEXT: begin
 		pc_dync_out = pc_sync;
-		pc_wen = 1'b0;
+		pc_wen = 1'b1;
 	  end
 	  `PC_JALR: begin
 		pc_dync_out = alu;
@@ -54,9 +62,22 @@ module wbu(
 		pc_dync_out = (alu == 32'b1 ? pc_plus_imm: pc_sync);
 		pc_wen = 1'b1;
 	  end
+	  `PC_MTVEC:begin
+		pc_dync_out = mtvec_in;
+		mepc_out = pc_in;
+		mcause_out = 32'd11;
+		pc_wen = 1'b1;
+		yield_csren = 1'b1;
+		csr_waddr = 12'b0;
+	  end
+	  `PC_MEPC:begin
+		pc_dync_out = mepc_in;
+		pc_wen = 1'b1;
+		csr_waddr = 12'b0;
+	  end
 	  default: begin
 		pc_dync_out = pc_sync;
-		pc_wen = 1'b0;
+		pc_wen = 1'b1;
 	  end
 	endcase
 

@@ -10,7 +10,7 @@ module idu(
   output [31: 0] src1,
   output [31: 0] src2,
   output reg [3: 0] alu_op,
-  output reg [1: 0] pc_src,
+  output reg [2: 0] pc_src,
   output reg [2: 0] reg_src,
   output reg alu_src,
   output reg [3: 0] rd_addr,
@@ -312,9 +312,18 @@ module idu(
 		is_signed = 0;
 		case(funct3)
 		  3'b000:begin
-			if(csr_addr == 12'b1)
+			wen = 1'b0;
+			if(csr_addr == 12'h001)  //ebreak
 			  ebreak();
-			else if(csr_addr == 12'b0)begin
+			else if(csr_addr == 12'h000)begin  //ecall
+			  wen = 0;
+			  csr_type = `CSR_NO;
+			  pc_src = `PC_MTVEC;
+			end
+			else if(csr_addr == 12'h302)begin  //mret
+			  wen = 0;
+			  csr_type = `CSR_NO;
+			  pc_src = `PC_MEPC;
 			end
 		  end
 		  3'b001:begin  //csrrw
@@ -322,18 +331,22 @@ module idu(
 		  end
 		  3'b010:begin  //csrrs
 			csr_type = `CSR_RS;
+			alu_op = `ALU_OR;
 		  end
 		  3'b011:begin  //csrrc
 			csr_type = `CSR_RC;
+			alu_op = `ALU_AND;
 		  end
 		  3'b101:begin  //csrrwi
 			csr_type = `CSR_RWI;
 		  end
 		  3'b110:begin  //csrrsi
 			csr_type = `CSR_RSI;
+			alu_op = `ALU_OR;
 		  end
 		  3'b111:begin  //csrrci
 			csr_type = `CSR_RCI;
+			alu_op = `ALU_AND;
 		  end
 		  default:begin
 			$display("csr abort");

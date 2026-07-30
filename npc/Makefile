@@ -41,6 +41,7 @@ CSRC += $(NPC_HOME)/csrc/*.cpp
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -DCONFIG_ITRACE
+#CXXFLAGS += -DCONFIG_FTRACE
 #CXXFLAGS += -DCONFIG_DIFFTEST
 #$(info INCFLAGS = $(INCFLAGS))
 
@@ -53,7 +54,8 @@ $(BIN): $(VSRC) $(CSRC)
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
-		-j 0 -I$(NPC_HOME)/vsrc
+		-j 0 -I$(NPC_HOME)/vsrc\
+		--trace-vcd
 #		-LDFLAGS "-lreadline"
 
 IMG ?= $(NPC_HOME)/csrc/dummy.bin
@@ -65,7 +67,6 @@ all: default
 
 run: $(BIN)
 #	@$^
-	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) -b
 
 gdb: $(BIN)
