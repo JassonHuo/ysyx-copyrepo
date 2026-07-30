@@ -66,6 +66,8 @@ module lsu(
   assign csr_data_out = csr_data_in;
   assign csr_addr_out = csr_addr;
 
+  assign src1_out = src1;
+
   reg [1: 0] mem_data;
   wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:

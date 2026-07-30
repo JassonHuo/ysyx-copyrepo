@@ -43,13 +43,14 @@ module csr(
   end
 
   always@(posedge clk)begin
-	if(csr_en)
-	  $display("mtvec: %08x, csr_wdata: %08x", mtvec, csr_wdata);
 	if(rst)begin
 	  mcycle <= 32'b0;
 	  mcycleh <= 32'b0;
 	  mvendorid <= ysyx_ascii;
 	  marchid <= ysyx_code;
+	  mepc <= 32'b0;
+	  mcause <= 32'd11;
+	  mtvec <= 32'b0;
 	end
 	else begin
 	  mcycle <= mcycle + 1;
@@ -60,14 +61,10 @@ module csr(
 		  12'hb80: mcycleh <= csr_wdata;
 		  12'hf11: mvendorid <= csr_wdata;
 		  12'hf12: marchid <= csr_wdata;
-		  12'h341: mepc <= (yield_csren ? mepc_in: csr_wdata);
-		  12'h342: mcause <= (yield_csren ? mcause_in: csr_wdata);
+		  12'h341: mepc <= csr_wdata;
+		  12'h342: mcause <= mcause_in;
 		  12'h300: mstatus <= csr_wdata;
-		  12'h305: begin
-//			$display("mtvec: %08x", mtvec);
-//			$display("wcsrdata: %08x", csr_wdata);
-			mtvec <= csr_wdata;
-		  end
+		  12'h305: mtvec <= csr_wdata;
 		  default:begin
 			mcycle <= mcycle;
 			mcycleh <= mcycleh;
@@ -79,6 +76,10 @@ module csr(
 			mtvec <= mtvec;
 		  end
 		endcase
+	  end
+	  if(yield_csren)begin
+		mepc <= mepc_in;
+		mcause <= mcause_in;
 	  end
 	end
   end

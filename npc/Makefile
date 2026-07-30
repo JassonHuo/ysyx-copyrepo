@@ -41,6 +41,8 @@ CSRC += $(NPC_HOME)/csrc/*.cpp
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -DCONFIG_ITRACE
+#CXXFLAGS += -DCONFIG_MTRACE
+#CXXFLAGS += -DCONFIG_FTRACE
 #CXXFLAGS += -DCONFIG_DIFFTEST
 #$(info INCFLAGS = $(INCFLAGS))
 
@@ -70,6 +72,7 @@ run: $(BIN)
 
 gdb: $(BIN)
 	gdb $(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) 
+
 clean: 
 	rm -rf $(BUILD_DIR)
 

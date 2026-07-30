@@ -21,7 +21,7 @@
 #define RED "\033[31m"
 #define BLUE "\033[34m"
 #define RESET "\033[0m"
-#define IB_SIZE 30
+#define IB_SIZE 200
 #define MB_SIZE 100
 #define FB_SIZE 300
 #define BUFFER_IRING 0
@@ -294,6 +294,7 @@ extern "C" int pmem_read(int addr)
 #ifdef CONFIG_MTRACE
 	display_mb();
 #endif
+	printf("read: %08x out of range\n", addr);
 	NPC_state = NPC_ABORT;
 	do_quitcheck();
 	return 1;
@@ -354,6 +355,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 #ifdef CONFIG_MTRACE
 	  display_mb();
 #endif
+	  printf("write: %08x out of range\n", waddr);
 	  NPC_state = NPC_ABORT;
 	  tfp->close();
 	  do_quitcheck();
@@ -498,7 +500,7 @@ void run_cycle(uint64_t n)
 #endif
 	top->clk = 0;
 	top->eval();
-	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
+//	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 	top->clk = 1;
 	top->eval();
 	tfp->dump(contextp->time());

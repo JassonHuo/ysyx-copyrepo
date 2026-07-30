@@ -44,9 +44,7 @@ module wbu(
   always@(*)begin
 	pc_wen = 1'b0;
 	csr_en = |csr_type;
-	yield_csren = 1'b1;
-	if(csr_en)
-	  $display("in wb csrdata: %08x", alu);
+	yield_csren = 1'b0;
 	case(pc_src)
 	  `PC_NEXT: begin
 		pc_dync_out = pc_sync;

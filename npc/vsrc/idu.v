@@ -312,6 +312,7 @@ module idu(
 		is_signed = 0;
 		case(funct3)
 		  3'b000:begin
+			wen = 1'b0;
 			if(csr_addr == 12'h001)  //ebreak
 			  ebreak();
 			else if(csr_addr == 12'h000)begin  //ecall
