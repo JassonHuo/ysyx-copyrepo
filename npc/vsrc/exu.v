@@ -110,8 +110,8 @@ module exu(
   end
 
   alu alu0(
-	.x(src1),
-	.y(reg_src == `ALU_IMM ? imm: src2),
+	.x(alu_num1),
+	.y(alu_num2),
 	.alu_op(alu_op),
 	.z(alu_out),
 	.zero(zero),
