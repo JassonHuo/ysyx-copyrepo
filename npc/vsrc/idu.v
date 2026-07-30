@@ -322,22 +322,18 @@ module idu(
 		  end
 		  3'b010:begin  //csrrs
 			csr_type = `CSR_RS;
-			alu_op = `ALU_OR;
 		  end
 		  3'b011:begin  //csrrc
 			csr_type = `CSR_RC;
-			alu_op = `ALU_AND;
 		  end
 		  3'b101:begin  //csrrwi
 			csr_type = `CSR_RWI;
 		  end
 		  3'b110:begin  //csrrsi
 			csr_type = `CSR_RSI;
-			alu_op = `ALU_OR;
 		  end
 		  3'b111:begin  //csrrci
 			csr_type = `CSR_RCI;
-			alu_op = `ALU_AND;
 		  end
 		  default:begin
 			$display("csr abort");
