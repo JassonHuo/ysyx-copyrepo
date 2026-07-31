@@ -21,7 +21,7 @@
 #define RED "\033[31m"
 #define BLUE "\033[34m"
 #define RESET "\033[0m"
-#define IB_SIZE 200
+#define IB_SIZE 16
 #define MB_SIZE 100
 #define FB_SIZE 300
 #define BUFFER_IRING 0
@@ -58,6 +58,8 @@ void difftest_step();
 void init_difftest();
 #endif
 int NPC_state = NPC_STOP;
+bool to_device = false;
+uint32_t skip_pc = 0;
 
 #ifdef CONFIG_TRACES
 
@@ -285,9 +287,9 @@ extern "C" int pmem_read(int addr)
 #endif
 #endif
 
-  if(addr == 0x10000000) return 0;
-  else if(addr == 0x10000048) return (uint32_t)get_time();
-  else if(addr == 0x1000004c) return get_time() >> 32;
+  if(addr == 0x10000000) {to_device = true; skip_pc = c_get_Pc(); return 0;}
+  else if(addr == 0x10000048) {to_device = true;skip_pc = c_get_Pc(); return (uint32_t)get_time();}
+  else if(addr == 0x1000004c){to_device = true;  skip_pc = c_get_Pc(); return get_time() >> 32;}
   else if(addr >= 0x80000000 && addr <= 0x87ffffff) return mem[((uint32_t)addr - 0x80000000) >> 2];
   else 
   {
@@ -317,11 +319,13 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	}
 #endif
 #endif
-	if(waddr == 0x10000048) return;
-	else if(waddr == 0x1000004c) return;
+	if(waddr == 0x10000048) {to_device = true; skip_pc = c_get_Pc(); return;}
+	else if(waddr == 0x1000004c) {to_device = true; skip_pc = c_get_Pc(); return;}
 	else if(waddr == 0x10000000)
 	{
+	  to_device = true;
       putchar(wdata);
+	  skip_pc = c_get_Pc(); 
 	  fflush(stdout);
 	}
 	else if(waddr >= 0x80000000 && waddr <= 0x87ffffff)
@@ -375,8 +379,8 @@ extern "C" void do_quitcheck()
   else
 	printf(RED "HIT BAD TRAP " RESET);
   printf("at pc = %08x\n", top->pc);
-  if(NPC_state == NPC_ABORT)
-	exit(1);
+//  if(NPC_state == NPC_ABORT)
+//	exit(1);
 }
 
 extern "C" void npc_abort()
@@ -412,6 +416,19 @@ uint32_t c_get_Pc()
   return (uint32_t)get_Pc();
 }
 
+uint32_t c_get_Csr(int idx)
+{
+  extern int get_Csr(int idx);
+  svSetScope(svGetScopeFromName("TOP.top.csr0"));
+  return (uint32_t)get_Csr(idx);
+}
+
+uint32_t c_get_next_Pc()
+{
+  extern int get_next_Pc();
+  svSetScope(svGetScopeFromName("TOP.top.pc0"));
+  return (uint32_t)get_next_Pc();
+}
 
 void run_cycle(uint64_t n)
 {
@@ -505,6 +522,7 @@ void run_cycle(uint64_t n)
 	top->eval();
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
+	tfp->flush();
 #ifdef CONFIG_DIFFTEST
 	difftest_step();
 #endif
@@ -556,6 +574,7 @@ int main(int argc, char** argv) {
 #endif
   if(NPC_state == NPC_QUIT)
 	return 0;
+  tfp->close();
   do_quitcheck();
   return top->a0;
 }
