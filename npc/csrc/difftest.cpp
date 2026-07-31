@@ -29,7 +29,7 @@ void get_all_Regs()
   {
 	npc_reg[i] = c_get_Reg(i);
   }
-  npc_reg[32] = c_get_next_Pc();
+  npc_reg[32] = c_get_Pc();
   for(int i = 0; i < 4096; i ++)
   {
 	npc_reg[i + 33] = c_get_Csr(i);
