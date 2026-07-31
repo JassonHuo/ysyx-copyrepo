@@ -21,7 +21,7 @@
 #define RED "\033[31m"
 #define BLUE "\033[34m"
 #define RESET "\033[0m"
-#define IB_SIZE 200
+#define IB_SIZE 16
 #define MB_SIZE 100
 #define FB_SIZE 300
 #define BUFFER_IRING 0
