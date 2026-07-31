@@ -36,15 +36,11 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 	assert(0);
 }
 
-uint32_t get_current_pc();
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
   char *p = (char*)&cpu;
-  uint32_t curr_pc = get_current_pc();
   if(direction == DIFFTEST_TO_DUT)
   {
-	printf("curr%08x\n", curr_pc);
 	memcpy(dut, p, DIFFTEST_REG_SIZE - 4);
-	((uint32_t*)dut)[32] = curr_pc;
 	memcpy(dut + DIFFTEST_REG_SIZE, p + DIFFTEST_REG_SIZE, 4096 * 4);
   }
   else if(direction == DIFFTEST_TO_REF)
