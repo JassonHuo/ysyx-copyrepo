@@ -50,6 +50,7 @@ module csr(
 	  marchid <= ysyx_code;
 	  mepc <= 32'b0;
 	  mcause <= 32'd11;
+	  mstatus <= 32'b0;
 	  mtvec <= 32'b0;
 	end
 	else begin
@@ -84,5 +85,16 @@ module csr(
 	end
   end
 
+  function int get_Csr(int idx);
+	case(csr_waddr)
+	  12'h341: return mepc;
+	  12'h342: return mcause;
+	  12'h300: return mstatus;
+	  12'h305: return mtvec;
+	  default: return 0;
+	endcase;
+  endfunction
+
+  export "DPI-C" function get_Csr;
 
 endmodule

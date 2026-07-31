@@ -41,22 +41,13 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
   if(direction == DIFFTEST_TO_DUT)
   {
 	memcpy(dut, p, DIFFTEST_REG_SIZE);
-		/*
-	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
-	{
-	  *(((char*)dut) + i) = *(p + i);
-	}
-	*/
+	memcpy(dut + DIFFTEST_REG_SIZE, p + DIFFTEST_REG_SIZE, 4096 * 4);
   }
   else if(direction == DIFFTEST_TO_REF)
   {
 	memcpy(p, dut, DIFFTEST_REG_SIZE);
-	/*
-	for(int i = 0; i < DIFFTEST_REG_SIZE; i ++)
-	{
-	  *(p + i) = *(((char*)dut) + i);
-	}
-	*/
+	memcpy(p + DIFFTEST_REG_SIZE, dut + DIFFTEST_REG_SIZE, 4096 * 4);
+	printf("%08x\n", cpu.pc);
   }
   else
 	assert(0);

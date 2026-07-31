@@ -11,13 +11,17 @@
 void (*difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*difftest_regcpy)(void *dut, bool directio) = NULL;
 void (*difftest_exec)(uint64_t n) = NULL;
-uint32_t ref_reg[33];
-uint32_t npc_reg[33];
+uint32_t ref_reg[4129];
+uint32_t npc_reg[4129];
 uint32_t c_get_Reg(int idx);
 uint32_t c_get_Pc();
+uint32_t c_get_Csr(int idx);
+uint32_t c_get_next_Pc();
 const char *get_reg_name(int i);
 extern uint32_t mem[];
 extern int NPC_state;
+extern bool to_device;
+
 
 void get_all_Regs()
 {
@@ -26,10 +30,15 @@ void get_all_Regs()
 	npc_reg[i] = c_get_Reg(i);
   }
   npc_reg[32] = c_get_Pc();
+  for(int i = 0; i < 4096; i ++)
+  {
+	npc_reg[i + 33] = c_get_Csr(i);
+  }
 }
 
 bool reg_check()
 {
+  /*
   for(int i = 0; i < 33; i ++)
   {
 	if(npc_reg[i] != ref_reg[i])
@@ -48,11 +57,28 @@ bool reg_check()
 	}
   }
   return true;
+  */
+  int ret = memcmp(ref_reg, npc_reg, (4096 + 33) * 4);
+  if(ret)
+  {
+	for(int i = 0; i < 33; i ++)
+	{
+	  if(npc_reg[i] != ref_reg[i])
+		printf(RED);
+	  else if(ref_reg[i])
+		printf(YELLOW);
+	  if(i == 32) printf("pc : ");
+	  else printf("%-3s: ", get_reg_name(i));
+	  printf("nemu: %08x, npc: %08x" RESET "\n", ref_reg[i], npc_reg[i]);
+	}
+  }
+  return ret == 0;
 }
 
 void init_difftest()
 {
 #ifdef CONFIG_DIFFTEST
+  printf("Difftest opened\n");
   void *dl_handle = dlopen("../nemu/build/riscv32-nemu-interpreter-so", RTLD_LAZY);
   assert(dl_handle);
 
@@ -69,8 +95,22 @@ void init_difftest()
 #endif
 }
 
+void difftest_skip()
+{
+  get_all_Regs();
+//  npc_reg[32] = c_get_next_Pc();
+  difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
+  to_device = false;
+}
+
 void difftest_step()
 {
+  if(to_device)
+  {
+	printf("test, pc: %08x\n", c_get_Pc());
+	difftest_skip();
+	return;
+  }
   difftest_exec(1);
   difftest_regcpy((void*)ref_reg, DIFFTEST_TO_DUT);
   get_all_Regs();

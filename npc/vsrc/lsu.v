@@ -89,9 +89,9 @@ module lsu(
 //		`MEM_HALF: rdata = (mem_data >> alu[1: 0]) & 32'hFFFF;
 //		`MEM_BYTE: rdata = (mem_data >> alu[1: 0]) & 32'hFF;
 //	  endcase
-	  if(mem_wen)
-//		$display("lsu store: %08x, mem_wen = %d, pc: %08x", src2, mem_wen, pc_in);
+	  if(mem_wen)begin
 		pmem_write(alu, src2, {4'b0, mask});
+	  end
 	end
 	else
 	  rdata = 0;

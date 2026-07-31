@@ -248,8 +248,6 @@ void display_ft_buffer()
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
-//  printf("%08x %08x\n", s->pc, s->isa.inst);
-  //printf("%d, %d, %d\n", pc, snpc, ilen);
   isa_exec_once(s);
   
 //  printf("%08x, %08x\n", s->pc, s->snpc);

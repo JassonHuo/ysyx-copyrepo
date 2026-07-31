@@ -15,7 +15,7 @@ Context* __am_irq_handle(Context *c) {
     c = user_handler(ev, c);
     assert(c != NULL);
   }
-
+//  printf("c: %p\n", c);
   return c;
 }
 
@@ -37,6 +37,7 @@ Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
   ctx->mcause = 11;
   ctx->mstatus = 0x1800;
   ctx->gpr[10] = (uintptr_t)arg;
+  printf("creat: %p\n", ctx);
   return ctx;
 }
 

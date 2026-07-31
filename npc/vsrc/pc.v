@@ -17,12 +17,15 @@ module pc(
 	  pc <= pc_in;
 	else 
 	  pc <= pc;
-	$display("%08x", pc);
   end
   function int get_Pc();
 	return pc;
   endfunction
+  function int get_next_Pc();
+	return pc_in;
+  endfunction
   export "DPI-C" function get_Pc;
+  export "DPI-C" function get_next_Pc;
 
   assign pc_out = pc;
 

@@ -21,7 +21,7 @@
 #define RED "\033[31m"
 #define BLUE "\033[34m"
 #define RESET "\033[0m"
-#define IB_SIZE 30
+#define IB_SIZE 200
 #define MB_SIZE 100
 #define FB_SIZE 300
 #define BUFFER_IRING 0
@@ -58,6 +58,7 @@ void difftest_step();
 void init_difftest();
 #endif
 int NPC_state = NPC_STOP;
+bool to_device = false;
 
 #ifdef CONFIG_TRACES
 
@@ -285,18 +286,20 @@ extern "C" int pmem_read(int addr)
 #endif
 #endif
 
-  if(addr == 0x10000000) return 0;
-  else if(addr == 0x10000048) return (uint32_t)get_time();
-  else if(addr == 0x1000004c) return get_time() >> 32;
-  else if(addr >= 0x80000000 && addr <= 0x87ffffff) return mem[((uint32_t)addr - 0x80000000) >> 2];
+  if(addr == 0x10000000) {to_device = true; return 0;}
+  else if(addr == 0x10000048) {to_device = true; return (uint32_t)get_time();}
+  else if(addr == 0x1000004c) {to_device = true; return get_time() >> 32;}
+  else if(addr >= 0x80000000 && addr <= 0x87ffffff) {return mem[((uint32_t)addr - 0x80000000) >> 2];}
   else 
   {
 #ifdef CONFIG_MTRACE
 	display_mb();
 #endif
+	printf("read: %08x out of range\n", addr);
 	NPC_state = NPC_ABORT;
-	do_quitcheck();
-	return 1;
+	printf("in pmemread mem[80009318]: %08x, mem[80011318]: %08x\n", mem[0x00009318 >> 2], mem[0x00011318 >> 2]);
+//	do_quitcheck();
+	return 0;
   }
 }
 
@@ -316,10 +319,11 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	}
 #endif
 #endif
-	if(waddr == 0x10000048) return;
-	else if(waddr == 0x1000004c) return;
+	if(waddr == 0x10000048) {to_device = true; return;}
+	else if(waddr == 0x1000004c) {to_device = true; return;}
 	else if(waddr == 0x10000000)
 	{
+	  to_device = true; 
       putchar(wdata);
 	  fflush(stdout);
 	}
@@ -354,16 +358,16 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 #ifdef CONFIG_MTRACE
 	  display_mb();
 #endif
+	  printf("write: %08x out of range\n", waddr);
 	  NPC_state = NPC_ABORT;
 	  tfp->close();
-	  do_quitcheck();
+//	  do_quitcheck();
 	}
   }
 }
 
 extern "C" void do_quitcheck()
 {
-  display_ib();
   printf("[%s:%d %s] npc: ", __FILE__, __LINE__, __func__);
   if(NPC_state == NPC_ABORT)
   {
@@ -375,7 +379,12 @@ extern "C" void do_quitcheck()
 	printf(RED "HIT BAD TRAP " RESET);
   printf("at pc = %08x\n", top->pc);
   if(NPC_state == NPC_ABORT)
+  {
+#ifdef CONFIG_ITRACE
+	display_ib();
+#endif
 	exit(1);
+  }
 }
 
 extern "C" void npc_abort()
@@ -411,6 +420,19 @@ uint32_t c_get_Pc()
   return (uint32_t)get_Pc();
 }
 
+uint32_t c_get_Csr(int idx)
+{
+  extern int get_Csr(int idx);
+  svSetScope(svGetScopeFromName("TOP.top.csr0"));
+  return (uint32_t)get_Csr(idx);
+}
+
+uint32_t c_get_next_Pc()
+{
+  extern int get_next_Pc();
+  svSetScope(svGetScopeFromName("TOP.top.pc0"));
+  return (uint32_t)get_next_Pc();
+}
 
 void run_cycle(uint64_t n)
 {
