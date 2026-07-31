@@ -54,7 +54,7 @@ static uint64_t start_time;
 void sdb_mainloop();
 char *march_func(uint32_t addr);
 #ifdef CONFIG_DIFFTEST
-void difftest_step(uint32_t test_pc);
+void difftest_step();
 void init_difftest();
 #endif
 int NPC_state = NPC_STOP;
@@ -288,8 +288,8 @@ extern "C" int pmem_read(int addr)
 
   if(addr == 0x10000000) {to_device = true; return 0;}
   else if(addr == 0x10000048) {to_device = true; return (uint32_t)get_time();}
-  else if(addr == 0x1000004c) {to_device = true; return get_time() >> 32;}
-  else if(addr >= 0x80000000 && addr <= 0x87ffffff) {return mem[((uint32_t)addr - 0x80000000) >> 2];}
+  else if(addr == 0x1000004c){to_device = true;  return get_time() >> 32;}
+  else if(addr >= 0x80000000 && addr <= 0x87ffffff) return mem[((uint32_t)addr - 0x80000000) >> 2];
   else 
   {
 #ifdef CONFIG_MTRACE
@@ -297,9 +297,8 @@ extern "C" int pmem_read(int addr)
 #endif
 	printf("read: %08x out of range\n", addr);
 	NPC_state = NPC_ABORT;
-	printf("in pmemread mem[80009318]: %08x, mem[80011318]: %08x\n", mem[0x00009318 >> 2], mem[0x00011318 >> 2]);
-//	do_quitcheck();
-	return 0;
+	do_quitcheck();
+	return 1;
   }
 }
 
@@ -323,7 +322,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	else if(waddr == 0x1000004c) {to_device = true; return;}
 	else if(waddr == 0x10000000)
 	{
-	  to_device = true; 
+	  to_device = true;
       putchar(wdata);
 	  fflush(stdout);
 	}
@@ -361,7 +360,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	  printf("write: %08x out of range\n", waddr);
 	  NPC_state = NPC_ABORT;
 	  tfp->close();
-//	  do_quitcheck();
+	  do_quitcheck();
 	}
   }
 }
@@ -379,12 +378,7 @@ extern "C" void do_quitcheck()
 	printf(RED "HIT BAD TRAP " RESET);
   printf("at pc = %08x\n", top->pc);
   if(NPC_state == NPC_ABORT)
-  {
-#ifdef CONFIG_ITRACE
-	display_ib();
-#endif
 	exit(1);
-  }
 }
 
 extern "C" void npc_abort()
@@ -527,8 +521,8 @@ void run_cycle(uint64_t n)
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 #ifdef CONFIG_DIFFTEST
-//	printf("main pc: %08x, function: %08x\n", top->pc, c_get_Pc());
-	difftest_step(c_get_Pc());
+	printf("pc in run cycle: %08x\n", c_get_Pc());
+	difftest_step();
 #endif
 	if(NPC_state != NPC_RUNNING)
 	{

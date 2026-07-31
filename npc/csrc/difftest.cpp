@@ -103,9 +103,10 @@ void difftest_skip()
   to_device = false;
 }
 
-void difftest_step(uint32_t test_pc)
+void difftest_step()
 {
 //  printf("test, pc: %08x pc_in: %08x\n", c_get_Pc(), test_pc);
+	printf("pc in difftest step: %08x\n", c_get_Pc());
   if(to_device)
   {
 	difftest_skip();
