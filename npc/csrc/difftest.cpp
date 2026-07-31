@@ -98,7 +98,7 @@ void init_difftest()
 void difftest_skip()
 {
   get_all_Regs();
-//  npc_reg[32] = c_get_next_Pc();
+  npc_reg[32] = c_get_next_Pc();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
   to_device = false;
 }
