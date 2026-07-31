@@ -7,6 +7,7 @@
 #define RED "\033[31m"
 #define YELLOW "\033[33m"
 #define RESET "\033[0m"
+#define MEM_SIZE 134217727
 
 void (*difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
 void (*difftest_regcpy)(void *dut, bool directio) = NULL;
@@ -22,6 +23,27 @@ extern uint32_t mem[];
 extern int NPC_state;
 extern bool to_device;
 extern uint32_t skip_pc;
+
+/*
+#ifdef CONFIG_MEMDIFFTEST
+uint32_t ref_mem[MEM_SIZE] = {0};
+
+void get_ref_mem()
+{
+  difftest_memcpy(
+}
+
+bool mem_check()
+{
+}
+#endif
+*/
+
+uint32_t csr_idx[] = {0x300, 0x305, 0x341, 0x342};
+const char* csr_name[] = {
+  "mstatus", "mtvec", "mepc", "mcause"
+};
+int CSR_SIZE = ARR_SIZE(csr_idx);
 
 
 void get_all_Regs()
@@ -69,8 +91,18 @@ bool reg_check()
 		printf(RED);
 	  else if(ref_reg[i])
 		printf(YELLOW);
-	  if(i == 32) printf("pc : ");
-	  else printf("%-3s: ", get_reg_name(i));
+	  if(i == 32) printf("pc     : ");
+	  else printf("%-7s: ", get_reg_name(i));
+	  printf("nemu: %08x | npc: %08x\n" RESET, ref_reg[i], npc_reg[i]);
+	}
+	for(int i = 0; i < CSR_SIZE; i ++)
+	{
+	  uint32_t idx = csr_idx[i] + 33;
+	  if(npc_reg[idx] != ref_reg[idx])
+		printf(RED);
+	  else if(npc_reg[idx])
+		printf(YELLOW);
+	  printf("%-7s: nemu: %08x | npc: %08x\n" RESET, csr_name[i], ref_reg[idx], npc_reg[idx]);
 	}
   }
   return ret == 0;
