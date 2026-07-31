@@ -54,7 +54,7 @@ static uint64_t start_time;
 void sdb_mainloop();
 char *march_func(uint32_t addr);
 #ifdef CONFIG_DIFFTEST
-void difftest_step();
+void difftest_step(uint32_t test_pc);
 void init_difftest();
 #endif
 int NPC_state = NPC_STOP;
@@ -527,7 +527,8 @@ void run_cycle(uint64_t n)
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 #ifdef CONFIG_DIFFTEST
-	difftest_step();
+//	printf("main pc: %08x, function: %08x\n", top->pc, c_get_Pc());
+	difftest_step(c_get_Pc());
 #endif
 	if(NPC_state != NPC_RUNNING)
 	{

@@ -30,6 +30,7 @@ void get_all_Regs()
 	npc_reg[i] = c_get_Reg(i);
   }
   npc_reg[32] = c_get_Pc();
+//  printf("diff_npc_reg pc: %08x, to_device: %d\n", npc_reg[32], to_device);
   for(int i = 0; i < 4096; i ++)
   {
 	npc_reg[i + 33] = c_get_Csr(i);
@@ -103,12 +104,16 @@ void difftest_skip()
   to_device = false;
 }
 
-void difftest_step()
+void difftest_step(uint32_t test_pc)
 {
+//  printf("test, pc: %08x pc_in: %08x\n", c_get_Pc(), test_pc);
   if(to_device)
   {
-	printf("test, pc: %08x\n", c_get_Pc());
-	difftest_skip();
+//	difftest_skip();
+	get_all_Regs();
+	npc_reg[32] = test_pc;
+	difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
+	to_device = false;
 	return;
   }
   difftest_exec(1);
