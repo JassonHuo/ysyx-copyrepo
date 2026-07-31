@@ -40,7 +40,7 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
   char *p = (char*)&cpu;
   if(direction == DIFFTEST_TO_DUT)
   {
-	memcpy(dut, p, DIFFTEST_REG_SIZE - 4);
+	memcpy(dut, p, DIFFTEST_REG_SIZE);
 	memcpy(dut + DIFFTEST_REG_SIZE, p + DIFFTEST_REG_SIZE, 4096 * 4);
   }
   else if(direction == DIFFTEST_TO_REF)
