@@ -24,20 +24,27 @@ extern int NPC_state;
 extern bool to_device;
 extern uint32_t skip_pc;
 
-/*
 #ifdef CONFIG_MEMDIFFTEST
 uint32_t ref_mem[MEM_SIZE] = {0};
 
 void get_ref_mem()
 {
-  difftest_memcpy(
+  difftest_memcpy(0x80000000, (void*)ref_mem,0x7ffffff, DIFFTEST_TO_DUT);
 }
 
 bool mem_check()
 {
+  get_ref_mem();
+  int ret = !memcmp(mem, ref_mem, 0x7ffffff);
+  if(!ret)
+  {
+	for(int i = 0; i < MEM_SIZE; i ++)
+	  if(mem[i] != ref_mem[i])
+		printf("0x%08x: mem: %08x | ref: %08x\n", i + 0x80000000, mem[i], ref_mem[i]);
+  }
+  return ret;
 }
 #endif
-*/
 
 uint32_t csr_idx[] = {0x300, 0x305, 0x341, 0x342};
 const char* csr_name[] = {
@@ -155,7 +162,11 @@ void difftest_step()
   difftest_exec(1);
   difftest_regcpy((void*)ref_reg, DIFFTEST_TO_DUT);
   get_all_Regs();
+#ifdef CONFIG_MEMDIFFTEST
+  bool ret = reg_check() && mem_check();
+#else
   bool ret = reg_check();
+#endif
   if(ret == false)
 	NPC_state = NPC_ABORT;
 }
