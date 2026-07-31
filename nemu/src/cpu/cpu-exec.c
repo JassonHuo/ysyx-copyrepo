@@ -245,11 +245,17 @@ void display_ft_buffer()
 }
 #endif
 
+static uint32_t nemu_current_pc = 0;
+uint32_t get_current_pc()
+{
+  return nemu_current_pc;
+}
+
 static void exec_once(Decode *s, vaddr_t pc) {
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
-  
+  nemu_current_pc = s->pc;
 //  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
