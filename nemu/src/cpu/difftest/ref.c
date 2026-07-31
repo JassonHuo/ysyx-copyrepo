@@ -45,6 +45,7 @@ __EXPORT void difftest_regcpy(void *dut, bool direction) {
   }
   else if(direction == DIFFTEST_TO_REF)
   {
+	printf("test\n");
 	memcpy(p, dut, DIFFTEST_REG_SIZE);
 	memcpy(p + DIFFTEST_REG_SIZE, dut + DIFFTEST_REG_SIZE, 4096 * 4);
   }
