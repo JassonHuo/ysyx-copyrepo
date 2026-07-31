@@ -99,6 +99,7 @@ void init_difftest()
 void difftest_skip()
 {
   get_all_Regs();
+  npc_reg[32] = c_get_next_Pc();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
   to_device = false;
 }
@@ -106,7 +107,6 @@ void difftest_skip()
 void difftest_step()
 {
 //  printf("test, pc: %08x pc_in: %08x\n", c_get_Pc(), test_pc);
-	printf("pc in difftest step: %08x\n", c_get_Pc());
   if(to_device)
   {
 	difftest_skip();
