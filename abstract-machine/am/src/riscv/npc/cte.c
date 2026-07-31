@@ -12,9 +12,11 @@ Context* __am_irq_handle(Context *c) {
       default: ev.event = EVENT_ERROR; break;
     }
 
+//	printf("irq handler: %08p\n", user_handler);
     c = user_handler(ev, c);
     assert(c != NULL);
   }
+  // assert((uintptr_t)c >= 0x80000000);
 //  printf("c: %p\n", c);
   return c;
 }
@@ -27,6 +29,7 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 
   // register event handler
   user_handler = handler;
+  printf("init handler: %08p\n", user_handler);
 
   return true;
 }

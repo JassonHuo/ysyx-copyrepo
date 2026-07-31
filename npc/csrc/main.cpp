@@ -379,8 +379,8 @@ extern "C" void do_quitcheck()
   else
 	printf(RED "HIT BAD TRAP " RESET);
   printf("at pc = %08x\n", top->pc);
-  if(NPC_state == NPC_ABORT)
-	exit(1);
+//  if(NPC_state == NPC_ABORT)
+//	exit(1);
 }
 
 extern "C" void npc_abort()
@@ -522,6 +522,7 @@ void run_cycle(uint64_t n)
 	top->eval();
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
+	tfp->flush();
 #ifdef CONFIG_DIFFTEST
 	difftest_step();
 #endif
@@ -573,6 +574,7 @@ int main(int argc, char** argv) {
 #endif
   if(NPC_state == NPC_QUIT)
 	return 0;
+  tfp->close();
   do_quitcheck();
   return top->a0;
 }
