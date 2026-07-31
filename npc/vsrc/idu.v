@@ -77,9 +77,7 @@ module idu(
   assign src2 = rdata2;
   assign rd_addr = rd[3: 0];
 
-
   always@(*)begin
-//	$display("at pc: %08x inst: %08x", pc_in, inst_in);
 	imm = 32'b0;
 	pc_src = `PC_NEXT;
 	alu_src = `ALU_IMM;
