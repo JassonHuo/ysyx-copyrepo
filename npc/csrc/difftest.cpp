@@ -21,6 +21,7 @@ const char *get_reg_name(int i);
 extern uint32_t mem[];
 extern int NPC_state;
 extern bool to_device;
+extern uint32_t skip_pc;
 
 
 void get_all_Regs()
@@ -70,7 +71,6 @@ bool reg_check()
 		printf(YELLOW);
 	  if(i == 32) printf("pc : ");
 	  else printf("%-3s: ", get_reg_name(i));
-	  printf("nemu: %08x, npc: %08x" RESET "\n", ref_reg[i], npc_reg[i]);
 	}
   }
   return ret == 0;
@@ -99,9 +99,7 @@ void init_difftest()
 void difftest_skip()
 {
   get_all_Regs();
-  npc_reg[32] = c_get_next_Pc();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
-  to_device = false;
 }
 
 void difftest_step()
@@ -109,8 +107,18 @@ void difftest_step()
 //  printf("test, pc: %08x pc_in: %08x\n", c_get_Pc(), test_pc);
   if(to_device)
   {
-	difftest_skip();
-	return;
+	if(c_get_Pc() == skip_pc)
+	{
+	  difftest_skip();
+	  return;
+	}
+	else
+	{
+	  get_all_Regs();
+	  difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
+	  to_device = false;
+	  return;
+	}
   }
   difftest_exec(1);
   difftest_regcpy((void*)ref_reg, DIFFTEST_TO_DUT);

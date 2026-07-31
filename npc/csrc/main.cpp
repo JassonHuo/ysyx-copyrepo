@@ -59,6 +59,7 @@ void init_difftest();
 #endif
 int NPC_state = NPC_STOP;
 bool to_device = false;
+uint32_t skip_pc = 0;
 
 #ifdef CONFIG_TRACES
 
@@ -286,9 +287,9 @@ extern "C" int pmem_read(int addr)
 #endif
 #endif
 
-  if(addr == 0x10000000) {to_device = true; return 0;}
-  else if(addr == 0x10000048) {to_device = true; return (uint32_t)get_time();}
-  else if(addr == 0x1000004c){to_device = true;  return get_time() >> 32;}
+  if(addr == 0x10000000) {to_device = true; skip_pc = c_get_Pc(); return 0;}
+  else if(addr == 0x10000048) {to_device = true;skip_pc = c_get_Pc(); return (uint32_t)get_time();}
+  else if(addr == 0x1000004c){to_device = true;  skip_pc = c_get_Pc(); return get_time() >> 32;}
   else if(addr >= 0x80000000 && addr <= 0x87ffffff) return mem[((uint32_t)addr - 0x80000000) >> 2];
   else 
   {
@@ -318,12 +319,13 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	}
 #endif
 #endif
-	if(waddr == 0x10000048) {to_device = true; return;}
-	else if(waddr == 0x1000004c) {to_device = true; return;}
+	if(waddr == 0x10000048) {to_device = true; skip_pc = c_get_Pc(); return;}
+	else if(waddr == 0x1000004c) {to_device = true; skip_pc = c_get_Pc(); return;}
 	else if(waddr == 0x10000000)
 	{
 	  to_device = true;
       putchar(wdata);
+	  skip_pc = c_get_Pc(); 
 	  fflush(stdout);
 	}
 	else if(waddr >= 0x80000000 && waddr <= 0x87ffffff)
@@ -521,7 +523,6 @@ void run_cycle(uint64_t n)
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 #ifdef CONFIG_DIFFTEST
-	printf("pc in run cycle: %08x\n", c_get_Pc());
 	difftest_step();
 #endif
 	if(NPC_state != NPC_RUNNING)
