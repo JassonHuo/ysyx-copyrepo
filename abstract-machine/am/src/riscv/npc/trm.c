@@ -29,13 +29,6 @@ void halt(int code) {
 }
 
 void _trm_init() {
-  /*
-  int a = 32;
-  int b = 0;
-  asm volatile("csrw 0x305, %0": :"r"(a));
-  asm volatile("csrr %0, 0x305":"=r"(b));
-  printf("a = %d, b = %d\n", a, b);
-  */
   int ret = main(mainargs);
   halt(ret);
 }

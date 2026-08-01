@@ -45,6 +45,7 @@ module wbu(
 	pc_wen = 1'b0;
 	csr_en = |csr_type;
 	yield_csren = 1'b0;
+//	$display("at pc: %08x mepc_out: %08x mepc_in: %08x", pc_in, mepc_out, mepc_in);
 	case(pc_src)
 	  `PC_NEXT: begin
 		pc_dync_out = pc_sync;
