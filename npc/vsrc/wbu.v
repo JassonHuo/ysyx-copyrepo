@@ -1,5 +1,7 @@
 `include "global.vh"
 module wbu(
+  input clk,
+  input rst,
   input [31: 0] pc_sync,
   input [31: 0] pc_in,
   input [31: 0] alu,
@@ -34,8 +36,36 @@ module wbu(
   input [31: 0] mtvec_in,
   input [31: 0] mepc_in,
 
-  output yield_csren
+  output yield_csren,
+
+  input reg valid_pre,
+  output ready_pre
 );
+
+  reg state, next_state;
+  wire pre_succ = valid_pre & ready_pre;
+
+  always@(*)begin
+    if(rst)
+      next_state = `IDLE;
+    else begin
+      case(state)
+        `IDLE: next_state = valid_aft ? `WAIT_READY: `IDLE;
+//        `WAIT_READY: next_state = ready_aft ? `IDLE: `WAIT_READY;
+        default: next_state = `IDLE;
+      endcase
+    end
+  end
+
+  assign ready_pre = valid_pre & (state == `IDLE);
+
+  always@(posedge clk)begin
+        if(rst)
+          state <= `IDLE;
+        else begin
+          state <= next_state;
+        end
+  end
 
   assign rd_addr_out = rd_addr;
   assign wen_out = wen;

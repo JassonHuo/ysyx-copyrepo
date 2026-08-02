@@ -412,7 +412,7 @@ uint32_t c_get_Inst()
 uint32_t c_get_Pc()
 {
   extern int get_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.pc0"));
+  svSetScope(svGetScopeFromName("TOP.top.ifu0.pc0"));
   return (uint32_t)get_Pc();
 }
 
@@ -426,7 +426,7 @@ uint32_t c_get_Csr(int idx)
 uint32_t c_get_next_Pc()
 {
   extern int get_next_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.pc0"));
+  svSetScope(svGetScopeFromName("TOP.top.ifu0.pc0"));
   return (uint32_t)get_next_Pc();
 }
 

@@ -1,5 +1,7 @@
 `include "global.vh"
 module exu(
+  input clk,
+  input rst,
   input [31: 0] pc_in,
   input [31: 0] pc_sync_in,
 
@@ -15,7 +17,7 @@ module exu(
 
   input mem_wen,
   input [7: 0] wmask,
-  input valid,
+  input mem_valid,
   input [1: 0] width,
   input is_signed,
   input is_branch,
@@ -46,12 +48,42 @@ module exu(
 
   output mem_wen_out,
   output [7: 0] wmask_out,
-  output valid_out,
+  output mem_valid_out,
   output [31: 0] src2_out,
   output [1: 0] width_out,
-  output is_signed_out
+  output is_signed_out,
+
+  input valid_pre,
+  output ready_pre,
+  output reg valid_aft,
+  input ready_aft
 
 );
+
+  reg state, next_state;
+  wire pre_succ = valid_pre & ready_pre;
+
+  always@(*)begin
+	if(rst)
+	  next_state = `IDLE;
+	else begin
+	  case(state)
+		`IDLE: next_state = valid_aft ? `WAIT_READY: `IDLE;
+		`WAIT_READY: next_state = ready_aft ? `IDLE: `WAIT_READY;
+		default: next_state = `IDLE;
+	  endcase
+	end
+  end
+
+  assign ready_pre = valid_pre & (state == `IDLE);
+
+  always@(posedge clk)begin
+	if(rst)
+	  state <= `IDLE;
+	else begin
+	  state <= next_state;
+	end
+  end
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
@@ -67,7 +99,7 @@ module exu(
 
   assign mem_wen_out = mem_wen;
   assign wmask_out = wmask; 
-  assign valid_out = valid;
+  assign mem_valid_out = mem_valid;
 
   assign src2_out = src2;
 
