@@ -57,12 +57,12 @@ module ifu(
   ) Rom(
 	.clk(clk),
 	.wdata(0),
-	.raddr1(pc_out),
+	.waddr(0),
+	.raddr1(pc_out[7: 0]),
 	.raddr2(0),
 	.rdata1(inst),
 	.rdata2(),
-	.wen(0),
-	.a0()
+	.wen(0)
   );
 
 

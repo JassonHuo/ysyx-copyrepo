@@ -50,7 +50,7 @@ module wbu(
       next_state = `IDLE;
     else begin
       case(state)
-        `IDLE: next_state = valid_aft ? `WAIT_READY: `IDLE;
+//        `IDLE: next_state = valid_aft ? `WAIT_READY: `IDLE;
 //        `WAIT_READY: next_state = ready_aft ? `IDLE: `WAIT_READY;
         default: next_state = `IDLE;
       endcase

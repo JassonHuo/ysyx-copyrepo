@@ -85,6 +85,7 @@ module csr(
 	end
   end
 
+  /*
   function int get_Csr(int idx);
 	case(idx)
 	  32'h341: return mepc;
@@ -96,5 +97,6 @@ module csr(
   endfunction
 
   export "DPI-C" function get_Csr;
+  */
 
 endmodule

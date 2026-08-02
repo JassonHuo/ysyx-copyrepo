@@ -99,24 +99,45 @@ module lsu(
 
   assign src1_out = src1;
 
-  reg [1: 0] mem_data;
+  reg [31: 0] mem_data;
   wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:
 	(width == `MEM_BYTE ? 4'b1  << alu[1: 0] : 4'b0)));
+  reg [31: 0] mem_wdata;
+
+  RegisterFile #(
+	.ADDR_WIDTH(8),
+	.DATA_WIDTH(32)
+  ) Ram(
+	.clk(clk),
+	.wdata(mem_data),
+	.waddr(alu[7: 0]),
+	.raddr1(alu[7: 0]),
+	.raddr2(0),
+	.rdata1(mem_data),
+	.rdata2(),
+	.wen(mem_wen)
+  );
 
   always@(*)begin
 	if(mem_valid)begin
-	  rdata = (/*pmem_read(alu)*/ >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
+	  rdata = (/*pmem_read(alu)*/ mem_data >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
 	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
 		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
 	  if(mem_wen)begin
+		mem_wdata = src2 & {{8{mask[3]}}, {8{mask[2]}}, {8{mask[1]}}, {8{mask[0]}}};
 //		pmem_write(alu, src2, {4'b0, mask});
 	  end
+	  else begin
+		mem_wdata = 32'b0;
+	  end
 	end
-	else
-	  rdata = 0;
+	else begin
+	  rdata = 32'b0;
+	  mem_wdata = 32'b0;
+	end
   end
 
 endmodule

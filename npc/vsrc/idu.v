@@ -1,6 +1,8 @@
 `include "global.vh"
+/*
 import "DPI-C" function void ebreak();
 import "DPI-C" function void npc_abort();
+*/
 module idu(
   input clk,
   input rst,
@@ -179,8 +181,8 @@ module idu(
 			alu_op = `ALU_LAREQ;
 		  end
 		  default:begin
-			$display("branch abort");
-			npc_abort();
+//			$display("branch abort");
+//			npc_abort();
 		  end
 		endcase
 	  end
@@ -211,8 +213,8 @@ module idu(
 			is_signed = 0;
 		  end
 		  default: begin
-			$display("load abort");
-			npc_abort();
+//			$display("load abort");
+			//npc_abort();
 		  end
 		endcase 
 	  end
@@ -235,8 +237,8 @@ module idu(
 			width = `MEM_WORD;
 		  end
 		  default begin
-			$display("store abort");
-			npc_abort();
+//			$display("store abort");
+			//npc_abort();
 		  end
 		endcase
 	  end
@@ -272,8 +274,8 @@ module idu(
 			  alu_op = `ALU_LEFT;
 			end
 			else begin
-			  $display("immi abort");
-			  npc_abort();
+//			  $display("immi abort");
+			  //npc_abort();
 			end
 		  end
 		  3'b101:begin
@@ -285,13 +287,13 @@ module idu(
 			  alu_op = `ALU_RIGHT;
 			end
 			else begin
-			  $display("immi abort");
-			  npc_abort();
+//			  $display("immi abort");
+			  //npc_abort();
 			end
 		  end
 		  default: begin
-			$display("immi abort");
-			npc_abort();
+//			$display("immi abort");
+			//npc_abort();
 		  end
 		endcase
 	  end
@@ -334,8 +336,8 @@ module idu(
 		  alu_op = `ALU_AND;
 		end
 		else begin
-		  $display("reg abort");
-		  npc_abort();
+//		  $display("reg abort");
+		  //npc_abort();
 		end
 	  end
 	  7'b1110011:begin
@@ -346,8 +348,9 @@ module idu(
 		case(funct3)
 		  3'b000:begin
 			wen = 1'b0;
-			if(csr_addr == 12'h001)  //ebreak
-			  ebreak();
+			if(csr_addr == 12'h001)begin  //ebreak
+//			  ebreak();
+			end
 			else if(csr_addr == 12'h000)begin  //ecall
 			  wen = 0;
 			  csr_type = `CSR_NO;
@@ -382,30 +385,30 @@ module idu(
 			alu_op = `ALU_AND;
 		  end
 		  default:begin
-			$display("csr abort");
-			npc_abort();
+//			$display("csr abort");
+			//npc_abort();
 		  end
 		endcase
 	  end
 	  default begin
-		$display("default abort");
-		npc_abort();
+//		$display("default abort");
+//		npc_abort();
 	  end
 	endcase
   end
 
+  /*
   function int get_Inst();
 	return inst_in;
   endfunction
 
-  /*
   function int get_Pc();
 	return pc_in;
   endfunction
-  */
 
 
   export "DPI-C" function get_Inst;
 //  export "DPI-C" function get_Pc;
+*/
 
 endmodule

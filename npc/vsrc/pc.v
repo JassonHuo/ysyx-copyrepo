@@ -7,7 +7,7 @@ module pc(
   output [31: 0] pc_out,
   output [31: 0] pc_sync
 );
-  reg [31: 0] pc = 0'h80000000;
+  reg [31: 0] pc = 32'h80000000;
   assign pc_sync = pc + 32'h4;
 
   always@(posedge clk)begin
@@ -19,6 +19,7 @@ module pc(
 	else 
 	  pc <= pc;
   end
+  /*
   function int get_Pc();
 	return pc;
   endfunction
@@ -27,6 +28,7 @@ module pc(
   endfunction
   export "DPI-C" function get_Pc;
   export "DPI-C" function get_next_Pc;
+  */
 
   assign pc_out = pc;
 

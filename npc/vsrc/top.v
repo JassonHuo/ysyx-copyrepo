@@ -1,8 +1,7 @@
 module top(
   input clk,
   input rst,
-  output [31: 0] pc,
-  output [31: 0] a0
+  output [31: 0] pc
 );
 
   wire pc_en_wb_ifu;
@@ -187,8 +186,7 @@ module top(
 	.raddr2(raddr2_idu_gpr),
 	.rdata1(rdata1_gpr_idu),
 	.rdata2(rdata2_gpr_idu),
-	.wen(wen_wb_gpr),
-	.a0(a0)
+	.wen(wen_wb_gpr)
   );
 
   exu exu0(
