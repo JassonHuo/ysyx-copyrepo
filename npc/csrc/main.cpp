@@ -374,7 +374,7 @@ extern "C" void do_quitcheck()
   {
 	printf(RED "ABORT " RESET);
   }
-  else if(!top->a0)
+  else if(c_get_Reg(10))
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
@@ -576,5 +576,5 @@ int main(int argc, char** argv) {
 	return 0;
   tfp->close();
   do_quitcheck();
-  return top->a0;
+  return c_get_Reg(10);
 }
