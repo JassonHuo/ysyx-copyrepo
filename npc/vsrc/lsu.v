@@ -1,5 +1,5 @@
-//import "DPI-C" function int pmem_read(input int raddr);
-//import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
+import "DPI-C" function int pmem_read(input int raddr);
+import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 
 module lsu(
   input clk,
@@ -58,7 +58,6 @@ module lsu(
 );
 
   reg state, next_state;
-  wire pre_succ = valid_pre & ready_pre;
 
   always@(*)begin
 	if(rst)
@@ -71,7 +70,7 @@ module lsu(
 	end
   end
 
-  assign ready_pre = valid_pre & (state == `IDLE);
+//  assign ready_pre = valid_pre & (state == `IDLE);
 
   always@(posedge clk)begin
 	if(rst)
@@ -80,6 +79,9 @@ module lsu(
 	  state <= next_state;
 	end
   end
+
+  assign ready_pre = valid_pre;
+  assign valid_aft = ready_pre & valid_pre;
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
@@ -99,12 +101,12 @@ module lsu(
 
   assign src1_out = src1;
 
-  reg [31: 0] mem_data;
   wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:
 	(width == `MEM_BYTE ? 4'b1  << alu[1: 0] : 4'b0)));
   reg [31: 0] mem_wdata;
 
+  /*
   RegisterFile #(
 	.ADDR_WIDTH(8),
 	.DATA_WIDTH(32)
@@ -118,17 +120,19 @@ module lsu(
 	.rdata2(),
 	.wen(mem_wen)
   );
+  */
+
 
   always@(*)begin
-	if(mem_valid)begin
-	  rdata = (/*pmem_read(alu)*/ mem_data >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
+	if(mem_valid & valid_aft)begin
+	  rdata = (pmem_read(alu) >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
 	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
 		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
-	  if(mem_wen)begin
+	  if(mem_wen & valid_aft)begin
 		mem_wdata = src2 & {{8{mask[3]}}, {8{mask[2]}}, {8{mask[1]}}, {8{mask[0]}}};
-//		pmem_write(alu, src2, {4'b0, mask});
+		pmem_write(alu, src2, {4'b0, mask});
 	  end
 	  else begin
 		mem_wdata = 32'b0;

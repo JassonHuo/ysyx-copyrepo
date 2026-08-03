@@ -1,8 +1,6 @@
 `include "global.vh"
-/*
 import "DPI-C" function void ebreak();
 import "DPI-C" function void npc_abort();
-*/
 module idu(
   input clk,
   input rst,
@@ -66,7 +64,7 @@ module idu(
 	end
   end
 
-  assign ready_pre = valid_pre & (state == `IDLE);
+//  assign ready_pre = valid_pre & (state == `IDLE);
 
   always@(posedge clk)begin
 	if(rst)
@@ -75,6 +73,9 @@ module idu(
 	  state <= next_state;
 	end
   end
+
+  assign ready_pre = valid_pre;
+  assign valid_aft = ready_pre & valid_pre;
 
   wire [6: 0] opcode;
   wire [4: 0] rs1;
@@ -182,7 +183,7 @@ module idu(
 		  end
 		  default:begin
 //			$display("branch abort");
-//			npc_abort();
+			npc_abort();
 		  end
 		endcase
 	  end
@@ -214,7 +215,7 @@ module idu(
 		  end
 		  default: begin
 //			$display("load abort");
-			//npc_abort();
+			npc_abort();
 		  end
 		endcase 
 	  end
@@ -238,7 +239,7 @@ module idu(
 		  end
 		  default begin
 //			$display("store abort");
-			//npc_abort();
+			npc_abort();
 		  end
 		endcase
 	  end
@@ -275,7 +276,7 @@ module idu(
 			end
 			else begin
 //			  $display("immi abort");
-			  //npc_abort();
+			  npc_abort();
 			end
 		  end
 		  3'b101:begin
@@ -288,12 +289,12 @@ module idu(
 			end
 			else begin
 //			  $display("immi abort");
-			  //npc_abort();
+			  npc_abort();
 			end
 		  end
 		  default: begin
 //			$display("immi abort");
-			//npc_abort();
+			npc_abort();
 		  end
 		endcase
 	  end
@@ -337,7 +338,7 @@ module idu(
 		end
 		else begin
 //		  $display("reg abort");
-		  //npc_abort();
+		  npc_abort();
 		end
 	  end
 	  7'b1110011:begin
@@ -386,29 +387,21 @@ module idu(
 		  end
 		  default:begin
 //			$display("csr abort");
-			//npc_abort();
+			npc_abort();
 		  end
 		endcase
 	  end
 	  default begin
 //		$display("default abort");
-//		npc_abort();
+		npc_abort();
 	  end
 	endcase
   end
 
-  /*
   function int get_Inst();
 	return inst_in;
   endfunction
 
-  function int get_Pc();
-	return pc_in;
-  endfunction
-
-
   export "DPI-C" function get_Inst;
-//  export "DPI-C" function get_Pc;
-*/
 
 endmodule

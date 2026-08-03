@@ -25,7 +25,7 @@ module wbu(
   output reg [31: 0] csr_wdata_out,
   output [11: 0] csr_waddr,
 
-  output reg pc_wen,
+  output reg pc_wen_out,
   output reg [31: 0] pc_dync_out,
   output [3: 0] rd_addr_out,
   output reg [31: 0] wdata_out,
@@ -43,7 +43,7 @@ module wbu(
 );
 
   reg state, next_state;
-  wire pre_succ = valid_pre & ready_pre;
+  reg pc_wen;
 
   always@(*)begin
     if(rst)
@@ -57,7 +57,7 @@ module wbu(
     end
   end
 
-  assign ready_pre = valid_pre & (state == `IDLE);
+//  assign ready_pre = valid_pre & (state == `IDLE);
 
   always@(posedge clk)begin
         if(rst)
@@ -67,13 +67,16 @@ module wbu(
         end
   end
 
+  assign ready_pre = valid_pre;
+  wire done = ready_pre & valid_pre;
+
   assign rd_addr_out = rd_addr;
-  assign wen_out = wen;
+  assign wen_out = wen & done;
   assign csr_waddr = csr_addr;
 
   always@(*)begin
 	pc_wen = 1'b0;
-	csr_en = |csr_type;
+	csr_en = |csr_type & done;
 	yield_csren = 1'b0;
 //	$display("at pc: %08x mepc_out: %08x mepc_in: %08x", pc_in, mepc_out, mepc_in);
 	case(pc_src)
@@ -98,7 +101,7 @@ module wbu(
 		mepc_out = pc_in;
 		mcause_out = 32'd11;
 		pc_wen = 1'b1;
-		yield_csren = 1'b1;
+		yield_csren = 1'b1 & done;
 		csr_waddr = 12'b0;
 	  end
 	  `PC_MEPC:begin
@@ -157,5 +160,7 @@ module wbu(
 	  end
 	endcase
   end
+
+  assign pc_wen_out = pc_wen & done;
 
 endmodule

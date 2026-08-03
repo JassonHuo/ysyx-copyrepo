@@ -61,7 +61,6 @@ module exu(
 );
 
   reg state, next_state;
-  wire pre_succ = valid_pre & ready_pre;
 
   always@(*)begin
 	if(rst)
@@ -75,7 +74,7 @@ module exu(
 	end
   end
 
-  assign ready_pre = valid_pre & (state == `IDLE);
+//  assign ready_pre = valid_pre & (state == `IDLE);
 
   always@(posedge clk)begin
 	if(rst)
@@ -84,6 +83,9 @@ module exu(
 	  state <= next_state;
 	end
   end
+
+  assign ready_pre = valid_pre;
+  assign valid_aft = ready_pre & valid_pre;
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;

@@ -5,6 +5,7 @@ module ifu(
   input pc_en,
 
   output [31: 0] inst_addr,
+//  input [31: 0] inst_in,
 
   output [31: 0] inst_out,
   output [31: 0] pc_sync_out,
@@ -14,6 +15,8 @@ module ifu(
   output [31: 0] pc_out
 );
 
+  reg state, next_state;
+  /*
   always@(*)begin
 	if(rst)
 	  next_state = `IDLE;
@@ -33,11 +36,27 @@ module ifu(
 	  state <= next_state;
 	end
   end
+  */
+ always@(*)begin
+   if(rst)
+	 next_state = `IFU_IDLE;
+   else
+	 next_state = ~state;
+ end
 
+ always@(posedge clk)begin
+   if(rst)
+	 state <= `IFU_IDLE;
+   else
+	 state <= next_state;
+ end
 
-  reg state, next_state;
+  assign valid = state;
   
-  wire [31: 0] inst;
+  reg [31: 0] inst;
+  always@(posedge clk)begin
+	inst <= pmem_read(inst_addr);
+  end
 //  assign inst = pmem_read(pc_out);
   assign inst_out = inst;
   assign inst_addr = pc_out;
@@ -51,6 +70,7 @@ module ifu(
 	.pc_sync(pc_sync_out)
   );
 
+  /*
   RegisterFile #(
 	.ADDR_WIDTH(8),
 	.DATA_WIDTH(32)
@@ -64,6 +84,7 @@ module ifu(
 	.rdata2(),
 	.wen(0)
   );
+  */
 
 
 endmodule

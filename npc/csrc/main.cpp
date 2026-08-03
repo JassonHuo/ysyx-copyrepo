@@ -171,6 +171,7 @@ void init_elf(char *args);
 
 int batch_mode_open();
 uint32_t c_get_Pc();
+uint32_t c_get_Reg(int idx);
 
 FILE *fp = NULL;
 
@@ -529,9 +530,10 @@ void run_cycle(uint64_t n)
 	if(NPC_state != NPC_RUNNING)
 	{
 #ifdef CONFIG_ITRACE
-	 display_ib();
+	  display_ib();
 #endif
 	  do_quitcheck();
+	  return;
 	}
   }
 }

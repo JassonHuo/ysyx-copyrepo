@@ -1,4 +1,4 @@
-module memory #(ADDR_WIDTH = 1, DATA_WIDTH) (
+module memory #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
   input clk,
   input [DATA_WIDTH-1:0] wdata,
   input [ADDR_WIDTH-1:0] waddr,
@@ -12,8 +12,8 @@ module memory #(ADDR_WIDTH = 1, DATA_WIDTH) (
   wire [DATA_WIDTH - 1: 0] reg_data1;
   wire [DATA_WIDTH - 1: 0] reg_data2;
   RegisterFIle #(
-	.ADDR_WIDTH = ADDR_WIDTH,
-	.DATA_WIDTH = DATA_WIDTH
+	.ADDR_WIDTH(ADDR_WIDTH),
+	.DATA_WIDTH(DATA_WIDTH)
   ) mem (
 	.clk(clk),
 	.wdata(wdata),

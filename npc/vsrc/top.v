@@ -111,14 +111,18 @@ module top(
   wire ready_wbu_lsu;
 
   /*
-  pc pc0(
-	.pc_en(pc_en_wb_pc),
-	.pc_in(pc_wb_pc),
-	.rst(rst),
+  memory #(
+	.ADDR_WIDTH = 8,
+	.DATA_WIDTH = 32
+  ) mem0(
 	.clk(clk),
-
-	.pc_out(pc_pc_ifu),
-	.pc_sync(pc_sync_pc_ifu)
+	.wdata(),
+	.waddr(),
+	.raddr1(),
+	.raddr2(),
+	.rdata1(),
+	.rdata2(),
+	.wen()
   );
   */
 
@@ -301,7 +305,7 @@ module top(
 	.wen(wen_lsu_wbu),
 	.imm(imm_lsu_wbu),
 	.pc_plus_imm(pc_imm_lsu_wbu),
-	.pc_wen(pc_en_wb_ifu),
+	.pc_wen_out(pc_en_wb_ifu),
 	.pc_dync_out(pc_wb_ifu),
 	.rd_addr_out(waddr_wbu_gpr),
 	.wdata_out(wdata_wbu_gpr),
