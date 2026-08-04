@@ -298,6 +298,7 @@ extern "C" int pmem_read(int addr)
 #endif
 	printf("read: %08x out of range\n", addr);
 	NPC_state = NPC_ABORT;
+	do_quitcheck();
 	return 1;
   }
 }
@@ -361,6 +362,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	  printf("write: %08x out of range\n", waddr);
 	  NPC_state = NPC_ABORT;
 	  tfp->close();
+	  do_quitcheck();
 	}
   }
 }
@@ -384,6 +386,7 @@ extern "C" void do_quitcheck()
 extern "C" void npc_abort()
 {
   NPC_state = NPC_ABORT;
+  do_quitcheck();
 }
 
 uint32_t hex2num(std::string &hex)
@@ -426,8 +429,6 @@ uint32_t c_get_next_Pc()
   svSetScope(svGetScopeFromName("TOP.top.pc0"));
   return (uint32_t)get_next_Pc();
 }
-
-unsigned long long cycle = 0;
 
 void run_cycle(uint64_t n)
 {
@@ -516,7 +517,6 @@ void run_cycle(uint64_t n)
 #endif
 	top->clk = 0;
 	top->eval();
-	cycle ++;
 //	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 	top->clk = 1;
 	top->eval();
@@ -531,6 +531,7 @@ void run_cycle(uint64_t n)
 #ifdef CONFIG_ITRACE
 	 display_ib();
 #endif
+	  do_quitcheck();
 	}
   }
 }
@@ -556,11 +557,17 @@ int main(int argc, char** argv) {
   top->rst = 0;
 
   time_init();
+//  printf("PC: %08x, get_PC: %08x\n", top->pc, c_get_Pc());
 #ifdef CONFIG_DIFFTEST
   init_difftest();
 #endif
-  sdb_mainloop();
-  printf("cycle num: %lld\n", cycle);
+//  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
+//  while(NPC_state != NPC_QUIT)
+//  {
+	sdb_mainloop();
+ // }
+//  display_mb();
+ // display_ib();
   delete top;
 #ifdef CONFIG_FTRACE
   display_fb();
