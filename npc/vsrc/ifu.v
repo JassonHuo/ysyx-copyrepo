@@ -40,14 +40,14 @@ module ifu(
   */
  always@(*)begin
    if(rst)
-	 next_state = `IFU_IDLE;
+	 next_state = `LS_IDLE;
    else
 	 next_state = ~state;
  end
 
  always@(posedge clk)begin
    if(rst)
-	 state <= `IFU_IDLE;
+	 state <= `LS_IDLE;
    else
 	 state <= next_state;
  end
