@@ -2,6 +2,8 @@
 import "DPI-C" function void ebreak();
 import "DPI-C" function void npc_abort();
 module idu(
+  input clk,
+  input rst,
   input [31: 0] inst_in,
   input [31: 0] pc_in,
   input [31: 0] pc_sync_in,
@@ -35,13 +37,45 @@ module idu(
   output reg [7: 0] wmask,
   output reg mem_wen,
 
-  output reg valid,
-  output reg [1: 0] width
+  output reg mem_valid,
+  output reg [1: 0] width,
+
+  input valid_pre,
+  output ready_pre,
+  output reg valid_aft,
+  input ready_aft
 );
 
   assign pc_out = pc_in;
   assign pc_sync_out = pc_sync_in;
+  wire pre_succ = valid_pre & ready_pre;
 
+  reg state, next_state;
+
+  always@(*)begin
+	if(rst)
+	  next_state = `IDLE;
+	else begin
+	  case(state)
+		`IDLE: next_state = valid_aft ? `WAIT_READY: `IDLE;
+		`WAIT_READY: next_state = ready_aft ? `IDLE: `WAIT_READY;
+		default: next_state = `IDLE;
+	  endcase
+	end
+  end
+
+//  assign ready_pre = valid_pre & (state == `IDLE);
+
+  always@(posedge clk)begin
+	if(rst)
+	  state <= `IDLE;
+	else begin
+	  state <= next_state;
+	end
+  end
+
+  assign ready_pre = valid_pre;
+  assign valid_aft = ready_pre & valid_pre;
 
   wire [6: 0] opcode;
   wire [4: 0] rs1;
@@ -88,7 +122,7 @@ module idu(
 	wen = 0;
 	wmask = 8'b0;
 	mem_wen = 0;
-	valid = 0;
+	mem_valid = 0;
 	width = 0;
 	is_branch = 0;
 	is_signed = 0;
@@ -148,7 +182,7 @@ module idu(
 			alu_op = `ALU_LAREQ;
 		  end
 		  default:begin
-			$display("branch abort");
+//			$display("branch abort");
 			npc_abort();
 		  end
 		endcase
@@ -159,7 +193,7 @@ module idu(
 		alu_op = `ALU_ADD;
 		reg_src = `RD_MEM;
 		wen = 1;
-		valid = 1;
+		mem_valid = 1;
 		is_signed = 1;
 		case(funct3)
 		  3'b000:begin   //lb
@@ -180,7 +214,7 @@ module idu(
 			is_signed = 0;
 		  end
 		  default: begin
-			$display("load abort");
+//			$display("load abort");
 			npc_abort();
 		  end
 		endcase 
@@ -190,7 +224,7 @@ module idu(
 		alu_src = `ALU_IMM;
 		alu_op = `ALU_ADD;
 		wen = 0;
-		valid = 1;
+		mem_valid = 1;
 		mem_wen = 1;
 //		$display("idu store: %08x, pc: %08x", src2, pc_in);
 		case(funct3)
@@ -204,7 +238,7 @@ module idu(
 			width = `MEM_WORD;
 		  end
 		  default begin
-			$display("store abort");
+//			$display("store abort");
 			npc_abort();
 		  end
 		endcase
@@ -241,7 +275,7 @@ module idu(
 			  alu_op = `ALU_LEFT;
 			end
 			else begin
-			  $display("immi abort");
+//			  $display("immi abort");
 			  npc_abort();
 			end
 		  end
@@ -254,12 +288,12 @@ module idu(
 			  alu_op = `ALU_RIGHT;
 			end
 			else begin
-			  $display("immi abort");
+//			  $display("immi abort");
 			  npc_abort();
 			end
 		  end
 		  default: begin
-			$display("immi abort");
+//			$display("immi abort");
 			npc_abort();
 		  end
 		endcase
@@ -303,7 +337,7 @@ module idu(
 		  alu_op = `ALU_AND;
 		end
 		else begin
-		  $display("reg abort");
+//		  $display("reg abort");
 		  npc_abort();
 		end
 	  end
@@ -315,8 +349,9 @@ module idu(
 		case(funct3)
 		  3'b000:begin
 			wen = 1'b0;
-			if(csr_addr == 12'h001)  //ebreak
-			  ebreak();
+			if(csr_addr == 12'h001)begin  //ebreak
+//			  ebreak();
+			end
 			else if(csr_addr == 12'h000)begin  //ecall
 			  wen = 0;
 			  csr_type = `CSR_NO;
@@ -351,13 +386,13 @@ module idu(
 			alu_op = `ALU_AND;
 		  end
 		  default:begin
-			$display("csr abort");
+//			$display("csr abort");
 			npc_abort();
 		  end
 		endcase
 	  end
 	  default begin
-		$display("default abort");
+//		$display("default abort");
 		npc_abort();
 	  end
 	endcase
@@ -367,14 +402,6 @@ module idu(
 	return inst_in;
   endfunction
 
-  /*
-  function int get_Pc();
-	return pc_in;
-  endfunction
-  */
-
-
   export "DPI-C" function get_Inst;
-//  export "DPI-C" function get_Pc;
 
 endmodule

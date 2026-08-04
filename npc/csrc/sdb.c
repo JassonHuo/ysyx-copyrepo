@@ -176,7 +176,8 @@ void sdb_mainloop()
   if(batch_mode)
   {
 	cmd_c(NULL);
-	run_cycle(-1);
+	if(NPC_state == NPC_ABORT)
+	  break;
 	return;
   }
 
