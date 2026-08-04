@@ -396,7 +396,9 @@ uint32_t hex2num(std::string &hex)
 uint32_t c_get_Reg(int idx)
 {
   extern int get_Reg(int idx);
-  assert(svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr")));
+  const svScope scope = svGetScopeFromName("TOP");
+  assert(scope != NULL);
+  svSetScope(scope);
   printf("test reg\n");
   return (uint32_t)get_Reg(idx);
 }
