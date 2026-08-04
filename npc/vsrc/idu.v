@@ -350,7 +350,7 @@ module idu(
 		  3'b000:begin
 			wen = 1'b0;
 			if(csr_addr == 12'h001)begin  //ebreak
-//			  ebreak();
+			  ebreak();
 			end
 			else if(csr_addr == 12'h000)begin  //ecall
 			  wen = 0;

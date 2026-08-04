@@ -259,6 +259,7 @@ void ebreak()
   printf("at pc = %08x\n", top->pc);
   */
   NPC_state = NPC_END;
+  printf("test\n");
 }
 
 static inline void time_init()
@@ -396,7 +397,8 @@ uint32_t hex2num(std::string &hex)
 uint32_t c_get_Reg(int idx)
 {
   extern int get_Reg(int idx);
-  svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
+  assert(svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr")));
+
   return (uint32_t)get_Reg(idx);
 }
 
@@ -516,6 +518,9 @@ void run_cycle(uint64_t n)
 	top->clk = 0;
 	top->eval();
 //	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
+	tfp->dump(contextp->time());
+	contextp->timeInc(1);
+	tfp->flush();
 	top->clk = 1;
 	top->eval();
 	tfp->dump(contextp->time());
