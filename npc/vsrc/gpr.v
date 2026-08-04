@@ -6,7 +6,8 @@ module gpr(
   input [3: 0] raddr2,
   output [31: 0] rdata1,
   output [31: 0] rdata2,
-  input wen
+  input wen,
+  output [31: 0] a0
 );
 
   RegisterFile #(4, 32) Gpr
@@ -18,7 +19,8 @@ module gpr(
 	.raddr2(raddr2),
 	.rdata1(rdata1),
 	.rdata2(rdata2),
-	.wen(wen)
+	.wen(wen),
+	.a0(a0)
   );
 
 endmodule
