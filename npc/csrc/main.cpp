@@ -171,6 +171,7 @@ void init_elf(char *args);
 
 int batch_mode_open();
 uint32_t c_get_Pc();
+uint32_t c_get_Reg(int idx);
 
 FILE *fp = NULL;
 
@@ -298,7 +299,6 @@ extern "C" int pmem_read(int addr)
 #endif
 	printf("read: %08x out of range\n", addr);
 	NPC_state = NPC_ABORT;
-	do_quitcheck();
 	return 1;
   }
 }
@@ -362,7 +362,6 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	  printf("write: %08x out of range\n", waddr);
 	  NPC_state = NPC_ABORT;
 	  tfp->close();
-	  do_quitcheck();
 	}
   }
 }
@@ -374,7 +373,7 @@ extern "C" void do_quitcheck()
   {
 	printf(RED "ABORT " RESET);
   }
-  else if(!top->a0)
+  else if(c_get_Reg(10))
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
@@ -386,7 +385,6 @@ extern "C" void do_quitcheck()
 extern "C" void npc_abort()
 {
   NPC_state = NPC_ABORT;
-  do_quitcheck();
 }
 
 uint32_t hex2num(std::string &hex)
@@ -412,7 +410,7 @@ uint32_t c_get_Inst()
 uint32_t c_get_Pc()
 {
   extern int get_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.pc0"));
+  svSetScope(svGetScopeFromName("TOP.top.ifu0.pc0"));
   return (uint32_t)get_Pc();
 }
 
@@ -426,7 +424,7 @@ uint32_t c_get_Csr(int idx)
 uint32_t c_get_next_Pc()
 {
   extern int get_next_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.pc0"));
+  svSetScope(svGetScopeFromName("TOP.top.ifu0.pc0"));
   return (uint32_t)get_next_Pc();
 }
 
@@ -529,9 +527,9 @@ void run_cycle(uint64_t n)
 	if(NPC_state != NPC_RUNNING)
 	{
 #ifdef CONFIG_ITRACE
-	 display_ib();
+	  display_ib();
 #endif
-	  do_quitcheck();
+	  return;
 	}
   }
 }
@@ -576,5 +574,5 @@ int main(int argc, char** argv) {
 	return 0;
   tfp->close();
   do_quitcheck();
-  return top->a0;
+  return c_get_Reg(10);
 }
