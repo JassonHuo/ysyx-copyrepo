@@ -373,7 +373,7 @@ extern "C" void do_quitcheck()
   {
 	printf(RED "ABORT " RESET);
   }
-  else if(c_get_Reg(10))
+  else if(!c_get_Reg(10))
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
@@ -396,10 +396,9 @@ uint32_t hex2num(std::string &hex)
 uint32_t c_get_Reg(int idx)
 {
   extern int get_Reg(int idx);
-  const svScope scope = svGetScopeFromName("TOP");
-  assert(scope != NULL);
-  svSetScope(scope);
-  printf("test reg\n");
+  assert(top != NULL);
+  assert(svGetScopeFromName("TOP") != NULL);
+  svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
   return (uint32_t)get_Reg(idx);
 }
 
@@ -561,17 +560,10 @@ int main(int argc, char** argv) {
   top->rst = 0;
 
   time_init();
-//  printf("PC: %08x, get_PC: %08x\n", top->pc, c_get_Pc());
 #ifdef CONFIG_DIFFTEST
   init_difftest();
 #endif
-//  while(!contextp->gotFinish() && !ebreak_happened && !npcsdb_quit)
-//  while(NPC_state != NPC_QUIT)
-//  {
-	sdb_mainloop();
- // }
-//  display_mb();
- // display_ib();
+  sdb_mainloop();
   delete top;
 #ifdef CONFIG_FTRACE
   display_fb();
