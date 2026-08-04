@@ -2,8 +2,6 @@ import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 
 module lsu(
-  input clk,
-  input rst,
   input [31: 0] pc_sync_in,
   input [31: 0] pc_in,
 
@@ -19,7 +17,7 @@ module lsu(
 
   input mem_wen,
   input [7: 0] wmask,
-  input mem_valid,
+  input valid,
   input [31: 0] src2,
 
   input [1: 0] width,
@@ -49,39 +47,8 @@ module lsu(
   output [31: 0] imm_out,
 
   output [31: 0] pc_plus_imm_out,
-  output reg [31: 0] rdata,
-
-  input valid_pre,
-  output ready_pre,
-  output reg valid_aft,
-  input ready_aft
+  output reg [31: 0] rdata
 );
-
-  reg state, next_state;
-
-  always@(*)begin
-	if(rst)
-	  next_state = `IDLE;
-	else begin
-	  case(state)
-		`IDLE: next_state = valid_aft ? `WAIT_READY: `IDLE;
-		`WAIT_READY: next_state = ready_aft ? `IDLE: `WAIT_READY;
-	  endcase
-	end
-  end
-
-//  assign ready_pre = valid_pre & (state == `IDLE);
-
-  always@(posedge clk)begin
-	if(rst)
-	  state <= `IDLE;
-	else begin
-	  state <= next_state;
-	end
-  end
-
-  assign ready_pre = valid_pre;
-  assign valid_aft = ready_pre & valid_pre;
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
@@ -101,47 +68,34 @@ module lsu(
 
   assign src1_out = src1;
 
+  reg [1: 0] mem_data;
   wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:
 	(width == `MEM_BYTE ? 4'b1  << alu[1: 0] : 4'b0)));
-  reg [31: 0] mem_wdata;
-
-  /*
-  RegisterFile #(
-	.ADDR_WIDTH(8),
-	.DATA_WIDTH(32)
-  ) Ram(
-	.clk(clk),
-	.wdata(mem_data),
-	.waddr(alu[7: 0]),
-	.raddr1(alu[7: 0]),
-	.raddr2(0),
-	.rdata1(mem_data),
-	.rdata2(),
-	.wen(mem_wen)
-  );
-  */
-
 
   always@(*)begin
-	if(mem_valid & valid_aft)begin
+	if(valid)begin
 	  rdata = (pmem_read(alu) >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
 	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
 		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
-	  if(mem_wen & valid_aft)begin
-		mem_wdata = src2 & {{8{mask[3]}}, {8{mask[2]}}, {8{mask[1]}}, {8{mask[0]}}};
+//	  $display("lsu load %08x, pc: %08x", rdata, pc_in);
+//	  $display("lsu store: %08x, mem_wen = %d, pc: %08x", src2, mem_wen, pc_in);
+//	  $display("addr: %x", src2);
+	  
+//	  case(width)
+//		`MEM_WORD: rdata = mem_data;
+//		`MEM_HALF: rdata = (mem_data >> alu[1: 0]) & 32'hFFFF;
+//		`MEM_BYTE: rdata = (mem_data >> alu[1: 0]) & 32'hFF;
+//	  endcase
+	  if(mem_wen)begin
 		pmem_write(alu, src2, {4'b0, mask});
 	  end
-	  else begin
-		mem_wdata = 32'b0;
-	  end
 	end
-	else begin
-	  rdata = 32'b0;
-	  mem_wdata = 32'b0;
-	end
+	else
+	  rdata = 0;
+//	$display("END");
   end
 
 endmodule
