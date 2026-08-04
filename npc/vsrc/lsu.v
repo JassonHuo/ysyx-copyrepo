@@ -103,7 +103,8 @@ module lsu(
   end
 
   assign ready_pre = valid_pre;
-  assign valid_aft = ready_pre & valid_pre & state;
+  wire pre_succ = ready_pre & valid_pre;
+  assign valid_aft = pre_succ & state;
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
@@ -127,10 +128,13 @@ module lsu(
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:
 	(width == `MEM_BYTE ? 4'b1  << alu[1: 0] : 4'b0)));
   reg [31: 0] ifu_rdata;
+  reg [31: 0] ifu_wdata;
 
   always@(posedge clk)begin
-	if(mem_valid)
-	  ifu_rdata <= pmem_read(alu);
+	  ifu_rdata <= mem_valid ? pmem_read(alu): 32'b0;
+	  if(mem_wen)
+		pmem_write(alu, src2, {4'b0, mask});
+	end
   end
 
   always@(*)begin
