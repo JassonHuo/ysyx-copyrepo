@@ -14,6 +14,7 @@
 #include "sdb.h"
 #include <capstone/capstone.h>
 #include <verilated_vcd_c.h>
+#include "Vtop___024root.h"
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -28,7 +29,10 @@
 #define BUFFER_MEMORY 1
 #define BUFFER_FUNCTION 2
 
-#define cat(a) a##buffer
+#define cat(a, b) a##b
+#define CONCAT(x, y) cat(x, y)
+#define CSRCAT(x) CONCAT(CSR_PUBLIC_PATH, x)
+#define CSR_PUBLIC_PATH top->rootp->top__DOT__csr0__DOT__
 
 #define TRACE(a) CONFIG_##a##TRACE
 #define CONFIG_TRACES  \
@@ -395,40 +399,57 @@ uint32_t hex2num(std::string &hex)
 
 uint32_t c_get_Reg(int idx)
 {
+  /*
   extern int get_Reg(int idx);
   assert(top != NULL);
   assert(svGetScopeFromName("TOP") != NULL);
   svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
   return (uint32_t)get_Reg(idx);
+  */
+  if(idx >= 0 && idx <= 15)
+	return top->rootp->top__DOT__gpr0__DOT__Gpr__DOT__rf[idx];
+  return 0;
 }
 
 uint32_t c_get_Inst()
 {
+  /*
   extern int get_Inst();
   svSetScope(svGetScopeFromName("TOP.top.idu0"));
   return (uint32_t)get_Inst();
+  */
+  return top->rootp->top__DOT__ifu0__DOT__inst;
 }
 
 uint32_t c_get_Pc()
 {
+  /*
   extern int get_Pc();
   svSetScope(svGetScopeFromName("TOP.top.ifu0.pc0"));
   return (uint32_t)get_Pc();
+  */
+  return top->rootp->top__DOT__ifu0__DOT__pc0__DOT__pc;
 }
 
 uint32_t c_get_Csr(int idx)
 {
+  /*
   extern int get_Csr(int idx);
   svSetScope(svGetScopeFromName("TOP.top.csr0"));
   return (uint32_t)get_Csr(idx);
+  */
+  if(idx == 0x341)
+	return CSRCAT(mepc);
+  else if(idx == 0x342)
+	return CSRCAT(mcause);
+  else if(idx == 0x300)
+	return CSRCAT(mstatus);
+  else if(idx == 0x305)
+	return CSRCAT(mtvec);
+  else
+	return 0;
 }
 
-uint32_t c_get_next_Pc()
-{
-  extern int get_next_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.ifu0.pc0"));
-  return (uint32_t)get_next_Pc();
-}
 
 void run_cycle(uint64_t n)
 {
@@ -527,7 +548,8 @@ void run_cycle(uint64_t n)
 	contextp->timeInc(1);
 	tfp->flush();
 #ifdef CONFIG_DIFFTEST
-	difftest_step();
+	if(top->rootp->top__DOT__wbu0__DOT__done)
+	  difftest_step();
 #endif
 	if(NPC_state != NPC_RUNNING)
 	{

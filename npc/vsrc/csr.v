@@ -20,10 +20,10 @@ module csr(
   reg [31: 0] mcycleh = 32'b0;
   reg [31: 0] mvendorid = ysyx_ascii;
   reg [31: 0] marchid = ysyx_code;
-  reg [31: 0] mepc = 32'b0;
-  reg [31: 0] mstatus = 32'h1800;
-  reg [31: 0] mcause = 32'b0;
-  reg [31: 0] mtvec = 32'b0;
+  (* verilator public_flat_rw *)reg [31: 0] mepc = 32'b0;
+  (* verilator public_flat_rw *)reg [31: 0] mstatus = 32'h1800;
+  (* verilator public_flat_rw *)reg [31: 0] mcause = 32'b0;
+  (* verilator public_flat_rw *)reg [31: 0] mtvec = 32'b0;
 
 
   assign mtvec_out = mtvec;
@@ -85,16 +85,5 @@ module csr(
 	end
   end
 
-  function int get_Csr(int idx);
-	case(idx)
-	  32'h341: return mepc;
-	  32'h342: return mcause;
-	  32'h300: return mstatus;
-	  32'h305: return mtvec;
-	  default: return 0;
-	endcase;
-  endfunction
-
-  export "DPI-C" function get_Csr;
 
 endmodule

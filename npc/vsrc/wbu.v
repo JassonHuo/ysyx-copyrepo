@@ -68,7 +68,7 @@ module wbu(
   end
 
   assign ready_pre = valid_pre;
-  wire done = ready_pre & valid_pre;
+  (* verilator public_flat_rw *) wire done = ready_pre & valid_pre;
 
   assign rd_addr_out = rd_addr;
   assign wen_out = wen & done;
