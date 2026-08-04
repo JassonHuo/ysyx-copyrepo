@@ -12,7 +12,8 @@ module ifu(
   output valid,
   input ready,
 
-  output [31: 0] pc_out
+  output [31: 0] pc_out,
+  input done
 );
 
   reg state, next_state;
@@ -62,7 +63,7 @@ module ifu(
   assign inst_addr = pc_out;
 
   pc pc0(
-	.pc_en(pc_en),
+	.pc_en(done & pc_en),
 	.pc_in(pc_in),
 	.rst(rst),
 	.clk(clk),

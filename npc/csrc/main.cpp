@@ -548,7 +548,11 @@ void run_cycle(uint64_t n)
 	contextp->timeInc(1);
 	tfp->flush();
 #ifdef CONFIG_DIFFTEST
-	if(top->rootp->top__DOT__wbu0__DOT__done)
+	static bool done;
+	static bool pre_done;
+	pre_done = done;
+	done = top->done;
+	if(pre_done & done)
 	  difftest_step();
 #endif
 	if(NPC_state != NPC_RUNNING)

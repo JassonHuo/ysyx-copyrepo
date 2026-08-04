@@ -1,7 +1,8 @@
 module top(
   input clk,
   input rst,
-  output [31: 0] pc
+  output [31: 0] pc,
+  output done
 );
 
   wire pc_en_wb_ifu;
@@ -109,6 +110,8 @@ module top(
   wire ready_exu_idu;
   wire ready_lsu_exu;
   wire ready_wbu_lsu;
+  wire done_wbu_ifu;
+  assign done = done_wbu_ifu;
 
   /*
   memory #(
@@ -136,7 +139,8 @@ module top(
 	.valid(valid_ifu_idu),
 	.ready(ready_idu_ifu),
 	.pc_sync_out(pc_sync_ifu_idu),
-	.pc_out(pc_ifu_idu)
+	.pc_out(pc_ifu_idu),
+	.done(done_wbu_ifu)
   );
 
   idu idu0(
@@ -305,7 +309,8 @@ module top(
 	.wen(wen_lsu_wbu),
 	.imm(imm_lsu_wbu),
 	.pc_plus_imm(pc_imm_lsu_wbu),
-	.pc_wen_out(pc_en_wb_ifu),
+	.pc_wen(pc_en_wb_ifu),
+	.done(done_wbu_ifu),
 	.pc_dync_out(pc_wb_ifu),
 	.rd_addr_out(waddr_wbu_gpr),
 	.wdata_out(wdata_wbu_gpr),
