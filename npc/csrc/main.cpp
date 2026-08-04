@@ -299,7 +299,6 @@ extern "C" int pmem_read(int addr)
 #endif
 	printf("read: %08x out of range\n", addr);
 	NPC_state = NPC_ABORT;
-	do_quitcheck();
 	return 1;
   }
 }
@@ -363,7 +362,6 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	  printf("write: %08x out of range\n", waddr);
 	  NPC_state = NPC_ABORT;
 	  tfp->close();
-	  do_quitcheck();
 	}
   }
 }
@@ -387,7 +385,6 @@ extern "C" void do_quitcheck()
 extern "C" void npc_abort()
 {
   NPC_state = NPC_ABORT;
-  do_quitcheck();
 }
 
 uint32_t hex2num(std::string &hex)
@@ -532,7 +529,6 @@ void run_cycle(uint64_t n)
 #ifdef CONFIG_ITRACE
 	  display_ib();
 #endif
-	  do_quitcheck();
 	  return;
 	}
   }
