@@ -259,7 +259,6 @@ void ebreak()
   printf("at pc = %08x\n", top->pc);
   */
   NPC_state = NPC_END;
-  printf("test\n");
 }
 
 static inline void time_init()
@@ -398,7 +397,7 @@ uint32_t c_get_Reg(int idx)
 {
   extern int get_Reg(int idx);
   assert(svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr")));
-
+  printf("test reg\n");
   return (uint32_t)get_Reg(idx);
 }
 
