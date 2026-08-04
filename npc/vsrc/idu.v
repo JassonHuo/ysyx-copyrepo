@@ -45,6 +45,8 @@ module idu(
   output reg valid_aft,
   input ready_aft
 );
+  
+  (* verilator public_flat_wb *) wire [31: 0] inst = inst_in;
 
   assign pc_out = pc_in;
   assign pc_sync_out = pc_sync_in;
@@ -350,7 +352,7 @@ module idu(
 		  3'b000:begin
 			wen = 1'b0;
 			if(csr_addr == 12'h001)begin  //ebreak
-//			  ebreak();
+			  ebreak();
 			end
 			else if(csr_addr == 12'h000)begin  //ecall
 			  wen = 0;
@@ -397,11 +399,5 @@ module idu(
 	  end
 	endcase
   end
-
-  function int get_Inst();
-	return inst_in;
-  endfunction
-
-  export "DPI-C" function get_Inst;
 
 endmodule

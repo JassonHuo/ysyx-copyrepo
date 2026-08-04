@@ -104,7 +104,7 @@ module lsu(
   wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:
 	(width == `MEM_BYTE ? 4'b1  << alu[1: 0] : 4'b0)));
-  reg [31: 0] mem_wdata;
+//  reg [31: 0] mem_wdata;
 
   /*
   RegisterFile #(
@@ -131,16 +131,16 @@ module lsu(
 	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
 		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
 	  if(mem_wen & valid_aft)begin
-		mem_wdata = src2 & {{8{mask[3]}}, {8{mask[2]}}, {8{mask[1]}}, {8{mask[0]}}};
+//		mem_wdata = src2 & {{8{mask[3]}}, {8{mask[2]}}, {8{mask[1]}}, {8{mask[0]}}};
 		pmem_write(alu, src2, {4'b0, mask});
 	  end
 	  else begin
-		mem_wdata = 32'b0;
+//		mem_wdata = 32'b0;
 	  end
 	end
 	else begin
 	  rdata = 32'b0;
-	  mem_wdata = 32'b0;
+//	  mem_wdata = 32'b0;
 	end
   end
 

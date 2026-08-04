@@ -44,7 +44,7 @@ static struct {
 int CMD_SIZE = ARR_SIZE(cmd_table);
 
 void run_cycle(uint64_t n);
-int c_get_Reg(int idx);
+uint32_t c_get_Reg(int idx);
 
 static char* rl_gets()
 {
