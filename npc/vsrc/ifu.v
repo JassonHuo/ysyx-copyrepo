@@ -44,7 +44,7 @@ module ifu(
    else
 	 case(state)
 	   `LS_IDLE: next_state = `LS_WAIT;
-	   `LS_WAIT: next_state = done ? `LS_IDLE; `LS_WAIT;
+	   `LS_WAIT: next_state = done ? `LS_IDLE: `LS_WAIT;
 	   default: next_state = `LS_IDLE;
 	 endcase
  end

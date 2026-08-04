@@ -87,7 +87,7 @@ module lsu(
 	 next_state = `LS_IDLE;
    else begin
 	 case(state)
-	   `LS_IDLE: next_state = `LS_WAIT;
+	   `LS_IDLE: next_state = mem_valid & ~mem_wen ? `LS_WAIT: `LS_IDLE;
 	   `LS_WAIT: next_state = `LS_IDLE;
 	   default: next_state = `LS_IDLE;
 	  endcase
@@ -104,7 +104,7 @@ module lsu(
 
   assign ready_pre = valid_pre;
   wire pre_succ = ready_pre & valid_pre;
-  assign valid_aft = pre_succ & state;
+  assign valid_aft = pre_succ & ~state;
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
@@ -131,10 +131,9 @@ module lsu(
   reg [31: 0] ifu_wdata;
 
   always@(posedge clk)begin
-	  ifu_rdata <= mem_valid ? pmem_read(alu): 32'b0;
-	  if(mem_wen)
-		pmem_write(alu, src2, {4'b0, mask});
-	end
+	ifu_rdata <= mem_valid ? pmem_read(alu): 32'b0;
+	if(mem_wen)
+	  pmem_write(alu, src2, {4'b0, mask});
   end
 
   always@(*)begin
@@ -144,14 +143,16 @@ module lsu(
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
 	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
 		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
-	  if(mem_wen & valid_aft)begin
-		pmem_write(alu, src2, {4'b0, mask});
+	  if(mem_wen)begin
+		ifu_wdata = src2;
 	  end
 	  else begin
+		ifu_wdata = 32'b0;
 	  end
 	end
 	else begin
 	  rdata = 32'b0;
+	  ifu_wdata = 32'b0;
 	end
   end
 
