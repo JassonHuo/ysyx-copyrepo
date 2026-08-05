@@ -111,6 +111,15 @@ module top(
   wire ready_lsu_exu;
   wire ready_wbu_lsu;
   wire done_wbu_ifu;
+
+  wire reqValid_lsu_mem;
+  wire [31: 0] mem_addr_lsu_mem;
+  wire mem_wen_lsu_mem;
+  wire [31: 0] lsu_wdata_lsu_mem;
+  wire [3: 0] mask_lsu_mem;
+  wire respValid_mem_lsu;
+  wire [31: 0] lsu_rdata_mem_lsu;
+
   assign done = done_wbu_ifu;
 
   /*
@@ -294,7 +303,26 @@ module top(
 	.valid_pre(valid_exu_lsu),
 	.ready_pre(ready_lsu_exu),
 	.valid_aft(valid_lsu_wbu),
-	.ready_aft(ready_wbu_lsu)
+	.ready_aft(ready_wbu_lsu),
+
+	.reqValid(reqValid_lsu_mem),
+	.mem_addr(mem_addr_lsu_mem),
+	.mem_wen_out(mem_wen_lsu_mem),
+	.lsu_wdata(lsu_wdata_lsu_mem),
+	.mask(mask_lsu_mem),
+	.respValid(respValid_mem_lsu),
+	.lsu_rdata(lsu_rdata_mem_lsu)
+  );
+
+  memory mem0(
+	.clk(clk),
+	.reqValid(reqValid_lsu_mem),
+	.addr(mem_addr_lsu_mem),
+	.wen(mem_wen_lsu_mem),
+	.wdata(lsu_wdata_lsu_mem),
+	.mask(mask_lsu_mem),
+	.respValid(respValid_mem_lsu),
+	.rdata(lsu_rdata_mem_lsu)
   );
 
   wbu wbu0(
