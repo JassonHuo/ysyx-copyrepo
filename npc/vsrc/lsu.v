@@ -98,13 +98,16 @@ module lsu(
 	if(rst)
 	  state <= `LS_IDLE;
 	else begin
-	  state <= next_state;
+	  if(valid_pre)
+		state <= next_state;
+	  else
+		state <= state;
 	end
   end
 
   assign ready_pre = valid_pre;
   wire pre_succ = ready_pre & valid_pre;
-  assign valid_aft = pre_succ & ~state;
+  assign valid_aft = pre_succ & ~next_state;
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
@@ -131,8 +134,8 @@ module lsu(
   reg [31: 0] ifu_wdata;
 
   always@(posedge clk)begin
-	ifu_rdata <= mem_valid ? pmem_read(alu): 32'b0;
-	if(mem_wen)
+	ifu_rdata <= (mem_valid & ~state & pre_succ) ? pmem_read(alu): 32'b0;
+	if(mem_wen & pre_succ)
 	  pmem_write(alu, src2, {4'b0, mask});
   end
 

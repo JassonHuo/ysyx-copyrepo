@@ -471,7 +471,8 @@ void run_cycle(uint64_t n)
 	for(int i = 3; i >= 0; i --)
 	  p += sprintf(inst_str + strlen(inst_str), "%02x ", inst[i]);
 	sprintf(tmp, "\t%s", inst_str);
-	ib_inQue(tmp);
+	if(top->done)
+	  ib_inQue(tmp);
 	if(output_pc)
 	  printf("%s\n", inst_str);
 #endif
