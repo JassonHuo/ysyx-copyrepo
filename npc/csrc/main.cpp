@@ -540,14 +540,18 @@ void run_cycle(uint64_t n)
 	top->clk = 0;
 	top->eval();
 //	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
+#ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 	tfp->flush();
+#endif
 	top->clk = 1;
 	top->eval();
+#ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 	tfp->flush();
+#endif
 #ifdef CONFIG_DIFFTEST
 	static bool done;
 	static bool pre_done;
@@ -566,9 +570,11 @@ void run_cycle(uint64_t n)
   }
 }
 int main(int argc, char** argv) {
+#ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
   top->trace(tfp, 99);
   tfp->open("wave.vcd");
+#endif
   printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
   printf(BLUE "Open device serial at [0x10000000, 0x10000004]" RESET "\n");
   printf(BLUE "Open device rtc at [0x10000048, 0x1000004f]" RESET "\n");
@@ -597,7 +603,9 @@ int main(int argc, char** argv) {
 #endif
   if(NPC_state == NPC_QUIT)
 	return 0;
+#ifdef CONFIG_WAVE
   tfp->close();
+#endif
   do_quitcheck();
   return c_get_Reg(10);
 }

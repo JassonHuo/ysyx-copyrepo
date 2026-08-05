@@ -66,7 +66,7 @@ module lsu(
 
   reg state, next_state;
 
- assign reqValid = mem_valid & pre_succ & ~state;
+ assign reqValid = mem_valid & pre_succ;
  assign mem_addr = alu;
  assign mem_wen_out = mem_wen;
 
@@ -76,8 +76,8 @@ module lsu(
    else begin
 	 case(state)
 	   `LS_IDLE: next_state = mem_valid & ~mem_wen ? `LS_WAIT: `LS_IDLE;
-//	   `LS_WAIT: next_state = respValid ? `LS_IDLE: `LS_WAIT;
-		`LS_WAIT: next_state = `LS_IDLE;
+	   `LS_WAIT: next_state = respValid ? `LS_IDLE: `LS_WAIT;
+//		`LS_WAIT: next_state = `LS_IDLE;
 	   default: next_state = `LS_IDLE;
 	  endcase
 	end
@@ -87,6 +87,7 @@ module lsu(
 	if(rst)
 	  state <= `LS_IDLE;
 	else begin
+	  if(pre_succ)
 		state <= next_state;
 	end
   end
