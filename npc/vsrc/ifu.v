@@ -5,7 +5,9 @@ module ifu(
   input pc_en,
 
   output [31: 0] inst_addr,
-//  input [31: 0] inst_in,
+  output reqValid,
+  input respValid,
+  input [31: 0] inst_in,
 
   output [31: 0] inst_out,
   output [31: 0] pc_sync_out,
@@ -17,44 +19,25 @@ module ifu(
 );
 
   reg state, next_state;
-  /*
+//  assign reqValid = ~state;
+
   always@(*)begin
 	if(rst)
-	  next_state = `IDLE;
-	else begin
+	  next_state = `LS_IDLE;
+	else
 	  case(state)
-		`IDLE: next_state = valid ? `WAIT_READY: `IDLE;
-		`WAIT_READY: next_state = ready ? `IDLE: `WAIT_READY;
-		default: next_state = state;
+		`LS_IDLE: next_state = `LS_WAIT;
+		`LS_WAIT: next_state = done ? `LS_IDLE: `LS_WAIT;
+		default: next_state = `LS_IDLE;
 	  endcase
-	end
   end
 
   always@(posedge clk)begin
 	if(rst)
-	  state <= `IDLE;
-	else begin
+	  state <= `LS_IDLE;
+	else
 	  state <= next_state;
-	end
   end
-  */
- always@(*)begin
-   if(rst)
-	 next_state = `LS_IDLE;
-   else
-	 case(state)
-	   `LS_IDLE: next_state = `LS_WAIT;
-	   `LS_WAIT: next_state = done ? `LS_IDLE: `LS_WAIT;
-	   default: next_state = `LS_IDLE;
-	 endcase
- end
-
- always@(posedge clk)begin
-   if(rst)
-	 state <= `LS_IDLE;
-   else
-	 state <= next_state;
- end
 
   assign valid = state;
   

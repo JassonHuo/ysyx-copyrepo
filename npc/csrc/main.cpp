@@ -381,7 +381,7 @@ extern "C" void do_quitcheck()
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
-  printf("at pc = %08x\n", top->pc);
+  printf("at pc = %08x\n", c_get_Pc());
 //  if(NPC_state == NPC_ABORT)
 //	exit(1);
 }
