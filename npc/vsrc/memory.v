@@ -10,7 +10,6 @@ module memory(
   output reg [31: 0] rdata
 );
 
-/*
   reg [31: 0] addr_reg;
   reg wen_reg;
   reg [31: 0] wdata_reg;
@@ -29,7 +28,6 @@ module memory(
 	  mask_reg <= mask;
 	end
   end
-  */
 
   parameter MEM_IDLE = 0, MEM_WAITRESP = 1;
   reg state, next_state;
