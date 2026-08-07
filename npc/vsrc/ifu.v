@@ -6,7 +6,7 @@ module ifu(
 
   output [31: 0] inst_addr,
   output reqValid,
-  output respValid,
+  output reg respValid,
   input [31: 0] inst_in,
 
   output [31: 0] inst_out,
@@ -22,8 +22,8 @@ module ifu(
   wire reqValid_tmp;
   reg respValid_tmp;
 
-  assign reqValid_tmp = ~state;
-//  assign reqValid_tmp = (state == `IF_WAIT);
+  assign reqValid = ~state;
+  assign inst_addr = pc_out;
 
   always@(*)begin
 	if(rst)
@@ -65,17 +65,15 @@ module ifu(
   end
   always@(posedge clk)begin
 	inst <= inst;
-	respValid_tmp <= 1'b0;
+	respValid <= reqValid;
 	counter <= 4'b0;
-	if(reqValid_tmp)begin
-	  inst <= pmem_read(inst_addr);
-//	  counter <= (counter == 0) ? lsfm: counter - 1;
-	  respValid_tmp <= (counter == 0? 1'b1: 1'b0);
+	if(reqValid)begin
+//	  inst <= pmem_read(inst_addr);
+	  inst <= inst_in;
 	end
   end
 //  assign inst = pmem_read(pc_out);
   assign inst_out = inst;
-  assign inst_addr = pc_out;
 
   pc pc0(
 	.pc_en(done & pc_en),
