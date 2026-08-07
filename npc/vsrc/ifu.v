@@ -23,7 +23,7 @@ module ifu(
   reg respValid_tmp;
 
 //  assign reqValid_tmp = ~(|state);
-  assign reqValid_tmp = (state == `IF_IDLE);
+  assign reqValid_tmp = (state == `IF_WAIT);
 
   always@(*)begin
 	if(rst)
