@@ -51,8 +51,8 @@ module ifu(
 	  state <= next_state;
   end
 
-//  assign valid = (state == `IF_RUNNING);
-  assign valid = respValid;
+  assign valid = (state == `IF_RUNNING);
+//  assign valid = respValid;
   
   reg [31: 0] inst;
   reg [3: 0] counter;
