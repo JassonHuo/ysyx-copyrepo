@@ -41,14 +41,14 @@ module memory(
 
   always@(posedge clk)begin
 	if(reqValid)begin
-	  if(wen)
-		pmem_write(addr, wdata, {4'b0, mask});
+	  if(wen_reg)
+		pmem_write(addr_reg, wdata_reg, {4'b0, mask_reg});
 	end
   end
 
   always@(*)begin
 	if(respValid)
-	  rdata = pmem_read(addr);
+	  rdata = pmem_read(addr_reg);
 	else
 	  rdata = 32'b0;
   end
