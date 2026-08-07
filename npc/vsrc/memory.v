@@ -45,7 +45,10 @@ module memory(
   end
 
   always@(*)begin
-	rdata = pmem_read(addr);
+	if(reqValid)
+	  rdata = pmem_read(addr);
+	else
+	  rdata = 32'b0;
   end
   
 endmodule
