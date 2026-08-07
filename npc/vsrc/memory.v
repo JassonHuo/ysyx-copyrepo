@@ -49,7 +49,7 @@ module memory(
   end
 
   always@(*)begin
-	if(reqValid | respValid)
+	if(next_state == MEM_WAITRESP)
 	  rdata = pmem_read(addr);
 	else
 	  rdata = 32'b0;
