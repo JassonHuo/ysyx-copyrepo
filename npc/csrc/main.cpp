@@ -601,11 +601,12 @@ int main(int argc, char** argv) {
 #ifdef CONFIG_FTRACE
   display_fb();
 #endif
-  if(NPC_state == NPC_QUIT)
-	return 0;
 #ifdef CONFIG_WAVE
   tfp->close();
 #endif
+  if(NPC_state == NPC_QUIT)
+	return 0;
   do_quitcheck();
-  return c_get_Reg(10);
+//  return c_get_Reg(10);
+  return (NPC_state == NPC_ABORT | c_get_Reg(10));
 }
