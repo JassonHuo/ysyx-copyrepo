@@ -22,16 +22,12 @@ module memory(
 	wen_reg <= wen_reg;
 	wdata_reg <= wdata_reg;
 	mask_reg <= mask_reg;
-	reqValid_reg <= reqValid_reg;
 	if(reqValid)begin
 	  addr_reg <= addr;
 	  wen_reg <= wen;
 	  wdata_reg <= wdata;
 	  mask_reg <= mask;
-	  reqValid_reg <= reqValid;
 	end
-	if(respValid)
-	  reqValid_reg <= 1'b0;
   end
   */
 
