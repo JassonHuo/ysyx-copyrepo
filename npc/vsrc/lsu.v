@@ -60,7 +60,7 @@ module lsu(
   output mem_wen_out,
   output [31: 0] lsu_wdata,
   output [3: 0] mask,
-  input respValid,
+  output respValid,
   input [31: 0] lsu_rdata
 );
 
@@ -82,6 +82,7 @@ module lsu(
 	  endcase
 	end
   end
+  assign respValid = state;
 
   always@(posedge clk)begin
 	if(rst)

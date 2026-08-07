@@ -6,7 +6,7 @@ module ifu(
 
   output [31: 0] inst_addr,
   output reqValid,
-  input respValid,
+  output respValid,
   input [31: 0] inst_in,
 
   output [31: 0] inst_out,
@@ -18,30 +18,30 @@ module ifu(
   input done
 );
 
-  reg [1: 0] state, next_state;
+  reg state, next_state;
   wire reqValid_tmp;
   reg respValid_tmp;
 
-  assign reqValid_tmp = ~(|state);
+  assign reqValid_tmp = ~state;
 //  assign reqValid_tmp = (state == `IF_WAIT);
 
   always@(*)begin
 	if(rst)
 	  next_state = `IF_IDLE;
 	else
+	  /*
 	  case(state)
 		`IF_IDLE: next_state = `IF_WAIT;
 		`IF_WAIT: next_state = respValid_tmp ? `IF_RUNNING: (done ? `IF_WAIT: `IF_IDLE);
 		`IF_RUNNING: next_state = done ? `IF_IDLE: `IF_RUNNING;
 		default: next_state = `LS_IDLE;
 	  endcase
-	 /*
+	  */
 	 case(state)
 	   `IF_IDLE: next_state = `IF_WAIT;
 	   `IF_WAIT: next_state = done ? `IF_IDLE: `IF_WAIT;
 	   default: next_state = `IF_IDLE;
 	 endcase
-	 */
   end
 
   always@(posedge clk)begin
@@ -51,8 +51,8 @@ module ifu(
 	  state <= next_state;
   end
 
-  assign valid = (state == `IF_RUNNING);
-//  assign valid = respValid;
+//  assign valid = (state == `IF_RUNNING);
+  assign valid = respValid_tmp;
   
   reg [31: 0] inst;
   reg [3: 0] counter;

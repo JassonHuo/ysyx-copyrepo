@@ -1,11 +1,12 @@
 module memory(
   input clk,
   input reqValid,
+//  output reqReady,
   input [31: 0] addr,
   input wen,
   input [31: 0] wdata,
   input [3: 0] mask,
-  output reg respValid,
+  input respValid,
   output reg [31: 0] rdata
 );
 
@@ -47,7 +48,7 @@ module memory(
   */
 
   always@(posedge clk)begin
-	respValid <= 1'b0;
+//	respValid <= 1'b0;
 //	counter <= (counter == 0) ? lfsr: counter - 1;
 	counter <= 0;
 	if(reqValid)begin
@@ -57,8 +58,8 @@ module memory(
 	  end
 	  else
 		pmem_write(addr, wdata, {4'b0, mask});
-	  respValid <= (counter == 0) ? 1'b1: 1'b0;
+//	  respValid <= (counter == 0) ? 1'b1: 1'b0;
 	end
   end
-
+  
 endmodule
