@@ -46,12 +46,14 @@ module ifu(
   assign valid = (state == `IF_RUNNING);
   
   reg [31: 0] inst;
+  reg [3: 0] counter;
   always@(posedge clk)begin
 	inst <= inst;
 	respValid_tmp <= 1'b0;
 	if(reqValid_tmp)begin
 	  inst <= pmem_read(inst_addr);
-	  respValid_tmp <= 1'b1;
+	  counter <= counter - 1;
+	  respValid_tmp <= (counter == 0? 1'b1: 1'b0);
 	end
   end
 //  assign inst = pmem_read(pc_out);
