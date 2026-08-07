@@ -47,12 +47,19 @@ module ifu(
   
   reg [31: 0] inst;
   reg [3: 0] counter;
+  reg [3: 0] lsfm;
+  initial begin
+	lsfm = 4'b1001;
+  end
+  always@(posedge clk)begin
+	lsfm <= {lsfm[2: 0], lsfm[0] ^ lsfm[1] | lsfm [3]};
+  end
   always@(posedge clk)begin
 	inst <= inst;
 	respValid_tmp <= 1'b0;
 	if(reqValid_tmp)begin
 	  inst <= pmem_read(inst_addr);
-	  counter <= counter - 1;
+	  counter <= (counter == 0) ? lsfm: counter - 1;
 	  respValid_tmp <= (counter == 0? 1'b1: 1'b0);
 	end
   end
