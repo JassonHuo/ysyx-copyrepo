@@ -66,9 +66,10 @@ module ifu(
   always@(posedge clk)begin
 	inst <= inst;
 	respValid_tmp <= 1'b0;
+	counter <= 4'b0;
 	if(reqValid_tmp)begin
 	  inst <= pmem_read(inst_addr);
-	  counter <= (counter == 0) ? lsfm: counter - 1;
+//	  counter <= (counter == 0) ? lsfm: counter - 1;
 	  respValid_tmp <= (counter == 0? 1'b1: 1'b0);
 	end
   end
