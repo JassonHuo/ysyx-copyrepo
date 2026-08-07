@@ -66,7 +66,7 @@ module lsu(
 
   reg state, next_state;
 
- assign reqValid = mem_valid & pre_succ;
+// assign reqValid = mem_valid & pre_succ;
  assign mem_addr = alu;
  assign mem_wen_out = mem_wen;
 
@@ -82,9 +82,10 @@ module lsu(
 	  endcase
 	end
   end
-  assign respValid = state;
+//  assign respValid = state;
 
   always@(posedge clk)begin
+	respValid = reqValid;
 	if(rst)
 	  state <= `LS_IDLE;
 	else begin
