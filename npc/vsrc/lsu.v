@@ -66,7 +66,7 @@ module lsu(
 
   reg state, next_state;
 
-// assign reqValid = mem_valid & pre_succ;
+ assign reqValid = mem_valid & pre_succ;
  assign mem_addr = alu;
  assign mem_wen_out = mem_wen;
 
