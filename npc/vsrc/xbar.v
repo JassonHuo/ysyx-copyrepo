@@ -55,10 +55,12 @@ module xbar(
 	end
 
 	if(ifu_respValid)begin
+	  respValid = ifu_respValid;
 	  ifu_rdata = rdata;
 	end
 	else if(lsu_respValid)begin
 	  lsu_rdata = rdata;
+	  respValid = lsu_respValid;
 	end
   end
   
