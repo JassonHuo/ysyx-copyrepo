@@ -31,6 +31,16 @@ module memory(
   end
   */
 
+  parameter MEM_IDLE = 0, MEM_WAITRESP = 1;
+  reg state, next_state;
+  always@(*)begin
+	case(state)
+	  MEM_IDLE: next_state = reqValid ? MEM_WAITRESP: MEM_IDLE;
+	  MEM_WAITRESP: next_state = respValid ? MEM_IDLE: MEM_WAITRESP;
+	  default: next_state = MEM_IDLE;
+	endcase
+  end
+
   always@(posedge clk)begin
 	if(reqValid)begin
 	  if(wen)
@@ -39,7 +49,7 @@ module memory(
   end
 
   always@(*)begin
-	if(respValid)
+	if(state)
 	  rdata = pmem_read(addr);
 	else
 	  rdata = 32'b0;
