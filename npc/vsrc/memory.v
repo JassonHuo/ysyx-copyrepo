@@ -10,15 +10,13 @@ module memory(
   output reg [31: 0] rdata
 );
 
-  /*
+/*
   reg [31: 0] addr_reg;
   reg wen_reg;
   reg [31: 0] wdata_reg;
   reg [3: 0] mask_reg;
   reg reqValid_reg;
-  */
 
- /*
   always@(posedge clk)begin
 	addr_reg <= addr_reg;
 	wen_reg <= wen_reg;
