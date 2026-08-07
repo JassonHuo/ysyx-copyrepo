@@ -22,26 +22,26 @@ module ifu(
   wire reqValid_tmp;
   reg respValid_tmp;
 
-//  assign reqValid_tmp = ~(|state);
-  assign reqValid_tmp = (state == `IF_WAIT);
+  assign reqValid_tmp = ~(|state);
+//  assign reqValid_tmp = (state == `IF_WAIT);
 
   always@(*)begin
 	if(rst)
 	  next_state = `IF_IDLE;
 	else
-	  /*
 	  case(state)
 		`IF_IDLE: next_state = `IF_WAIT;
 		`IF_WAIT: next_state = respValid_tmp ? `IF_RUNNING: (done ? `IF_WAIT: `IF_IDLE);
 		`IF_RUNNING: next_state = done ? `IF_IDLE: `IF_RUNNING;
 		default: next_state = `LS_IDLE;
 	  endcase
-	  */
+	 /*
 	 case(state)
 	   `IF_IDLE: next_state = `IF_WAIT;
 	   `IF_WAIT: next_state = done ? `IF_IDLE: `IF_WAIT;
 	   default: next_state = `IF_IDLE;
 	 endcase
+	 */
   end
 
   always@(posedge clk)begin
