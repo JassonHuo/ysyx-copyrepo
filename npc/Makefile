@@ -70,6 +70,7 @@ all: default
 
 run: $(BIN)
 #	@$^
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) -b
 
 gdb: $(BIN)
