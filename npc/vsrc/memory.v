@@ -11,7 +11,6 @@ module memory(
 
   reg [9: 0] counter;
   reg [9: 0] lfsr;
-  reg [9: 0] cur_con;
   initial begin
 	lfsr = 10'b101;
   end
@@ -52,6 +51,7 @@ module memory(
 //	counter <= (counter == 0) ? lfsr: counter - 1;
 	counter <= 0;
 	if(reqValid)begin
+	  counter <= (counter == 0) ? lfsr: counter - 1;
 	  if(~wen)begin
 		rdata <= pmem_read(addr);
 	  end
