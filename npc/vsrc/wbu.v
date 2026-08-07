@@ -25,7 +25,7 @@ module wbu(
   output reg [31: 0] csr_wdata_out,
   output [11: 0] csr_waddr,
 
-  output reg pc_wen_out,
+  output reg pc_wen,
   output reg [31: 0] pc_dync_out,
   output [3: 0] rd_addr_out,
   output reg [31: 0] wdata_out,
@@ -39,11 +39,11 @@ module wbu(
   output yield_csren,
 
   input reg valid_pre,
-  output ready_pre
+  output ready_pre,
+  output done
 );
 
   reg state, next_state;
-  reg pc_wen;
 
   always@(*)begin
     if(rst)
@@ -68,7 +68,7 @@ module wbu(
   end
 
   assign ready_pre = valid_pre;
-  wire done = ready_pre & valid_pre;
+  assign done = ready_pre & valid_pre;
 
   assign rd_addr_out = rd_addr;
   assign wen_out = wen & done;
@@ -161,6 +161,5 @@ module wbu(
 	endcase
   end
 
-  assign pc_wen_out = pc_wen & done;
 
 endmodule

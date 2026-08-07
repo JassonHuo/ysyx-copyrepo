@@ -6,6 +6,7 @@
 
 #define RED "\033[31m"
 #define YELLOW "\033[33m"
+#define BLUE "\033[34m"
 #define RESET "\033[0m"
 #define MEM_SIZE 134217727
 
@@ -118,7 +119,7 @@ bool reg_check()
 void init_difftest()
 {
 #ifdef CONFIG_DIFFTEST
-  printf("Difftest opened\n");
+  printf(BLUE "[%s %d %s] Difftest opened\n" RESET, __FILE__, __LINE__, __func__);
   void *dl_handle = dlopen("../nemu/build/riscv32-nemu-interpreter-so", RTLD_LAZY);
   assert(dl_handle);
 
