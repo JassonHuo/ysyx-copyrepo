@@ -22,7 +22,7 @@ module ifu(
   wire reqValid_tmp;
   reg respValid_tmp;
 
-  assign reqValid = (state == `IF_WAIT);
+  assign reqValid = (state != `IF_RUNNING);
   assign inst_addr = pc_out;
 
   always@(*)begin
