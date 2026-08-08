@@ -52,7 +52,7 @@ module ifu(
   end
 
 //  assign valid = (state == `IF_RUNNING);
-  assign valid = reqValid;
+  assign valid = state;
   
   reg [31: 0] inst;
   reg [3: 0] counter;
