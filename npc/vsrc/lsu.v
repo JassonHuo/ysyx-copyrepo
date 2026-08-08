@@ -58,7 +58,9 @@ module lsu(
 );
 
   reg state, next_state;
-  reg reqValid, respValid;
+  wire reqValid;
+  reg respValid;
+  assign reqValid = pre_succ & ~state & mem_valid;
 
   always@(*)begin
 	if(rst)
@@ -73,7 +75,6 @@ module lsu(
 	end
 
   always@(posedge clk)begin
-	reqValid <= pre_succ & ~state;
 	if(rst)
 	  state <= `LS_IDLE;
 	else begin
