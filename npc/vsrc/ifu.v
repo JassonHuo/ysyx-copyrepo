@@ -11,37 +11,37 @@ module ifu(
 
   output [31: 0] inst_out,
   output [31: 0] pc_sync_out,
-  output valid,
+  output reg valid,
   input ready,
 
   output [31: 0] pc_out,
   input done
 );
 
-  reg [1: 0] state, next_state;
+  reg state, next_state;
   wire reqValid_tmp;
   reg respValid_tmp;
 
-  assign reqValid = (state != `IF_RUNNING);
+  assign reqValid = ~state;
   assign inst_addr = pc_out;
 
   always@(*)begin
 	if(rst)
 	  next_state = `IF_IDLE;
 	else
+	  /*
 	  case(state)
 		`IF_IDLE: next_state = `IF_WAIT;
 		`IF_WAIT: next_state = respValid ? `IF_RUNNING: `IF_WAIT;
 		`IF_RUNNING: next_state = done ? `IF_IDLE: `IF_RUNNING;
 		default: next_state = `LS_IDLE;
 	  endcase
-	 /*
+	  */
 	 case(state)
 	   `IF_IDLE: next_state = `IF_WAIT;
 	   `IF_WAIT: next_state = done ? `IF_IDLE: `IF_WAIT;
 	   default: next_state = `IF_IDLE;
 	 endcase
-	 */
   end
 
   always@(posedge clk)begin
@@ -52,7 +52,7 @@ module ifu(
   end
 
 //  assign valid = (state == `IF_RUNNING);
-  assign valid = (state == `IF_RUNNING);
+  assign valid = reqValid;
   
   reg [31: 0] inst;
   reg [3: 0] counter;
@@ -67,7 +67,7 @@ module ifu(
 	inst <= inst;
 	respValid <= reqValid;
 	counter <= 4'b0;
-	if(state != `IF_RUNNING)begin
+	if(respValid)begin
 //	  inst <= pmem_read(inst_addr);
 	  inst <= inst_in;
 	end
