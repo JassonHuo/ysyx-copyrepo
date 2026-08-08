@@ -65,7 +65,8 @@ module ifu(
   end
   always@(posedge clk)begin
 	inst <= inst;
-	respValid <= reqValid;
+//	respValid <= reqValid;
+	respValid <= (state == `IF_WAIT);
 	counter <= 4'b0;
 	if(reqValid)begin
 //	  inst <= pmem_read(inst_addr);
