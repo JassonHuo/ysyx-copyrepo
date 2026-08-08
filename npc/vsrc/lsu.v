@@ -87,7 +87,7 @@ module lsu(
   assign ready_pre = valid_pre;
   wire pre_succ = ready_pre & valid_pre;
 //  assign valid_aft = pre_succ & ~next_state;
-  assign valid_aft = (state & respValid | ~mem_valid);
+  assign valid_aft = pre_succ & (state & respValid | ~mem_valid);
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
