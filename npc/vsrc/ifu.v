@@ -31,7 +31,7 @@ module ifu(
 	else
 	  case(state)
 		`IF_IDLE: next_state = `IF_WAIT;
-		`IF_WAIT: next_state = respValid_tmp ? `IF_RUNNING: (done ? `IF_WAIT: `IF_IDLE);
+		`IF_WAIT: next_state = respValid_tmp ? `IF_RUNNING: `IF_WAIT;
 		`IF_RUNNING: next_state = done ? `IF_IDLE: `IF_RUNNING;
 		default: next_state = `LS_IDLE;
 	  endcase
