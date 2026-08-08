@@ -68,7 +68,7 @@ module lsu(
 	else begin
 	  case(state)
 		`LS_IDLE: next_state = mem_valid ? `LS_WAIT: `LS_IDLE;
-		`LS_WAIT: next_state = `LS_IDLE;
+		`LS_WAIT: next_state = respValid ? `LS_IDLE: `LS_WAIT;
 		default: next_state = `LS_IDLE;
 		endcase
 	  end
@@ -114,11 +114,18 @@ module lsu(
   reg [31: 0] lsu_rdata;
   reg [31: 0] ifu_wdata;
 
+
+  reg [3: 0] counter;
+
   always@(posedge clk)begin
 	lsu_rdata <= (reqValid & ~mem_wen) ? pmem_read(alu): 32'b0;
 	if(mem_wen & reqValid)
 	  pmem_write(alu, src2, {4'b0, mask});
-	respValid <= reqValid;
+	if(state == `LS_WAIT)begin
+	  counter <= (counter == 0 ? 5: counter - 1);
+	  respValid <= (counter == 0 ? 1: 0);
+	end
+//	respValid <= reqValid;
   end
 
   always@(*)begin

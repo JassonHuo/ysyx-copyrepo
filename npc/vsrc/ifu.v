@@ -15,9 +15,12 @@ module ifu(
   input done
 );
 
-  reg state, next_state;
+//  reg state, next_state;
+
+  reg [1: 0] state, next_state;
 
   always@(*)begin
+	/*
 	if(rst)
 	  next_state = `LS_IDLE;
 	else begin
@@ -26,54 +29,52 @@ module ifu(
 		`LS_WAIT: next_state = done ? `LS_IDLE: `LS_WAIT;
 		default: next_state = `LS_IDLE;
 	 endcase
-	/*
-	  case(state)
-		`LS_IDLE: next_state = done ? `LS_WAIT: `LS_IDLE;
-		`LS_WAIT: next_state = respValid ? `LS_IDLE: `LS_WAIT;
-		default: next_state = `LS_IDLE;
-	  endcase
-	  */
 	end
+	*/
+   if(rst)
+	 next_state = `IF_IDLE;
+   else begin
+	 case(state)
+	   `IF_IDLE: next_state = respValid ? `IF_RUNNING: `IF_WAIT;
+	   `IF_WAIT: next_state = respValid ? `IF_RUNNING: `IF_WAIT;
+	   `IF_RUNNING: next_state = done ? `IF_IDLE: `IF_RUNNING;
+	 endcase
+   end
   end
 
   always@(posedge clk)begin
 	if(rst)
-	  state <= `LS_IDLE;
+	  state <= `IF_IDLE;
 	else
 	  state <= next_state;
   end
 
-  /*
-  parameter VALID_RUNNING = 1, VALID_WAITRESP = 0;
-  reg valid_state, valid_next_state;
-  always@(*)begin
-	if(rst)
-	  valid_next_state = VALID_RUNNING;
-	case(valid_state)
-	  VALID_RUNNING: valid_next_state = done ? VALID_WAITRESP: VALID_RUNNING;
-	  VALID_WAITRESP: valid_next_state = respValid ? VALID_RUNNING: VALID_WAITRESP;
-	endcase
+  //lsfm
+  reg [3: 0] lsfm;
+  initial begin
+	lsfm = 4'b1011;
   end
-
   always@(posedge clk)begin
-	if(rst)
-	  valid_state <= VALID_RUNNING;
-	else
-	  valid_state <= valid_next_state;
+	lsfm <= {lsfm[2: 0], lsfm[0] ^ lsfm[1] & lsfm[2]};
   end
+  //end
 
-  assign valid = valid_state;
-  */
-  assign valid = state;
+  assign valid = (state == `IF_RUNNING);
   
   reg [31: 0] inst;
   reg respValid;
   wire reqValid;
-  assign reqValid = ~state;
+  assign reqValid = (state == `IF_IDLE);
+  reg [3: 0] counter;
   always@(posedge clk)begin
-	if(reqValid)
+	if(reqValid)begin
 	  inst <= pmem_read(pc_out);
-	respValid <= reqValid;
+	end
+//	respValid <= reqValid;
+	if(state == `IF_WAIT)begin
+	  counter <= (counter == 0 ? lsfm: counter - 1);
+	  respValid <= (counter == 0 ? 1: 0);
+	end
   end
 //  assign inst = pmem_read(pc_out);
   assign inst_out = inst;
