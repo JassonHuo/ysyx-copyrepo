@@ -381,7 +381,7 @@ extern "C" void do_quitcheck()
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
-  printf("at pc = %08x\n", c_get_Pc());
+  printf("at pc = %08x\n", top->pc);
 //  if(NPC_state == NPC_ABORT)
 //	exit(1);
 }
@@ -540,18 +540,14 @@ void run_cycle(uint64_t n)
 	top->clk = 0;
 	top->eval();
 //	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
-#ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 	tfp->flush();
-#endif
 	top->clk = 1;
 	top->eval();
-#ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 	tfp->flush();
-#endif
 #ifdef CONFIG_DIFFTEST
 	static bool done;
 	static bool pre_done;
@@ -570,11 +566,9 @@ void run_cycle(uint64_t n)
   }
 }
 int main(int argc, char** argv) {
-#ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
   top->trace(tfp, 99);
   tfp->open("wave.vcd");
-#endif
   printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
   printf(BLUE "Open device serial at [0x10000000, 0x10000004]" RESET "\n");
   printf(BLUE "Open device rtc at [0x10000048, 0x1000004f]" RESET "\n");
@@ -601,12 +595,9 @@ int main(int argc, char** argv) {
 #ifdef CONFIG_FTRACE
   display_fb();
 #endif
-#ifdef CONFIG_WAVE
-  tfp->close();
-#endif
   if(NPC_state == NPC_QUIT)
 	return 0;
+  tfp->close();
   do_quitcheck();
-//  return c_get_Reg(10);
-  return (NPC_state == NPC_ABORT | c_get_Reg(10));
+  return c_get_Reg(10);
 }

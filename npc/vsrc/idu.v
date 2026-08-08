@@ -184,7 +184,7 @@ module idu(
 			alu_op = `ALU_LAREQ;
 		  end
 		  default:begin
-			$display("branch abort");
+//			$display("branch abort");
 			npc_abort();
 		  end
 		endcase
@@ -216,7 +216,7 @@ module idu(
 			is_signed = 0;
 		  end
 		  default: begin
-			$display("load abort");
+//			$display("load abort");
 			npc_abort();
 		  end
 		endcase 
@@ -240,7 +240,7 @@ module idu(
 			width = `MEM_WORD;
 		  end
 		  default begin
-			$display("store abort");
+//			$display("store abort");
 			npc_abort();
 		  end
 		endcase
@@ -277,7 +277,7 @@ module idu(
 			  alu_op = `ALU_LEFT;
 			end
 			else begin
-			  $display("immi abort");
+//			  $display("immi abort");
 			  npc_abort();
 			end
 		  end
@@ -290,12 +290,12 @@ module idu(
 			  alu_op = `ALU_RIGHT;
 			end
 			else begin
-			  $display("immi abort");
+//			  $display("immi abort");
 			  npc_abort();
 			end
 		  end
 		  default: begin
-			$display("immi abort");
+//			$display("immi abort");
 			npc_abort();
 		  end
 		endcase
@@ -339,7 +339,7 @@ module idu(
 		  alu_op = `ALU_AND;
 		end
 		else begin
-		  $display("reg abort");
+//		  $display("reg abort");
 		  npc_abort();
 		end
 	  end
@@ -388,13 +388,13 @@ module idu(
 			alu_op = `ALU_AND;
 		  end
 		  default:begin
-			$display("csr abort");
+//			$display("csr abort");
 			npc_abort();
 		  end
 		endcase
 	  end
 	  default begin
-		$display("default abort");
+//		$display("default abort");
 		npc_abort();
 	  end
 	endcase
