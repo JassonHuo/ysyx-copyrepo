@@ -16,50 +16,64 @@ module ifu(
 );
 
   reg state, next_state;
-  /*
+
   always@(*)begin
 	if(rst)
-	  next_state = `IDLE;
+	  next_state = `LS_IDLE;
 	else begin
 	  case(state)
-		`IDLE: next_state = valid ? `WAIT_READY: `IDLE;
-		`WAIT_READY: next_state = ready ? `IDLE: `WAIT_READY;
-		default: next_state = state;
+		`LS_IDLE: next_state = `LS_WAIT;
+		`LS_WAIT: next_state = done ? `LS_IDLE: `LS_WAIT;
+		default: next_state = `LS_IDLE;
+	 endcase
+	/*
+	  case(state)
+		`LS_IDLE: next_state = done ? `LS_WAIT: `LS_IDLE;
+		`LS_WAIT: next_state = respValid ? `LS_IDLE: `LS_WAIT;
+		default: next_state = `LS_IDLE;
 	  endcase
+	  */
 	end
   end
 
   always@(posedge clk)begin
 	if(rst)
-	  state <= `IDLE;
-	else begin
+	  state <= `LS_IDLE;
+	else
 	  state <= next_state;
-	end
   end
+
+  /*
+  parameter VALID_RUNNING = 1, VALID_WAITRESP = 0;
+  reg valid_state, valid_next_state;
+  always@(*)begin
+	if(rst)
+	  valid_next_state = VALID_RUNNING;
+	case(valid_state)
+	  VALID_RUNNING: valid_next_state = done ? VALID_WAITRESP: VALID_RUNNING;
+	  VALID_WAITRESP: valid_next_state = respValid ? VALID_RUNNING: VALID_WAITRESP;
+	endcase
+  end
+
+  always@(posedge clk)begin
+	if(rst)
+	  valid_state <= VALID_RUNNING;
+	else
+	  valid_state <= valid_next_state;
+  end
+
+  assign valid = valid_state;
   */
- always@(*)begin
-   if(rst)
-	 next_state = `LS_IDLE;
-   else
-	 case(state)
-	   `LS_IDLE: next_state = `LS_WAIT;
-	   `LS_WAIT: next_state = done ? `LS_IDLE: `LS_WAIT;
-	   default: next_state = `LS_IDLE;
-	 endcase
- end
-
- always@(posedge clk)begin
-   if(rst)
-	 state <= `LS_IDLE;
-   else
-	 state <= next_state;
- end
-
   assign valid = state;
   
   reg [31: 0] inst;
+  reg respValid;
+  wire reqValid;
+  assign reqValid = ~state;
   always@(posedge clk)begin
-	inst <= pmem_read(pc_out);
+	if(reqValid)
+	  inst <= pmem_read(pc_out);
+	respValid <= reqValid;
   end
 //  assign inst = pmem_read(pc_out);
   assign inst_out = inst;
