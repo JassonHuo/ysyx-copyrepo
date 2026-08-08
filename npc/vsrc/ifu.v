@@ -67,7 +67,7 @@ module ifu(
 	inst <= inst;
 	respValid <= reqValid;
 	counter <= 4'b0;
-	if(state == `IF_WAIT)begin
+	if(state != `IF_RUNNING)begin
 //	  inst <= pmem_read(inst_addr);
 	  inst <= inst_in;
 	end
