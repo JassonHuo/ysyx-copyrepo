@@ -10,6 +10,7 @@ module memory(
   output reg [31: 0] rdata
 );
 
+/*
   reg [31: 0] addr_reg;
   reg wen_reg;
   reg [31: 0] wdata_reg;
@@ -28,6 +29,7 @@ module memory(
 	  mask_reg <= mask;
 	end
   end
+  */
 
   parameter MEM_IDLE = 0, MEM_WAITRESP = 1;
   reg state, next_state;
@@ -46,6 +48,6 @@ module memory(
 	end
   end
 
-  assign rdata = pmem_read(addr_reg);
+  assign rdata = (addr == 0) ? 32'b0: pmem_read(addr);
   
 endmodule
