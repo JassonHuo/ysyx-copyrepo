@@ -11,7 +11,7 @@ module ifu(
 
   output [31: 0] inst_out,
   output [31: 0] pc_sync_out,
-  output valid,
+  output reg valid,
   input ready,
 
   output [31: 0] pc_out,
@@ -32,7 +32,7 @@ module ifu(
 	  /*
 	  case(state)
 		`IF_IDLE: next_state = `IF_WAIT;
-		`IF_WAIT: next_state = respValid_tmp ? `IF_RUNNING: (done ? `IF_WAIT: `IF_IDLE);
+		`IF_WAIT: next_state = respValid ? `IF_RUNNING: `IF_WAIT;
 		`IF_RUNNING: next_state = done ? `IF_IDLE: `IF_RUNNING;
 		default: next_state = `LS_IDLE;
 	  endcase
@@ -52,7 +52,7 @@ module ifu(
   end
 
 //  assign valid = (state == `IF_RUNNING);
-  assign valid = state;
+  assign valid = reqValid;
   
   reg [31: 0] inst;
   reg [3: 0] counter;
@@ -67,7 +67,7 @@ module ifu(
 	inst <= inst;
 	respValid <= reqValid;
 	counter <= 4'b0;
-	if(reqValid)begin
+	if(respValid)begin
 //	  inst <= pmem_read(inst_addr);
 	  inst <= inst_in;
 	end
