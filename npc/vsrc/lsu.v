@@ -66,7 +66,7 @@ module lsu(
 	  next_state = `LS_IDLE;
 	else begin
 	  case(state)
-		`LS_IDLE: next_state = mem_valid & ~mem_wen ? `LS_WAIT: `LS_IDLE;
+		`LS_IDLE: next_state = mem_valid ? `LS_WAIT: `LS_IDLE;
 		`LS_WAIT: next_state = `LS_IDLE;
 		default: next_state = `LS_IDLE;
 		endcase
