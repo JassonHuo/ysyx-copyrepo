@@ -607,5 +607,5 @@ int main(int argc, char** argv) {
   tfp->close();
 #endif
   do_quitcheck();
-  return c_get_Reg(10);
+  return c_get_Reg(10) || (NPC_state == NPC_ABORT);
 }
