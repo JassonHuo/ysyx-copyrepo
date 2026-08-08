@@ -54,49 +54,41 @@ module lsu(
   input valid_pre,
   output ready_pre,
   output reg valid_aft,
-  input ready_aft,
-  output reqValid,
-  output [31: 0] mem_addr,
-  output mem_wen_out,
-  output [31: 0] lsu_wdata,
-  output [3: 0] mask,
-  output respValid,
-  input [31: 0] lsu_rdata
+  input ready_aft
 );
 
   reg state, next_state;
+  wire reqValid;
+  reg respValid;
+  assign reqValid = pre_succ & ~state & mem_valid;
 
- assign reqValid = mem_valid & pre_succ;
- assign mem_addr = alu;
- assign mem_wen_out = mem_wen;
-
- always@(*)begin
-   if(rst)
-	 next_state = `LS_IDLE;
-   else begin
-	 case(state)
-	   `LS_IDLE: next_state = mem_valid & ~mem_wen ? `LS_WAIT: `LS_IDLE;
-	   `LS_WAIT: next_state = respValid ? `LS_IDLE: `LS_WAIT;
-//		`LS_WAIT: next_state = `LS_IDLE;
-	   default: next_state = `LS_IDLE;
-	  endcase
+  always@(*)begin
+	if(rst)
+	  next_state = `LS_IDLE;
+	else begin
+	  case(state)
+		`LS_IDLE: next_state = mem_valid ? `LS_WAIT: `LS_IDLE;
+		`LS_WAIT: next_state = `LS_IDLE;
+		default: next_state = `LS_IDLE;
+		endcase
+	  end
 	end
-  end
-//  assign respValid = state;
 
   always@(posedge clk)begin
-	respValid = reqValid;
 	if(rst)
 	  state <= `LS_IDLE;
 	else begin
-	  if(pre_succ)
+	  if(valid_pre)
 		state <= next_state;
+	  else
+		state <= state;
 	end
   end
 
   assign ready_pre = valid_pre;
   wire pre_succ = ready_pre & valid_pre;
-  assign valid_aft = pre_succ & (respValid | ~mem_valid);
+//  assign valid_aft = pre_succ & ~next_state;
+  assign valid_aft = pre_succ & (state & respValid | ~mem_valid);
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
@@ -116,17 +108,18 @@ module lsu(
 
   assign src1_out = src1;
 
-  assign mask = (width == `MEM_WORD ? 4'b1111:
+  wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:
 	(width == `MEM_BYTE ? 4'b1  << alu[1: 0] : 4'b0)));
+  reg [31: 0] lsu_rdata;
+  reg [31: 0] ifu_wdata;
 
-  /*
   always@(posedge clk)begin
-	ifu_rdata <= (mem_valid & ~state & pre_succ) ? pmem_read(alu): 32'b0;
-	if(mem_wen & pre_succ)
+	lsu_rdata <= (reqValid & ~mem_wen) ? pmem_read(alu): 32'b0;
+	if(mem_wen & reqValid)
 	  pmem_write(alu, src2, {4'b0, mask});
+	respValid <= reqValid;
   end
-  */
 
   always@(*)begin
 	if(mem_valid & valid_aft)begin
@@ -136,15 +129,15 @@ module lsu(
 	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
 		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
 	  if(mem_wen)begin
-		lsu_wdata = src2;
+		ifu_wdata = src2;
 	  end
 	  else begin
-		lsu_wdata = 32'b0;
+		ifu_wdata = 32'b0;
 	  end
 	end
 	else begin
 	  rdata = 32'b0;
-	  lsu_wdata = 32'b0;
+	  ifu_wdata = 32'b0;
 	end
   end
 

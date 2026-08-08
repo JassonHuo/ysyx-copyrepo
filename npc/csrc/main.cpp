@@ -574,6 +574,7 @@ int main(int argc, char** argv) {
   Verilated::traceEverOn(true);
   top->trace(tfp, 99);
   tfp->open("wave.vcd");
+  printf(BLUE "[%s %d %s] Open wave dump to wave.vcd" RESET "\n", __FILE__, __LINE__, __func__);
 #endif
   printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
   printf(BLUE "Open device serial at [0x10000000, 0x10000004]" RESET "\n");

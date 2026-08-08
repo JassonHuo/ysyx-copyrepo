@@ -4,14 +4,11 @@ module ifu(
   input [31: 0] pc_in,
   input pc_en,
 
-  output [31: 0] inst_addr,
-  output reqValid,
-  output reg respValid,
-  input [31: 0] inst_in,
+//  output [31: 0] inst_addr,
 
   output [31: 0] inst_out,
   output [31: 0] pc_sync_out,
-  output reg valid,
+  output valid,
   input ready,
 
   output [31: 0] pc_out,
@@ -19,61 +16,54 @@ module ifu(
 );
 
   reg state, next_state;
-  wire reqValid_tmp;
-  reg respValid_tmp;
-
-  assign reqValid = ~state;
-  assign inst_addr = pc_out;
-
+  /*
   always@(*)begin
 	if(rst)
-	  next_state = `IF_IDLE;
-	else
-	  /*
+	  next_state = `IDLE;
+	else begin
 	  case(state)
-		`IF_IDLE: next_state = `IF_WAIT;
-		`IF_WAIT: next_state = respValid ? `IF_RUNNING: `IF_WAIT;
-		`IF_RUNNING: next_state = done ? `IF_IDLE: `IF_RUNNING;
-		default: next_state = `LS_IDLE;
+		`IDLE: next_state = valid ? `WAIT_READY: `IDLE;
+		`WAIT_READY: next_state = ready ? `IDLE: `WAIT_READY;
+		default: next_state = state;
 	  endcase
-	  */
-	 case(state)
-	   `IF_IDLE: next_state = `IF_WAIT;
-	   `IF_WAIT: next_state = done ? `IF_IDLE: `IF_WAIT;
-	   default: next_state = `IF_IDLE;
-	 endcase
+	end
   end
 
   always@(posedge clk)begin
 	if(rst)
-	  state <= `LS_IDLE;
-	else
+	  state <= `IDLE;
+	else begin
 	  state <= next_state;
+	end
   end
+  */
+ always@(*)begin
+   if(rst)
+	 next_state = `LS_IDLE;
+   else
+	 case(state)
+	   `LS_IDLE: next_state = `LS_WAIT;
+	   `LS_WAIT: next_state = done ? `LS_IDLE: `LS_WAIT;
+	   default: next_state = `LS_IDLE;
+	 endcase
+ end
 
-//  assign valid = (state == `IF_RUNNING);
+ always@(posedge clk)begin
+   if(rst)
+	 state <= `LS_IDLE;
+   else
+	 state <= next_state;
+ end
+
   assign valid = state;
   
   reg [31: 0] inst;
-  reg [3: 0] counter;
-  reg [3: 0] lsfm;
-  initial begin
-	lsfm = 4'b1001;
-  end
   always@(posedge clk)begin
-	lsfm <= {lsfm[2: 0], lsfm[0] ^ lsfm[1] | lsfm [3]};
-  end
-  always@(posedge clk)begin
-	inst <= inst;
-	respValid <= reqValid;
-	counter <= 4'b0;
-	if(respValid)begin
-//	  inst <= pmem_read(inst_addr);
-	  inst <= inst_in;
-	end
+	inst <= pmem_read(pc_out);
   end
 //  assign inst = pmem_read(pc_out);
   assign inst_out = inst;
+//  assign inst_addr = pc_out;
 
   pc pc0(
 	.pc_en(done & pc_en),
