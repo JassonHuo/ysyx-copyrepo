@@ -112,21 +112,6 @@ module top(
   wire done_wbu_ifu;
   assign done = done_wbu_ifu;
 
-  /*
-  memory #(
-	.ADDR_WIDTH = 8,
-	.DATA_WIDTH = 32
-  ) mem0(
-	.clk(clk),
-	.wdata(),
-	.waddr(),
-	.raddr1(),
-	.raddr2(),
-	.rdata1(),
-	.rdata2(),
-	.wen()
-  );
-  */
 
   ifu ifu0(
 	.clk(clk),

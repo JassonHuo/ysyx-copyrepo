@@ -17,20 +17,9 @@ module ifu(
 
 //  reg state, next_state;
 
-  reg [1: 0] state, next_state;
+  reg [2: 0] state, next_state;
 
   always@(*)begin
-	/*
-	if(rst)
-	  next_state = `LS_IDLE;
-	else begin
-	  case(state)
-		`LS_IDLE: next_state = `LS_WAIT;
-		`LS_WAIT: next_state = done ? `LS_IDLE: `LS_WAIT;
-		default: next_state = `LS_IDLE;
-	 endcase
-	end
-	*/
    if(rst)
 	 next_state = `IF_IDLE;
    else begin
@@ -48,29 +37,6 @@ module ifu(
 	else
 	  state <= next_state;
   end
-
-  /*
-  parameter VALID_WAIT = 0, VALID_RUN = 1;
-  reg valid_state, valid_next;
-  always@(*)begin
-	if(rst)
-	  valid_next = VALID_RUN;
-	else begin
-	  case(state)
-		VALID_WAIT: valid_next = respValid ? VALID_RUN: VALID_WAIT;
-		VALID_RUN: valid_next = done ? VALID_WAIT: VALID_RUN;
-		default: valid_next = VALID_RUN;
-	  endcase
-	end
-  end
-
-  always@(posedge clk)begin
-	if(rst)
-	  valid_state <= VALID_RUN;
-	else
-	  valid_state <= valid_next;
-  end
-  */
 
   //lsfm
   reg [3: 0] lsfm;
@@ -93,6 +59,7 @@ module ifu(
   reg respValid;
   wire reqValid;
   assign reqValid = ~(|state);
+  /*
   always@(posedge clk)begin
 	respValid <= 0;
 	if(reqValid)begin
@@ -104,6 +71,20 @@ module ifu(
 	  respValid <= (counter == 0 ? 1: 0);
 	end
   end
+  */
+
+  memory mem0(
+	.clk(clk),
+	.reqValid(reqValid),
+	.reqReady(),
+	.addr(pc_out),
+	.wen(0),
+	.wdata(0),
+	.mask(0),
+	.respValid(respValid),
+	.respReady(0),
+	.rdata(inst)
+  );
 //  assign inst = pmem_read(pc_out);
   assign inst_out = inst;
 //  assign inst_addr = pc_out;

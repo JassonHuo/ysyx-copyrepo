@@ -121,12 +121,24 @@ module lsu(
 	lsu_rdata <= (reqValid & ~mem_wen) ? pmem_read(alu): lsu_rdata;
 	if(mem_wen & reqValid)
 	  pmem_write(alu, src2, {4'b0, mask});
-	if(state == `LS_WAIT)begin
-	  counter <= (counter == 0 ? 5: counter - 1);
-	  respValid <= (counter == 0 ? 1: 0);
-	end
-//	respValid <= reqValid;
+	respValid <= reqValid;
   end
+  
+
+ /*
+  memory mem1(
+	.clk(clk),
+	.reqValid(reqValid),
+	.reqReady(),
+	.addr(alu),
+	.wen(mem_wen),
+	.wdata(src2),
+	.mask(wmask[3: 0]),
+	.respValid(respValid),
+	.respReady(),
+	.rdata(lsu_rdata)
+  );
+  */
 
   always@(*)begin
 	if(mem_valid & valid_aft)begin
