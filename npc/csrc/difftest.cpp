@@ -70,26 +70,6 @@ void get_all_Regs()
 
 bool reg_check()
 {
-  /*
-  for(int i = 0; i < 33; i ++)
-  {
-	if(npc_reg[i] != ref_reg[i])
-	{
-	  for(int j = 0; j < 33; j ++)
-	  {
-		if(i == j)
-		  printf(RED);
-		else if(ref_reg[j])
-		  printf(YELLOW);
-		if(j == 32) printf("pc : ");
-		else printf("%-3s: ", get_reg_name(j));
-		printf("nemu: %08x, npc: %08x" RESET "\n", ref_reg[j], npc_reg[j]);
-	  }
-	  return false;
-	}
-  }
-  return true;
-  */
   int ret = memcmp(ref_reg, npc_reg, (4096 + 33) * 4);
   if(ret)
   {
@@ -144,7 +124,6 @@ void difftest_skip()
 
 void difftest_step()
 {
-//  printf("test, pc: %08x pc_in: %08x\n", c_get_Pc(), test_pc);
   if(to_device)
   {
 	if(c_get_Pc() == skip_pc)

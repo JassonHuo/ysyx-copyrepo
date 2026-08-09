@@ -115,19 +115,17 @@ module lsu(
   reg [31: 0] ifu_wdata;
 
 
-//  reg [3: 0] counter;
+  reg [3: 0] counter;
 
   always@(posedge clk)begin
-	lsu_rdata <= (reqValid & ~mem_wen) ? pmem_read(alu): 32'b0;
+	lsu_rdata <= (reqValid & ~mem_wen) ? pmem_read(alu): lsu_rdata;
 	if(mem_wen & reqValid)
 	  pmem_write(alu, src2, {4'b0, mask});
-	/*
 	if(state == `LS_WAIT)begin
 	  counter <= (counter == 0 ? 5: counter - 1);
 	  respValid <= (counter == 0 ? 1: 0);
 	end
-	*/
-	respValid <= reqValid;
+//	respValid <= reqValid;
   end
 
   always@(*)begin

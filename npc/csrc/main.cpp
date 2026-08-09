@@ -557,7 +557,7 @@ void run_cycle(uint64_t n)
 	static bool pre_done;
 	pre_done = done;
 	done = top->done;
-	if(pre_done & done)
+	if(pre_done & ~done)
 	  difftest_step();
 #endif
 	if(NPC_state != NPC_RUNNING)
