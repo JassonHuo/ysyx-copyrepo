@@ -44,29 +44,57 @@ module ifu(
 
   always@(posedge clk)begin
 	if(rst)
-	  state <= `IF_IDLE;
+	  state <= `LS_IDLE;
 	else
 	  state <= next_state;
   end
 
+  /*
+  parameter VALID_WAIT = 0, VALID_RUN = 1;
+  reg valid_state, valid_next;
+  always@(*)begin
+	if(rst)
+	  valid_next = VALID_RUN;
+	else begin
+	  case(state)
+		VALID_WAIT: valid_next = respValid ? VALID_RUN: VALID_WAIT;
+		VALID_RUN: valid_next = done ? VALID_WAIT: VALID_RUN;
+		default: valid_next = VALID_RUN;
+	  endcase
+	end
+  end
+
+  always@(posedge clk)begin
+	if(rst)
+	  valid_state <= VALID_RUN;
+	else
+	  valid_state <= valid_next;
+  end
+  */
+
   //lsfm
   reg [3: 0] lsfm;
   initial begin
-	lsfm = 4'b1011;
+	lsfm = 4'b1001;
   end
   always@(posedge clk)begin
-	lsfm <= {lsfm[2: 0], lsfm[0] ^ lsfm[1] & lsfm[2]};
+	if(lsfm == 0)
+	  lsfm <= 4'b1001;
+	lsfm <= {lsfm[2: 0], lsfm[0] ^ lsfm[1] ^ lsfm[3]};
   end
+  reg [3: 0] counter;
   //end
 
   assign valid = (state == `IF_RUNNING);
+//  assign valid = state;
+//  assign valid = VALID_RUN;
   
   reg [31: 0] inst;
   reg respValid;
   wire reqValid;
-  assign reqValid = (state == `IF_IDLE);
-  reg [3: 0] counter;
+  assign reqValid = ~(|state);
   always@(posedge clk)begin
+	respValid <= 0;
 	if(reqValid)begin
 	  inst <= pmem_read(pc_out);
 	end
@@ -88,22 +116,6 @@ module ifu(
 	.pc_out(pc_out),
 	.pc_sync(pc_sync_out)
   );
-
-  /*
-  RegisterFile #(
-	.ADDR_WIDTH(8),
-	.DATA_WIDTH(32)
-  ) Rom(
-	.clk(clk),
-	.wdata(0),
-	.waddr(0),
-	.raddr1(pc_out[7: 0]),
-	.raddr2(0),
-	.rdata1(inst),
-	.rdata2(),
-	.wen(0)
-  );
-  */
 
 
 endmodule

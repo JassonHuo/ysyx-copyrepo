@@ -13,3 +13,5 @@ _*
 *~
 build/
 !.gitignore
+riscv-arch-test-am/
+riscv-tests-am/
