@@ -93,26 +93,11 @@ static int IB_tail = 0;
 
 static void ib_inQue(char *str)
 {
-  /*
-  memcpy(iring_buffer[ib_tail], str, 100);
-  ib_tail = (ib_tail + 1) % IB_SIZE;
-  if(ib_tail == ib_head)
-	ib_head = (ib_head + 1) % IB_SIZE;
-	*/
   INQUE(iring, IB);
 }
 
 static void display_ib()
 {
-  /*
-  for(int i = ib_head; i != ib_tail;)
-  {
-	if(i == (ib_tail - 1 + IB_SIZE) % IB_SIZE)
-		printf(RED " -->");
-	printf("%s" RESET "\n", iring_buffer[i]);
-	i = (i + 1) % IB_SIZE;
-  }
-  */
   DISPLAY(iring, IB);
 }
 #endif
@@ -124,7 +109,7 @@ static int MB_tail = 0;
 
 static void mb_inQue(char *str)
 {
-  /*
+ /*
   memcpy(memory_buffer[mb_tail], str, 100);
   mb_tail = (mb_tail + 1) % MB_SIZE;
   */
@@ -309,7 +294,7 @@ extern "C" int pmem_read(int addr)
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask)
 {
-  if(top->clk)
+  //if(top->clk)
   {
 #ifdef CONFIG_MTRACE
 	char tmp[100];
@@ -347,6 +332,8 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	  uint32_t tmp_mask = mask;
 	  while(tmp_mask % 2 == 0)
 	  {
+		if(!tmp_mask)
+		  break;
 		tmp_mask = tmp_mask >> 4;
 	  }
 	  wdata = wdata & tmp_mask;

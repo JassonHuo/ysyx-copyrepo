@@ -6,7 +6,7 @@ include ../Makefile
 
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign fast \
+VERILATOR_CFLAGS += -MMD --build -cc --x-assign fast \
 					--x-initial fast --noassert
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -40,12 +40,13 @@ CSRC += $(NPC_HOME)/csrc/*.cpp
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+CXXFLAGS += -O0 -g
 #CXXFLAGS += -DCONFIG_ITRACE
 #CXXFLAGS += -DCONFIG_MTRACE
 #CXXFLAGS += -DCONFIG_FTRACE
 CXXFLAGS += -DCONFIG_DIFFTEST
 #CXXFLAGS += -DCONFIG_MEMDIFFTEST
-CXXFLAGS += -DCONFIG_WAVE
+#CXXFLAGS += -DCONFIG_WAVE
 
 LDFLAGS += -lreadline -g
 

@@ -53,7 +53,7 @@ module lsu(
 
   input valid_pre,
   output ready_pre,
-  output reg valid_aft,
+  output valid_aft,
   input ready_aft
 );
 
@@ -114,18 +114,15 @@ module lsu(
   reg [31: 0] lsu_rdata;
   reg [31: 0] ifu_wdata;
 
-
-  reg [3: 0] counter;
-
+  /*
   always@(posedge clk)begin
 	lsu_rdata <= (reqValid & ~mem_wen) ? pmem_read(alu): lsu_rdata;
 	if(mem_wen & reqValid)
 	  pmem_write(alu, src2, {4'b0, mask});
 	respValid <= reqValid;
   end
-  
+  */
 
- /*
   memory mem1(
 	.clk(clk),
 	.reqValid(reqValid),
@@ -133,12 +130,11 @@ module lsu(
 	.addr(alu),
 	.wen(mem_wen),
 	.wdata(src2),
-	.mask(wmask[3: 0]),
+	.mask(mask),
 	.respValid(respValid),
-	.respReady(),
+	.respReady(0),
 	.rdata(lsu_rdata)
   );
-  */
 
   always@(*)begin
 	if(mem_valid & valid_aft)begin

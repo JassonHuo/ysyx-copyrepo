@@ -11,6 +11,7 @@ module memory(
   output reg [31: 0] rdata
 );
 
+/*
   parameter MEM_IDLE = 0, MEM_WAITRESP = 1;
   reg state, next_state;
   always@(*)begin
@@ -20,10 +21,12 @@ module memory(
 	  default: next_state = MEM_IDLE;
 	endcase
   end
+  */
 
   always@(posedge clk)begin
 	if(reqValid)begin
-	  rdata <= pmem_read(addr);
+	  if (~wen)
+		rdata <= pmem_read(addr);
 	  if(wen)
 		pmem_write(addr, wdata, {4'b0, mask});
 	end
