@@ -51,7 +51,8 @@ module memory(
 		pmem_write(addr, wdata, {4'b0, mask});
 	end
 	data_ready <= reqValid;
-	counter <= (counter == 0 ? lsfm: counter - 1);
+//	counter <= (counter == 0 ? lsfm: counter - 1);
+	counter <= 0;
   end
 
   

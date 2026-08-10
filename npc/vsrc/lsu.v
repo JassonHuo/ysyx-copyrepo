@@ -54,12 +54,22 @@ module lsu(
   input valid_pre,
   output ready_pre,
   output valid_aft,
-  input ready_aft
+  input ready_aft,
+
+  output reqValid,
+  input reqReady,
+  output [31: 0] addr,
+  output mem_wen_out,
+  output [31: 0] wdata,
+  output [3: 0] mask_out,
+  output respReady,
+  input respValid,
+  input [31: 0] lsu_rdata
 );
 
   reg [2: 0] state, next_state;
-  wire reqValid;
-  reg respValid;
+//  wire reqValid;
+//  reg respValid;
 
   //lsfm
   reg [7: 0] lsfm;
@@ -89,6 +99,11 @@ module lsu(
   end
   assign reqValid = (state == LS_WAITREQREADY);
   assign respReady = (state == LS_RESPREADY);
+  assign addr = alu;
+  assign mem_wen_out = mem_wen;
+  assign wdata = src2;
+  assign mask_out = mask;
+//  assign lsu_rdata = rdata;
 
   always@(posedge clk)begin
 	if(rst)
@@ -99,7 +114,8 @@ module lsu(
 	  else
 		state <= state;
 	end
-	counter = (counter == 0 ? lsfm: counter - 1);
+//	counter = (counter == 0 ? lsfm: counter - 1);
+	counter <= 0;
   end
 
   assign ready_pre = valid_pre;
@@ -128,18 +144,11 @@ module lsu(
   wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:
 	(width == `MEM_BYTE ? 4'b1  << alu[1: 0] : 4'b0)));
-  reg [31: 0] lsu_rdata;
+//  reg [31: 0] lsu_rdata;
   reg [31: 0] ifu_wdata;
 
-  /*
-  always@(posedge clk)begin
-	lsu_rdata <= (reqValid & ~mem_wen) ? pmem_read(alu): lsu_rdata;
-	if(mem_wen & reqValid)
-	  pmem_write(alu, src2, {4'b0, mask});
-	respValid <= reqValid;
-  end
-  */
 
+ /*
   memory mem1(
 	.clk(clk),
 	.reqValid(reqValid),
@@ -152,7 +161,8 @@ module lsu(
 	.respReady(respReady),
 	.rdata(lsu_rdata)
   );
-  wire reqReady, respReady;
+  */
+//  wire reqReady, respReady;
 
   always@(*)begin
 	if(mem_valid & valid_aft)begin

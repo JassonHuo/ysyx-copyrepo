@@ -12,7 +12,14 @@ module ifu(
   input ready,
 
   output [31: 0] pc_out,
-  input done
+  input done,
+
+  output reqValid,
+  input reqReady,
+  output [31: 0] addr,
+  output respReady,
+  input respValid,
+  input [31: 0] inst_in
 );
 
 //  reg state, next_state;
@@ -70,14 +77,17 @@ module ifu(
 //  assign valid = VALID_RUN;
   
   reg [31: 0] inst;
+  /*
   wire respValid;
   wire reqValid;
   wire respReady;
   wire reqReady;
-  wire [31: 0] inst_in;
+  */
   assign reqValid = rst ? 1'b0: (state == IF_WAITREQREADY);
   assign respReady = (state == IF_RESPREADY);
+  assign addr = pc_out;
 
+  /*
   memory mem0(
 	.clk(clk),
 	.reqValid(reqValid),
@@ -90,6 +100,7 @@ module ifu(
 	.respReady(respReady),
 	.rdata(inst_in)
   );
+  */
 
   always@(posedge clk)begin
 	if(respValid & respReady)

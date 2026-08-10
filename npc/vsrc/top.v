@@ -112,6 +112,74 @@ module top(
   wire done_wbu_ifu;
   assign done = done_wbu_ifu;
 
+  wire reqValid_ifu_xbar;
+  wire reqReady_xbar_ifu;
+  wire [31: 0] addr_ifu_xbar;
+  wire respReady_ifu_xbar;
+  wire respValid_xbar_ifu;
+  wire [31: 0] rdata_xbar_ifu;
+
+  wire reqValid_lsu_xbar;
+  wire reqReady_xbar_lsu;
+  wire [31: 0] addr_lsu_xbar;
+  wire wen_lsu_xbar;
+  wire [31: 0] wdata_lsu_xbar;
+  wire [3: 0] mask_lsu_xbar;
+  wire respReady_lsu_xbar;
+  wire respValid_xbar_lsu;
+  wire [31: 0] rdata_xbar_lsu;
+
+  wire reqValid_xbar_mem;
+  wire reqReady_mem_xbar;
+  wire [31: 0] addr_xbar_mem;
+  wire wen_xbar_mem;
+  wire [31: 0] wdata_xbar_mem;
+  wire [3: 0] mask_xbar_mem;
+  wire respReady_xbar_mem;
+  wire respValid_mem_xbar;
+  wire [31: 0] rdata_mem_xbar;
+
+  memory mem0(
+	.clk(clk),
+  	.reqValid(reqValid_xbar_mem),
+  	.reqReady(reqReady_mem_xbar),
+  	.addr(addr_xbar_mem),
+  	.wen(wen_xbar_mem),
+  	.wdata(wdata_xbar_mem),
+  	.mask(mask_xbar_mem),
+  	.respValid(respReady_xbar_mem),
+  	.respReady(respValid_mem_xbar),
+  	.rdata(rdata_mem_xbar)
+  );
+
+  xbar xbar0(
+  	.ifu_reqValid(reqValid_ifu_xbar),
+  	.ifu_reqReady(reqReady_xbar_ifu),
+  	.ifu_addr(addr_ifu_xbar),
+  	.ifu_respReady(respReady_ifu_xbar),
+  	.ifu_respValid(respValid_xbar_ifu),
+  	.ifu_rdata(rdata_xbar_ifu),
+
+  	.lsu_reqValid(reqValid_lsu_xbar),
+  	.lsu_reqReady(reqReady_xbar_lsu),
+  	.lsu_addr(addr_lsu_xbar),
+  	.lsu_wen(wen_lsu_xbar),
+  	.lsu_wdata(wdata_lsu_xbar),
+  	.lsu_mask(mask_lsu_xbar),
+  	.lsu_respReady(respReady_lsu_xbar),
+  	.lsu_respValid(respValid_xbar_lsu),
+  	.lsu_rdata(rdata_xbar_lsu),
+
+  	.reqValid(reqValid_xbar_mem),
+  	.reqReady(reqReady_mem_xbar),
+  	.addr(addr_xbar_mem),
+  	.wen(wen_xbar_mem),
+  	.wdata(wdata_xbar_mem),
+  	.wmask(mask_xbar_mem),
+  	.respValid(respReady_xbar_mem),
+  	.respReady(respValid_mem_xbar),
+  	.rdata(rdata_mem_xbar)
+  );
 
   ifu ifu0(
 	.clk(clk),
@@ -123,7 +191,14 @@ module top(
 	.ready(ready_idu_ifu),
 	.pc_sync_out(pc_sync_ifu_idu),
 	.pc_out(pc_ifu_idu),
-	.done(done_wbu_ifu)
+	.done(done_wbu_ifu),
+
+  	.reqValid(reqValid_ifu_xbar),
+  	.reqReady(reqReady_xbar_ifu),
+  	.addr(addr_ifu_xbar),
+  	.respReady(respReady_ifu_xbar),
+  	.respValid(respValid_xbar_ifu),
+  	.inst_in(rdata_xbar_ifu)
   );
 
   idu idu0(
@@ -277,7 +352,17 @@ module top(
 	.valid_pre(valid_exu_lsu),
 	.ready_pre(ready_lsu_exu),
 	.valid_aft(valid_lsu_wbu),
-	.ready_aft(ready_wbu_lsu)
+	.ready_aft(ready_wbu_lsu),
+
+  	.reqValid(reqValid_lsu_xbar),
+  	.reqReady(reqReady_xbar_lsu),
+  	.addr(addr_lsu_xbar),
+  	.mem_wen_out(wen_lsu_xbar),
+  	.wdata(wdata_lsu_xbar),
+  	.mask_out(mask_lsu_xbar),
+  	.respReady(respReady_lsu_xbar),
+  	.respValid(respValid_xbar_lsu),
+  	.lsu_rdata(rdata_xbar_lsu)
   );
 
   wbu wbu0(
