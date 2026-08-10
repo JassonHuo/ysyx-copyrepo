@@ -129,6 +129,7 @@ module idu(
 	is_branch = 0;
 	is_signed = 0;
 	csr_type = `CSR_NO;
+	if(pre_succ)begin
 	case(opcode)
 	  7'b0110111:begin   //LUI
 		imm = Uimm;
@@ -398,6 +399,7 @@ module idu(
 		npc_abort();
 	  end
 	endcase
+  end
   end
 
 endmodule

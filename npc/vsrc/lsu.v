@@ -57,38 +57,55 @@ module lsu(
   input ready_aft
 );
 
-  reg state, next_state;
+  reg [2: 0] state, next_state;
   wire reqValid;
   reg respValid;
-  assign reqValid = pre_succ & ~state & mem_valid;
 
+  //lsfm
+  reg [7: 0] lsfm;
+  reg [7: 0] counter;
+  initial begin
+	lsfm = 8'b00101001;
+  end
+  
+  always@(posedge clk)begin
+	lsfm <= {lsfm[6: 0], lsfm[0] ^ lsfm[3] ^ lsfm[7] ^ lsfm[2]};
+  end
+  //end
+
+  parameter LS_IDLE = 0, LS_WAITREQREADY = 1, LS_WAITRESP = 2, LS_RESPREADY = 3;
   always@(*)begin
 	if(rst)
-	  next_state = `LS_IDLE;
+	  next_state = LS_IDLE;
 	else begin
 	  case(state)
-		`LS_IDLE: next_state = mem_valid ? `LS_WAIT: `LS_IDLE;
-		`LS_WAIT: next_state = respValid ? `LS_IDLE: `LS_WAIT;
-		default: next_state = `LS_IDLE;
-		endcase
-	  end
+		LS_IDLE: next_state = mem_valid ? LS_WAITREQREADY: LS_IDLE;
+		LS_WAITREQREADY: next_state = reqReady ? LS_WAITRESP: LS_WAITREQREADY;
+		LS_WAITRESP: next_state = respValid & (counter == 0) ? LS_RESPREADY: LS_WAITRESP;
+		LS_RESPREADY: next_state = LS_IDLE;
+		default: next_state = LS_IDLE;
+	  endcase
 	end
+  end
+  assign reqValid = (state == LS_WAITREQREADY);
+  assign respReady = (state == LS_RESPREADY);
 
   always@(posedge clk)begin
 	if(rst)
-	  state <= `LS_IDLE;
+	  state <= LS_IDLE;
 	else begin
 	  if(valid_pre)
 		state <= next_state;
 	  else
 		state <= state;
 	end
+	counter = (counter == 0 ? lsfm: counter - 1);
   end
 
   assign ready_pre = valid_pre;
   wire pre_succ = ready_pre & valid_pre;
 //  assign valid_aft = pre_succ & ~next_state;
-  assign valid_aft = pre_succ & (state & respValid | ~mem_valid);
+  assign valid_aft = pre_succ & (~mem_valid | (mem_valid & (state == LS_RESPREADY)));
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;
@@ -126,15 +143,16 @@ module lsu(
   memory mem1(
 	.clk(clk),
 	.reqValid(reqValid),
-	.reqReady(),
+	.reqReady(reqReady),
 	.addr(alu),
 	.wen(mem_wen),
 	.wdata(src2),
 	.mask(mask),
 	.respValid(respValid),
-	.respReady(0),
+	.respReady(respReady),
 	.rdata(lsu_rdata)
   );
+  wire reqReady, respReady;
 
   always@(*)begin
 	if(mem_valid & valid_aft)begin

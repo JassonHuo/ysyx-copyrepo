@@ -18,8 +18,10 @@ module ifu(
 //  reg state, next_state;
 
   reg [2: 0] state, next_state;
+  parameter IF_WAITREQREADY = 0, IF_WAITRESP = 1, IF_RESPREADY = 2, IF_RUN = 3;
 
   always@(*)begin
+	/*
    if(rst)
 	 next_state = `IF_IDLE;
    else begin
@@ -29,11 +31,23 @@ module ifu(
 	   `IF_RUNNING: next_state = done ? `IF_IDLE: `IF_RUNNING;
 	 endcase
    end
+   */
+	if(rst)
+	  next_state = IF_WAITREQREADY;
+	else begin
+	  case(state)
+		IF_WAITREQREADY: next_state = reqReady ? IF_WAITRESP: IF_WAITREQREADY;
+		IF_WAITRESP: next_state = respValid ? IF_RESPREADY: IF_WAITRESP;
+		IF_RESPREADY: next_state = IF_RUN;
+		IF_RUN: next_state = done ? IF_WAITREQREADY: IF_RUN;
+		default: next_state = IF_WAITREQREADY;
+	  endcase
+	end
   end
 
   always@(posedge clk)begin
 	if(rst)
-	  state <= `LS_IDLE;
+	  state <= IF_WAITREQREADY;
 	else
 	  state <= next_state;
   end
@@ -51,40 +65,36 @@ module ifu(
   reg [3: 0] counter;
   //end
 
-  assign valid = (state == `IF_RUNNING);
+  assign valid = (state == IF_RUN);
 //  assign valid = state;
 //  assign valid = VALID_RUN;
   
   reg [31: 0] inst;
-  reg respValid;
+  wire respValid;
   wire reqValid;
-  assign reqValid = ~(|state);
-  /*
-  always@(posedge clk)begin
-	respValid <= 0;
-	if(reqValid)begin
-	  inst <= pmem_read(pc_out);
-	end
-//	respValid <= reqValid;
-	if(state == `IF_WAIT)begin
-	  counter <= (counter == 0 ? lsfm: counter - 1);
-	  respValid <= (counter == 0 ? 1: 0);
-	end
-  end
-  */
+  wire respReady;
+  wire reqReady;
+  wire [31: 0] inst_in;
+  assign reqValid = rst ? 1'b0: (state == IF_WAITREQREADY);
+  assign respReady = (state == IF_RESPREADY);
 
   memory mem0(
 	.clk(clk),
 	.reqValid(reqValid),
-	.reqReady(),
+	.reqReady(reqReady),
 	.addr(pc_out),
 	.wen(0),
 	.wdata(0),
 	.mask(0),
 	.respValid(respValid),
-	.respReady(0),
-	.rdata(inst)
+	.respReady(respReady),
+	.rdata(inst_in)
   );
+
+  always@(posedge clk)begin
+	if(respValid & respReady)
+	  inst <= inst_in;
+  end
 //  assign inst = pmem_read(pc_out);
   assign inst_out = inst;
 //  assign inst_addr = pc_out;
