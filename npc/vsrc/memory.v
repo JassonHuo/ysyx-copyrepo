@@ -1,14 +1,29 @@
+import "DPI-C" function int pmem_read(input int raddr);
+import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 module memory(
   input clk,
-  input reqValid,
-  output reqReady,
-  input [31: 0] addr,
-  input wen,
+  input arValid,
+  output arReady,
+  input [31: 0] araddr,
+
+  output reg [31: 0] rdata,
+  output rresp,
+  output rValid,
+  input rReady,
+
+  input [31: 0] awaddr,
+  input awValid,
+  output awReady,
+
+//  input wen,
   input [31: 0] wdata,
-  input [3: 0] mask,
-  output reg respValid,
-  input respReady,
-  output reg [31: 0] rdata
+  input [3: 0] wstrb,
+  input wValid,
+  output wReady,
+
+  output bresp,
+  output bValid,
+  input bReady
 );
 
   //lsfm
@@ -23,37 +38,120 @@ module memory(
   end
   //end
 
-  parameter IDLE = 0, REQREADY = 1, WAIT = 2, RESPVALID = 3;
-  reg [2: 0] state, next_state;
+  parameter RIDLE = 0, ARREADY = 1, RWAIT = 2, RVALID = 3;
+  reg [2: 0] rstate, next_rstate;
   always@(*)begin
-	case(state)
-	  IDLE: next_state = reqValid & (counter == 0 ? 1: 0) ? REQREADY: IDLE;
-	  REQREADY: next_state = data_ready ? RESPVALID: WAIT;
-	  WAIT: next_state = data_ready ? RESPVALID: WAIT;
-	  RESPVALID: next_state = respReady ? IDLE: RESPVALID;
-	  default: next_state = IDLE;
+	case(rstate)
+	  RIDLE: next_rstate = arValid & (counter == 0 ? 1: 0) ? ARREADY: RIDLE;
+	  ARREADY: next_rstate = data_ready ? RVALID: RWAIT;
+	  RWAIT: next_rstate = data_ready ? RVALID: RWAIT;
+	  RVALID: next_rstate = rReady ? RIDLE: RVALID;
+	  default: next_rstate = RIDLE;
 	endcase
   end
 
   always@(posedge clk)begin
-	state <= next_state;
+	rstate <= next_rstate;
   end
 
-  assign reqReady = (state == REQREADY);
-  assign respValid = (state == RESPVALID);
+  assign arReady = (rstate == ARREADY);
+  assign rValid = (rstate == RVALID);
   reg data_ready;
 
   always@(posedge clk)begin
-	if(reqValid & reqReady)begin
-	  if (~wen)
-		rdata <= pmem_read(addr);
-	  if(wen)
-		pmem_write(addr, wdata, {4'b0, mask});
+	if(arValid & arReady)begin
+		rdata <= pmem_read(araddr);
 	end
-	data_ready <= reqValid;
+	data_ready <= arValid;
 //	counter <= (counter == 0 ? lsfm: counter - 1);
 	counter <= 0;
   end
 
-  
+  /*
+  parameter WIDLE = 0, AWREADY = 1, WAITDATA = 2, WREADY = 3, WRITE = 4, WAIT_BREADY = 5;
+  reg [2: 0] wstate, next_wstate;
+  reg write_finish;
+  always@(*)begin
+	case(wstate)
+	  WIDLE: next_wstate = awValid ? AWREADY: WIDLE;
+	  AWREADY: next_wstate = awValid ? WAITDATA: AWREADY;
+	  WAITDATA: next_wstate = wValid ? WREADY: WAITDATA;
+	  WREADY: next_wstate = wValid ? WRITE: WREADY;
+	  WRITE: next_wstate = write_finish ? WAIT_BREADY: WRITE;
+	  WAIT_BREADY: next_wstate = bReady ? WIDLE: WAIT_BREADY;
+	  default: next_wstate = WIDLE;
+	endcase
+  end
+  */
+  parameter AW_IDLE = 0, AW_READY = 1, AW_DONE = 2;
+  reg [2: 0] awstate, next_awstate;
+  reg write_finish;
+  always@(*)begin
+	case(awstate)
+	  AW_IDLE: next_awstate = awValid ? AW_READY: AW_IDLE;
+	  AW_READY: next_awstate = AW_DONE;
+	  AW_DONE: next_awstate = write_finish ? AW_IDLE: AW_DONE;
+	  default: next_awstate = AW_IDLE;
+	endcase
+  end
+
+  always@(posedge clk)begin
+	awstate <= next_awstate;
+  end
+
+  assign awReady = (awstate == AW_READY);
+
+  parameter DW_IDLE = 0, DW_READY = 1, DW_DONE = 2;
+  reg [2: 0] dwstate, next_dwstate;
+  always@(*)begin
+	case(dwstate)
+	  DW_IDLE: next_dwstate = wValid ? DW_READY: DW_IDLE;
+	  DW_READY: next_dwstate = DW_DONE;
+	  DW_DONE: next_dwstate = write_finish ? DW_IDLE: DW_DONE;
+	  default: next_dwstate = DW_IDLE;
+	endcase
+  end
+
+  always@(posedge clk)begin
+	dwstate <= next_dwstate;
+  end
+
+  assign wReady = (dwstate == DW_READY);
+
+  parameter W_IDLE = 0, W_WAIT = 1, WRITE = 2, WAIT_BREADY = 3;
+  reg [2: 0] wstate, next_wstate;
+  always@(*)begin
+	case(wstate)
+	  W_IDLE: next_wstate = awValid | wValid ? W_WAIT: W_IDLE;
+	  W_WAIT: next_wstate = (awstate == AW_DONE & dwstate == DW_DONE) ? WRITE: W_WAIT;
+	  WRITE: next_wstate = write_finish ? WAIT_BREADY: WRITE;
+	  WAIT_BREADY: next_wstate = bReady ? W_IDLE:  WAIT_BREADY;
+	  default: next_wstate = W_IDLE;
+	endcase
+  end
+
+  always@(posedge clk)begin
+	wstate <= next_wstate;
+  end
+
+  assign bValid = (wstate == WAIT_BREADY);
+
+  reg [31: 0] w_addr;
+  reg [31: 0] w_data;
+  reg [3: 0] w_mask;
+
+  always@(posedge clk)begin
+	write_finish <= 1'b0;
+	if(awValid & awReady)
+	  w_addr <= awaddr;
+	if(wValid & wReady)begin
+	  w_data <= wdata;
+	  w_mask <= wstrb;
+	end
+	if(wstate == WRITE)begin
+	  pmem_write(w_addr, w_data, {4'b0, w_mask});
+	  write_finish <= 1'b1;
+	end
+  end
+
 endmodule

@@ -56,15 +56,26 @@ module lsu(
   output valid_aft,
   input ready_aft,
 
-  output reqValid,
-  input reqReady,
-  output [31: 0] addr,
-  output mem_wen_out,
+  output arValid,
+  input arReady,
+  output [31: 0] araddr,
+  output rReady,
+  input rValid,
+  input [31: 0] lsu_rdata,
+  input rresp,
+
+  output [31: 0] awaddr,
+  output awValid,
+  input awReady,
+
   output [31: 0] wdata,
-  output [3: 0] mask_out,
-  output respReady,
-  input respValid,
-  input [31: 0] lsu_rdata
+  output [3: 0] wstrb,
+  output wValid,
+  input wReady,
+
+  input bresp,
+  input bValid,
+  output bReady,
 );
 
   reg [2: 0] state, next_state;
@@ -83,16 +94,27 @@ module lsu(
   end
   //end
 
-  parameter LS_IDLE = 0, LS_WAITREQREADY = 1, LS_WAITRESP = 2, LS_RESPREADY = 3;
+  parameter LS_IDLE = 0, LS_WAIT_ARREADY = 1, LS_WAIT_RVALID = 2, LS_RREADY = 3;
+  parameter LS_WAIT_AWREADY = 4, LS_WAIT_WREADY = 5, LS_WAIT_BVALID = 6, LS_BREADY = 7;
   always@(*)begin
 	if(rst)
 	  next_state = LS_IDLE;
 	else begin
 	  case(state)
+		/*
 		LS_IDLE: next_state = mem_valid ? LS_WAITREQREADY: LS_IDLE;
 		LS_WAITREQREADY: next_state = reqReady ? LS_WAITRESP: LS_WAITREQREADY;
 		LS_WAITRESP: next_state = respValid & (counter == 0) ? LS_RESPREADY: LS_WAITRESP;
 		LS_RESPREADY: next_state = LS_IDLE;
+		*/
+		LS_IDLE: next_state = mem_valid ? (mem_wen ? LS_WAIT_AWREADY: LS_WAIT_ARREADY): LS_IDLE;
+		LS_WAIT_ARREADY: next_state = arReady ? LS_WAIT_RVALID: LS_WAIT_ARREADY;
+		LS_WAIT_RVALID: next_state = rValid ? LS_READY: LS_WAIT_RVALID;
+		LS_READY: next_state = LS_IDLE;
+		LS_WAIT_AWREADY: next_state = awReady ? LS_WAIT_WREADY: LS_WAIT_AWREADY;
+		LS_WAIT_WREADY: next_state = wReady ? LS_WAIT_BVALID: LS_WAIT_WREADY;
+		LS_WAIT_BVALID: next_state = bValid ? LS_BREADY: LS_WAIT_BVALID;
+		
 		default: next_state = LS_IDLE;
 	  endcase
 	end

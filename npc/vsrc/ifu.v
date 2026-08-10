@@ -14,11 +14,11 @@ module ifu(
   output [31: 0] pc_out,
   input done,
 
-  output reqValid,
-  input reqReady,
-  output [31: 0] addr,
-  output respReady,
-  input respValid,
+  output arValid,
+  input arReady,
+  output [31: 0] araddr,
+  output rReady,
+  input rValid,
   input [31: 0] inst_in
 );
 
@@ -43,8 +43,8 @@ module ifu(
 	  next_state = IF_WAITREQREADY;
 	else begin
 	  case(state)
-		IF_WAITREQREADY: next_state = reqReady ? IF_WAITRESP: IF_WAITREQREADY;
-		IF_WAITRESP: next_state = respValid ? IF_RESPREADY: IF_WAITRESP;
+		IF_WAITREQREADY: next_state = arReady ? IF_WAITRESP: IF_WAITREQREADY;
+		IF_WAITRESP: next_state = rValid ? IF_RESPREADY: IF_WAITRESP;
 		IF_RESPREADY: next_state = IF_RUN;
 		IF_RUN: next_state = done ? IF_WAITREQREADY: IF_RUN;
 		default: next_state = IF_WAITREQREADY;
@@ -83,9 +83,9 @@ module ifu(
   wire respReady;
   wire reqReady;
   */
-  assign reqValid = rst ? 1'b0: (state == IF_WAITREQREADY);
-  assign respReady = (state == IF_RESPREADY);
-  assign addr = pc_out;
+  assign arValid = rst ? 1'b0: (state == IF_WAITREQREADY);
+  assign rReady = (state == IF_RESPREADY);
+  assign araddr = pc_out;
 
   /*
   memory mem0(
