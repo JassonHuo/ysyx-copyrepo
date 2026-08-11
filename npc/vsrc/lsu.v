@@ -167,7 +167,7 @@ module lsu(
   assign arValid = (state == WAIT_ARREADY);
   assign rReady = (state == RREADY);
   assign bReady = (state == BREADY);
-  assign write_done = (next_state == WAIT_BVALID);
+  assign write_done = (state == BREADY);
   assign araddr = alu;
   assign awaddr = alu;
   assign wdata = src2;
@@ -177,7 +177,7 @@ module lsu(
   assign ready_pre = valid_pre;
   wire pre_succ = ready_pre & valid_pre;
 //  assign valid_aft = pre_succ & ~next_state;
-  assign valid_aft = pre_succ & (~mem_valid | (mem_valid & (state == BREADY)));
+  assign valid_aft = pre_succ & (~mem_valid | (mem_valid & (state == BREADY | state == RREADY)));
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;

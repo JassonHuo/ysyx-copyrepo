@@ -46,7 +46,7 @@ CXXFLAGS += -O0 -g
 #CXXFLAGS += -DCONFIG_FTRACE
 CXXFLAGS += -DCONFIG_DIFFTEST
 #CXXFLAGS += -DCONFIG_MEMDIFFTEST
-CXXFLAGS += -DCONFIG_WAVE
+#CXXFLAGS += -DCONFIG_WAVE
 
 LDFLAGS += -lreadline -g
 
@@ -68,7 +68,7 @@ ELF ?= $(NPC_HOME)/csrc/dummy.elf
 all: default
 #	@echo "Write this Makefile by your self."
 
-run: $(BIN)
+run: $(BIN) 
 #	@$^
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) -b

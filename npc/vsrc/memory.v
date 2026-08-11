@@ -67,22 +67,6 @@ module memory(
 	counter <= 0;
   end
 
-  /*
-  parameter WIDLE = 0, AWREADY = 1, WAITDATA = 2, WREADY = 3, WRITE = 4, WAIT_BREADY = 5;
-  reg [2: 0] wstate, next_wstate;
-  reg write_finish;
-  always@(*)begin
-	case(wstate)
-	  WIDLE: next_wstate = awValid ? AWREADY: WIDLE;
-	  AWREADY: next_wstate = awValid ? WAITDATA: AWREADY;
-	  WAITDATA: next_wstate = wValid ? WREADY: WAITDATA;
-	  WREADY: next_wstate = wValid ? WRITE: WREADY;
-	  WRITE: next_wstate = write_finish ? WAIT_BREADY: WRITE;
-	  WAIT_BREADY: next_wstate = bReady ? WIDLE: WAIT_BREADY;
-	  default: next_wstate = WIDLE;
-	endcase
-  end
-  */
   parameter AW_IDLE = 0, AW_READY = 1, AW_DONE = 2;
   reg [2: 0] awstate, next_awstate;
   reg write_finish;
@@ -148,7 +132,7 @@ module memory(
 	  w_data <= wdata;
 	  w_mask <= wstrb;
 	end
-	if(wstate == WRITE)begin
+	if(wstate == WRITE & ~write_finish)begin
 	  pmem_write(w_addr, w_data, {4'b0, w_mask});
 	  write_finish <= 1'b1;
 	end
