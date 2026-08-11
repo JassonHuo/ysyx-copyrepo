@@ -75,10 +75,9 @@ module lsu(
 
   input bresp,
   input bValid,
-  output bReady,
+  output bReady
 );
 
-  reg [2: 0] state, next_state;
 //  wire reqValid;
 //  reg respValid;
 
@@ -94,56 +93,91 @@ module lsu(
   end
   //end
 
-  parameter LS_IDLE = 0, LS_WAIT_ARREADY = 1, LS_WAIT_RVALID = 2, LS_RREADY = 3;
-  parameter LS_WAIT_AWREADY = 4, LS_WAIT_WREADY = 5, LS_WAIT_BVALID = 6, LS_BREADY = 7;
+  reg write_done;
+  parameter AWIDLE = 0, AWWAIT_READY = 1, DONE = 2;
+  reg [1: 0] awstate, next_awstate;
   always@(*)begin
 	if(rst)
-	  next_state = LS_IDLE;
+	  next_awstate = AWIDLE;
 	else begin
-	  case(state)
-		/*
-		LS_IDLE: next_state = mem_valid ? LS_WAITREQREADY: LS_IDLE;
-		LS_WAITREQREADY: next_state = reqReady ? LS_WAITRESP: LS_WAITREQREADY;
-		LS_WAITRESP: next_state = respValid & (counter == 0) ? LS_RESPREADY: LS_WAITRESP;
-		LS_RESPREADY: next_state = LS_IDLE;
-		*/
-		LS_IDLE: next_state = mem_valid ? (mem_wen ? LS_WAIT_AWREADY: LS_WAIT_ARREADY): LS_IDLE;
-		LS_WAIT_ARREADY: next_state = arReady ? LS_WAIT_RVALID: LS_WAIT_ARREADY;
-		LS_WAIT_RVALID: next_state = rValid ? LS_READY: LS_WAIT_RVALID;
-		LS_READY: next_state = LS_IDLE;
-		LS_WAIT_AWREADY: next_state = awReady ? LS_WAIT_WREADY: LS_WAIT_AWREADY;
-		LS_WAIT_WREADY: next_state = wReady ? LS_WAIT_BVALID: LS_WAIT_WREADY;
-		LS_WAIT_BVALID: next_state = bValid ? LS_BREADY: LS_WAIT_BVALID;
-		
-		default: next_state = LS_IDLE;
+	  case(awstate)
+		AWIDLE: next_awstate = mem_wen ? AWWAIT_READY: AWIDLE;
+		AWWAIT_READY: next_awstate = awReady ? DONE: AWWAIT_READY;
+		DONE: next_awstate = write_done ? AWIDLE: DONE;
+		default: next_awstate = AWIDLE;
 	  endcase
 	end
   end
-  assign reqValid = (state == LS_WAITREQREADY);
-  assign respReady = (state == LS_RESPREADY);
-  assign addr = alu;
-  assign mem_wen_out = mem_wen;
-  assign wdata = src2;
-  assign mask_out = mask;
-//  assign lsu_rdata = rdata;
-
   always@(posedge clk)begin
 	if(rst)
-	  state <= LS_IDLE;
-	else begin
-	  if(valid_pre)
-		state <= next_state;
-	  else
-		state <= state;
-	end
-//	counter = (counter == 0 ? lsfm: counter - 1);
-	counter <= 0;
+	  awstate <= AWIDLE;
+	else
+	  awstate <= next_awstate;
   end
+  assign awValid = (awstate == AWWAIT_READY);
+
+  parameter WIDLE = 0, WWAIT_READY = 1;
+  reg [1: 0] wstate, next_wstate;
+  always@(*)begin
+	if(rst)
+	  next_wstate = WIDLE;
+	else begin
+	  case(wstate)
+		WIDLE: next_wstate = mem_wen ? WWAIT_READY: WIDLE;
+		WWAIT_READY: next_wstate = wReady ? DONE: WWAIT_READY;
+		DONE: next_wstate = write_done ? WIDLE: DONE;
+		default: next_wstate = WIDLE;
+	  endcase
+	end
+  end
+  always@(posedge clk)begin
+	if(rst)
+	  wstate <= WIDLE;
+	else
+	  wstate <= next_wstate;
+  end
+  assign wValid = (wstate == WWAIT_READY);
+  
+  parameter IDLE = 0, WAIT_ARREADY = 1, WAIT_RVALID = 2, RREADY = 3;
+  parameter WAIT_READY = 4, WAIT_BVALID = 5, BREADY = 6;
+  reg [2: 0] state, next_state;
+  always@(*)begin
+	if(rst)
+	  next_state = IDLE;
+	else begin
+	  case(state)
+		IDLE: next_state = mem_valid ? (mem_wen ? WAIT_READY: WAIT_ARREADY): IDLE;
+		WAIT_ARREADY: next_state = arReady ? WAIT_RVALID: WAIT_ARREADY;
+		WAIT_RVALID: next_state = rValid ? RREADY: WAIT_RVALID;
+		RREADY: next_state = IDLE;
+		WAIT_READY: next_state = (wstate == DONE & awstate == DONE) ? WAIT_BVALID: WAIT_READY;
+		WAIT_BVALID: next_state = bValid ? BREADY: WAIT_BVALID;
+		BREADY: next_state = IDLE;
+		default: next_state = IDLE;
+	  endcase
+	end
+  end
+  always@(posedge clk)begin
+	if(rst)
+	  state <= IDLE;
+	else
+	  state <= next_state;
+  end
+
+  assign arValid = (state == WAIT_ARREADY);
+  assign rReady = (state == RREADY);
+  assign bReady = (state == BREADY);
+  assign write_done = (next_state == WAIT_BVALID);
+  assign araddr = alu;
+  assign awaddr = alu;
+  assign wdata = src2;
+  assign wstrb = mask;
+//  assign lsu_rdata = rdata;
 
   assign ready_pre = valid_pre;
   wire pre_succ = ready_pre & valid_pre;
 //  assign valid_aft = pre_succ & ~next_state;
-  assign valid_aft = pre_succ & (~mem_valid | (mem_valid & (state == LS_RESPREADY)));
+  assign valid_aft = pre_succ & (~mem_valid | (mem_valid & (state == BREADY)));
 
   assign pc_sync_out = pc_sync_in;
   assign pc_out = pc_in;

@@ -112,6 +112,7 @@ module top(
   wire done_wbu_ifu;
   assign done = done_wbu_ifu;
 
+  /*
   wire reqValid_ifu_xbar;
   wire reqReady_xbar_ifu;
   wire [31: 0] addr_ifu_xbar;
@@ -122,7 +123,6 @@ module top(
   wire reqValid_lsu_xbar;
   wire reqReady_xbar_lsu;
   wire [31: 0] addr_lsu_xbar;
-  wire wen_lsu_xbar;
   wire [31: 0] wdata_lsu_xbar;
   wire [3: 0] mask_lsu_xbar;
   wire respReady_lsu_xbar;
@@ -132,53 +132,121 @@ module top(
   wire reqValid_xbar_mem;
   wire reqReady_mem_xbar;
   wire [31: 0] addr_xbar_mem;
-  wire wen_xbar_mem;
   wire [31: 0] wdata_xbar_mem;
   wire [3: 0] mask_xbar_mem;
   wire respReady_xbar_mem;
   wire respValid_mem_xbar;
   wire [31: 0] rdata_mem_xbar;
+  */
+
+  wire arValid_xbar_mem;
+  wire arReady_mem_xbar;
+  wire [31: 0] araddr_xbar_mem;
+  wire [31: 0] rdata_mem_xbar;
+  wire rresp_mem_xbar;
+  wire rValid_mem_xbar;
+  wire rReady_xbar_mem;
+  wire [31: 0] awaddr_xbar_mem;
+  wire awValid_xbar_mem;
+  wire awReady_mem_xbar;
+  wire [31: 0] wdata_xbar_mem;
+  wire [3: 0] wstrb_xbar_mem;
+  wire wValid_xbar_mem;
+  wire wReady_mem_xbar;
+  wire bresp_mem_xbar;
+  wire bValid_mem_xbar;
+  wire bReady_xbar_mem;
+
+  wire arValid_ifu_xbar;
+  wire arReady_xbar_ifu;
+  wire [31: 0] araddr_ifu_xbar;
+  wire rReady_ifu_xbar;
+  wire rValid_xbar_ifu;
+  wire [31: 0] rdata_xbar_ifu;
+  wire rresp_xbar_ifu;
+  wire arValid_lsu_xbar;
+  wire arReady_xbar_lsu;
+  wire [31: 0] araddr_lsu_xbar;
+  wire rReady_lsu_xbar;
+  wire rValid_xbar_lsu;
+  wire [31: 0] rdata_xbar_lsu;
+  wire rresp_xbar_lsu;
+  wire [31: 0] awaddr_lsu_xbar;
+  wire awValid_lsu_xbar;
+  wire awReady_xbar_lsu;
+  wire [31: 0] wdata_lsu_xbar;
+  wire [3: 0] wstrb_lsu_xbar;
+  wire wValid_lsu_xbar;
+  wire wReady_xbar_lsu;
+  wire bresp_xbar_lsu;
+  wire bValid_xbar_lsu;
+  wire bReady_lsu_xbar;
 
   memory mem0(
 	.clk(clk),
-  	.reqValid(reqValid_xbar_mem),
-  	.reqReady(reqReady_mem_xbar),
-  	.addr(addr_xbar_mem),
-  	.wen(wen_xbar_mem),
-  	.wdata(wdata_xbar_mem),
-  	.mask(mask_xbar_mem),
-  	.respValid(respReady_xbar_mem),
-  	.respReady(respValid_mem_xbar),
-  	.rdata(rdata_mem_xbar)
+	.arValid(arValid_xbar_mem),
+	.arReady(arReady_mem_xbar),
+	.araddr(araddr_xbar_mem),
+	.rdata(rdata_mem_xbar),
+	.rresp(rresp_mem_xbar),
+	.rValid(rValid_mem_xbar),
+	.rReady(rReady_xbar_mem),
+	.awaddr(awaddr_xbar_mem),
+	.awValid(awValid_xbar_mem),
+	.awReady(awReady_mem_xbar),
+	.wdata(wdata_xbar_mem),
+	.wstrb(wstrb_xbar_mem),
+	.wValid(wValid_xbar_mem),
+	.wReady(wReady_mem_xbar),
+	.bresp(bresp_mem_xbar),
+	.bValid(bValid_mem_xbar),
+	.bReady(bReady_xbar_mem)
   );
 
   xbar xbar0(
-  	.ifu_reqValid(reqValid_ifu_xbar),
-  	.ifu_reqReady(reqReady_xbar_ifu),
-  	.ifu_addr(addr_ifu_xbar),
-  	.ifu_respReady(respReady_ifu_xbar),
-  	.ifu_respValid(respValid_xbar_ifu),
+  	.ifu_arValid(arValid_ifu_xbar),
+  	.ifu_arReady(arReady_xbar_ifu),
+  	.ifu_araddr(araddr_ifu_xbar),
+  	.ifu_rReady(rReady_ifu_xbar),
+  	.ifu_rValid(rValid_xbar_ifu),
   	.ifu_rdata(rdata_xbar_ifu),
+	.ifu_rresp(rresp_xbar_ifu),
 
-  	.lsu_reqValid(reqValid_lsu_xbar),
-  	.lsu_reqReady(reqReady_xbar_lsu),
-  	.lsu_addr(addr_lsu_xbar),
-  	.lsu_wen(wen_lsu_xbar),
-  	.lsu_wdata(wdata_lsu_xbar),
-  	.lsu_mask(mask_lsu_xbar),
-  	.lsu_respReady(respReady_lsu_xbar),
-  	.lsu_respValid(respValid_xbar_lsu),
-  	.lsu_rdata(rdata_xbar_lsu),
+  	.lsu_arValid(arValid_lsu_xbar),
+  	.lsu_arReady(arReady_xbar_lsu),
+  	.lsu_araddr(araddr_lsu_xbar),
+	.lsu_rReady(rReady_lsu_xbar),
+	.lsu_rValid(rValid_xbar_lsu),
+	.lsu_rdata(rdata_xbar_lsu),
+	.lsu_rresp(rresp_xbar_lsu),
+	.lsu_awaddr(awaddr_lsu_xbar),
+	.lsu_awValid(awValid_lsu_xbar),
+	.lsu_awReady(awReady_xbar_lsu),
+	.lsu_wdata(wdata_lsu_xbar),
+	.lsu_wstrb(wstrb_lsu_xbar),
+	.lsu_wValid(wValid_lsu_xbar),
+	.lsu_wReady(wReady_xbar_lsu),
+	.lsu_bresp(bresp_xbar_lsu),
+	.lsu_bValid(bValid_xbar_lsu),
+	.lsu_bReady(bReady_lsu_xbar),
 
-  	.reqValid(reqValid_xbar_mem),
-  	.reqReady(reqReady_mem_xbar),
-  	.addr(addr_xbar_mem),
-  	.wen(wen_xbar_mem),
+  	.arValid(arValid_xbar_mem),
+  	.arReady(arReady_mem_xbar),
+  	.araddr(araddr_xbar_mem),
+	.rReady(rReady_xbar_mem),//
+	.rValid(rValid_mem_xbar),//
+  	.rdata(rdata_mem_xbar),
+	.rresp(rresp_mem_xbar),
+	.awaddr(awaddr_xbar_mem),
+	.awValid(awValid_xbar_mem),
+	.awReady(awReady_mem_xbar),
   	.wdata(wdata_xbar_mem),
-  	.wmask(mask_xbar_mem),
-  	.respValid(respReady_xbar_mem),
-  	.respReady(respValid_mem_xbar),
-  	.rdata(rdata_mem_xbar)
+  	.wstrb(wstrb_xbar_mem),
+	.wValid(wValid_xbar_mem),
+	.wReady(wReady_mem_xbar),
+	.bresp(bresp_mem_xbar),
+	.bValid(bValid_mem_xbar),
+	.bReady(bReady_xbar_mem)
   );
 
   ifu ifu0(
@@ -193,11 +261,11 @@ module top(
 	.pc_out(pc_ifu_idu),
 	.done(done_wbu_ifu),
 
-  	.reqValid(reqValid_ifu_xbar),
-  	.reqReady(reqReady_xbar_ifu),
-  	.addr(addr_ifu_xbar),
-  	.respReady(respReady_ifu_xbar),
-  	.respValid(respValid_xbar_ifu),
+  	.arValid(arValid_ifu_xbar),
+  	.arReady(arReady_xbar_ifu),
+  	.araddr(araddr_ifu_xbar),
+  	.rReady(rReady_ifu_xbar),
+  	.rValid(rValid_xbar_ifu),
   	.inst_in(rdata_xbar_ifu)
   );
 
@@ -354,15 +422,23 @@ module top(
 	.valid_aft(valid_lsu_wbu),
 	.ready_aft(ready_wbu_lsu),
 
-  	.reqValid(reqValid_lsu_xbar),
-  	.reqReady(reqReady_xbar_lsu),
-  	.addr(addr_lsu_xbar),
-  	.mem_wen_out(wen_lsu_xbar),
+  	.arValid(arValid_lsu_xbar),
+  	.arReady(arReady_xbar_lsu),
+  	.araddr(araddr_lsu_xbar),
+	.rReady(rReady_lsu_xbar),//
+	.rValid(rValid_xbar_lsu),//
+  	.lsu_rdata(rdata_xbar_lsu),
+	.rresp(rresp_xbar_lsu),
+	.awaddr(awaddr_lsu_xbar),
+	.awValid(awValid_lsu_xbar),
+	.awReady(awReady_xbar_lsu),
   	.wdata(wdata_lsu_xbar),
-  	.mask_out(mask_lsu_xbar),
-  	.respReady(respReady_lsu_xbar),
-  	.respValid(respValid_xbar_lsu),
-  	.lsu_rdata(rdata_xbar_lsu)
+  	.wstrb(wstrb_lsu_xbar),
+	.wValid(wValid_lsu_xbar),
+	.wReady(wReady_xbar_lsu),
+	.bresp(bresp_xbar_lsu),
+	.bValid(bValid_xbar_lsu),
+	.bReady(bReady_lsu_xbar)
   );
 
   wbu wbu0(

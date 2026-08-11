@@ -103,7 +103,7 @@ module ifu(
   */
 
   always@(posedge clk)begin
-	if(respValid & respReady)
+	if(rValid & rReady)
 	  inst <= inst_in;
   end
 //  assign inst = pmem_read(pc_out);
