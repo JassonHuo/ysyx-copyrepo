@@ -67,6 +67,7 @@ module memory(
 	counter <= 0;
   end
 
+  /*
   parameter AW_IDLE = 0, AW_READY = 1, AW_DONE = 2;
   reg [2: 0] awstate, next_awstate;
   reg write_finish;
@@ -101,18 +102,22 @@ module memory(
   end
 
   assign wReady = (dwstate == DW_READY);
+  */
 
   parameter W_IDLE = 0, W_WAIT = 1, WRITE = 2, WAIT_BREADY = 3;
   reg [2: 0] wstate, next_wstate;
+  reg write_finish;
   always@(*)begin
 	case(wstate)
-	  W_IDLE: next_wstate = awValid | wValid ? W_WAIT: W_IDLE;
-	  W_WAIT: next_wstate = (awstate == AW_DONE & dwstate == DW_DONE) ? WRITE: W_WAIT;
+	  W_IDLE: next_wstate = awValid | wValid ? WRITE: W_IDLE;
+//	  W_WAIT: next_wstate = (awstate == AW_DONE & dwstate == DW_DONE) ? WRITE: W_WAIT;
 	  WRITE: next_wstate = write_finish ? WAIT_BREADY: WRITE;
 	  WAIT_BREADY: next_wstate = bReady ? W_IDLE:  WAIT_BREADY;
 	  default: next_wstate = W_IDLE;
 	endcase
   end
+  assign wReady = (wstate == W_IDLE);
+  assign awReady = wReady;
 
   always@(posedge clk)begin
 	wstate <= next_wstate;

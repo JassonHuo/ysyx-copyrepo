@@ -93,6 +93,7 @@ module lsu(
   end
   //end
 
+  /*
   reg write_done;
   parameter AWIDLE = 0, AWWAIT_READY = 1, DONE = 2;
   reg [1: 0] awstate, next_awstate;
@@ -137,6 +138,7 @@ module lsu(
 	  wstate <= next_wstate;
   end
   assign wValid = (wstate == WWAIT_READY);
+  */
   
   parameter IDLE = 0, WAIT_ARREADY = 1, WAIT_RVALID = 2, RREADY = 3;
   parameter WAIT_READY = 4, WAIT_BVALID = 5, BREADY = 6;
@@ -150,7 +152,7 @@ module lsu(
 		WAIT_ARREADY: next_state = arReady ? WAIT_RVALID: WAIT_ARREADY;
 		WAIT_RVALID: next_state = rValid ? RREADY: WAIT_RVALID;
 		RREADY: next_state = IDLE;
-		WAIT_READY: next_state = (wstate == DONE & awstate == DONE) ? WAIT_BVALID: WAIT_READY;
+		WAIT_READY: next_state = /*(wstate == DONE & awstate == DONE)*/(awReady & wReady) ? WAIT_BVALID: WAIT_READY;
 		WAIT_BVALID: next_state = bValid ? BREADY: WAIT_BVALID;
 		BREADY: next_state = IDLE;
 		default: next_state = IDLE;
@@ -163,11 +165,13 @@ module lsu(
 	else
 	  state <= next_state;
   end
+  assign awValid = (state == WAIT_READY);
+  assign wValid = awValid;
 
   assign arValid = (state == WAIT_ARREADY);
   assign rReady = (state == RREADY);
   assign bReady = (state == BREADY);
-  assign write_done = (state == BREADY);
+//  assign write_done = (state == BREADY);
   assign araddr = alu;
   assign awaddr = alu;
   assign wdata = src2;
