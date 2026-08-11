@@ -262,6 +262,11 @@ static inline uint64_t get_time()
   return tv.tv_sec * 1000000 + tv.tv_usec - start_time;
 }
 
+extern "C" void TO_device()
+{
+  to_device = true;
+}
+
 extern "C" int pmem_read(int addr)
 {
 #ifdef CONFIG_MTRACE

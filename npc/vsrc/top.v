@@ -182,6 +182,45 @@ module top(
   wire bValid_xbar_lsu;
   wire bReady_lsu_xbar;
 
+  wire arValid_xbar_uart;
+  wire arReady_uart_xbar;
+  wire [31: 0] araddr_xbar_uart;
+  wire rReady_xbar_uart;
+  wire rValid_uart_xbar;
+  wire [31: 0] rdata_uart_xbar;
+  wire rresp_uart_xbar;
+  wire [31: 0] awaddr_xbar_uart;
+  wire awValid_xbar_uart;
+  wire awReady_uart_xbar;
+  wire [31: 0] wdata_xbar_uart;
+  wire [3: 0] wstrb_xbar_uart;
+  wire wValid_xbar_uart;
+  wire wReady_uart_xbar;
+  wire bresp_uart_xbar;
+  wire bValid_uart_xbar;
+  wire bReady_xbar_uart;
+
+  uart uart0(
+	.clk(clk),
+  	.arValid(arValid_xbar_uart),
+  	.arReady(arReady_uart_xbar),
+  	.araddr(araddr_xbar_uart),
+	.rReady(rReady_xbar_uart),//
+	.rValid(rValid_uart_xbar),//
+  	.rdata(rdata_uart_xbar),
+	.rresp(rresp_uart_xbar),
+	.awaddr(awaddr_xbar_uart),
+	.awValid(awValid_xbar_uart),
+	.awReady(awReady_uart_xbar),
+  	.wdata(wdata_xbar_uart),
+  	.wstrb(wstrb_xbar_uart),
+	.wValid(wValid_xbar_uart),
+	.wReady(wReady_uart_xbar),
+	.bresp(bresp_uart_xbar),
+	.bValid(bValid_uart_xbar),
+	.bReady(bReady_xbar_uart)
+  );
+
   memory mem0(
 	.clk(clk),
 	.arValid(arValid_xbar_mem),
@@ -230,23 +269,41 @@ module top(
 	.lsu_bValid(bValid_xbar_lsu),
 	.lsu_bReady(bReady_lsu_xbar),
 
-  	.arValid(arValid_xbar_mem),
-  	.arReady(arReady_mem_xbar),
-  	.araddr(araddr_xbar_mem),
-	.rReady(rReady_xbar_mem),//
-	.rValid(rValid_mem_xbar),//
-  	.rdata(rdata_mem_xbar),
-	.rresp(rresp_mem_xbar),
-	.awaddr(awaddr_xbar_mem),
-	.awValid(awValid_xbar_mem),
-	.awReady(awReady_mem_xbar),
-  	.wdata(wdata_xbar_mem),
-  	.wstrb(wstrb_xbar_mem),
-	.wValid(wValid_xbar_mem),
-	.wReady(wReady_mem_xbar),
-	.bresp(bresp_mem_xbar),
-	.bValid(bValid_mem_xbar),
-	.bReady(bReady_xbar_mem)
+  	.mem_arValid(arValid_xbar_mem),
+  	.mem_arReady(arReady_mem_xbar),
+  	.mem_araddr(araddr_xbar_mem),
+	.mem_rReady(rReady_xbar_mem),//
+	.mem_rValid(rValid_mem_xbar),//
+  	.mem_rdata(rdata_mem_xbar),
+	.mem_rresp(rresp_mem_xbar),
+	.mem_awaddr(awaddr_xbar_mem),
+	.mem_awValid(awValid_xbar_mem),
+	.mem_awReady(awReady_mem_xbar),
+  	.mem_wdata(wdata_xbar_mem),
+  	.mem_wstrb(wstrb_xbar_mem),
+	.mem_wValid(wValid_xbar_mem),
+	.mem_wReady(wReady_mem_xbar),
+	.mem_bresp(bresp_mem_xbar),
+	.mem_bValid(bValid_mem_xbar),
+	.mem_bReady(bReady_xbar_mem),
+
+  	.uart_arValid(arValid_xbar_uart),
+  	.uart_arReady(arReady_uart_xbar),
+  	.uart_araddr(araddr_xbar_uart),
+	.uart_rReady(rReady_xbar_uart),//
+	.uart_rValid(rValid_uart_xbar),//
+  	.uart_rdata(rdata_uart_xbar),
+	.uart_rresp(rresp_uart_xbar),
+	.uart_awaddr(awaddr_xbar_uart),
+	.uart_awValid(awValid_xbar_uart),
+	.uart_awReady(awReady_uart_xbar),
+  	.uart_wdata(wdata_xbar_uart),
+  	.uart_wstrb(wstrb_xbar_uart),
+	.uart_wValid(wValid_xbar_uart),
+	.uart_wReady(wReady_uart_xbar),
+	.uart_bresp(bresp_uart_xbar),
+	.uart_bValid(bValid_uart_xbar),
+	.uart_bReady(bReady_xbar_uart)
   );
 
   ifu ifu0(
