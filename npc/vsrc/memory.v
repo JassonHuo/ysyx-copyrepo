@@ -1,5 +1,3 @@
-//import "DPI-C" function int pmem_read(input int raddr);
-//import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 module memory(
   input clk,
   input arValid,
@@ -42,8 +40,8 @@ module memory(
   reg [2: 0] rstate, next_rstate;
   always@(*)begin
 	case(rstate)
-	  RIDLE: next_rstate = arValid & (counter == 0 ? 1: 0) ? ARREADY: RIDLE;
-	  ARREADY: next_rstate = data_ready ? RVALID: RWAIT;
+	  RIDLE: next_rstate = arValid & (counter == 0 ? 1: 0) ? RWAIT: RIDLE;
+//	  ARREADY: next_rstate = data_ready ? RVALID: RWAIT;
 	  RWAIT: next_rstate = data_ready ? RVALID: RWAIT;
 	  RVALID: next_rstate = rReady ? RIDLE: RVALID;
 	  default: next_rstate = RIDLE;
@@ -54,7 +52,7 @@ module memory(
 	rstate <= next_rstate;
   end
 
-  assign arReady = (rstate == ARREADY);
+  assign arReady = (rstate == RIDLE);
   assign rValid = (rstate == RVALID);
   reg data_ready;
 

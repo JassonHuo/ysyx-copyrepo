@@ -282,7 +282,7 @@ extern "C" int pmem_read(int addr)
 #endif
 #endif
 
-  if(addr == 0x10000000) {to_device = true; skip_pc = c_get_Pc(); return 0;}
+  if(addr == 0x02000000) {to_device = true; skip_pc = c_get_Pc(); return 0;}
   else if(addr == 0x10000048) {to_device = true;skip_pc = c_get_Pc(); return (uint32_t)get_time();}
   else if(addr == 0x1000004c){to_device = true;  skip_pc = c_get_Pc(); return get_time() >> 32;}
   else if(addr >= 0x80000000 && addr <= 0x87ffffff) return mem[((uint32_t)addr - 0x80000000) >> 2];

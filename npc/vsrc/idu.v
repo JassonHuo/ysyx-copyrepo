@@ -1,6 +1,8 @@
 `include "global.vh"
+`ifdef VERILATOR
 import "DPI-C" function void ebreak();
 import "DPI-C" function void npc_abort();
+`endif
 module idu(
   input clk,
   input rst,
@@ -46,7 +48,11 @@ module idu(
   input ready_aft
 );
   
+`ifdef VERILATOR
   (* verilator public_flat_wb *) wire [31: 0] inst = inst_in;
+`else
+  wire [31: 0] inst = inst_in;
+`endif
 
   assign pc_out = pc_in;
   assign pc_sync_out = pc_sync_in;
@@ -185,8 +191,10 @@ module idu(
 			alu_op = `ALU_LAREQ;
 		  end
 		  default:begin
+`ifdef VERILATOR
 			$display("branch abort");
 			npc_abort();
+`endif
 		  end
 		endcase
 	  end
@@ -217,8 +225,10 @@ module idu(
 			is_signed = 0;
 		  end
 		  default: begin
+`ifdef VERILATOR
 			$display("load abort");
 			npc_abort();
+`endif
 		  end
 		endcase 
 	  end
@@ -241,8 +251,10 @@ module idu(
 			width = `MEM_WORD;
 		  end
 		  default begin
+`ifdef VERILATOR
 			$display("store abort");
 			npc_abort();
+`endif			
 		  end
 		endcase
 	  end
@@ -278,8 +290,10 @@ module idu(
 			  alu_op = `ALU_LEFT;
 			end
 			else begin
+`ifdef VERILATOR
 			  $display("immi abort");
 			  npc_abort();
+`endif
 			end
 		  end
 		  3'b101:begin
@@ -291,13 +305,17 @@ module idu(
 			  alu_op = `ALU_RIGHT;
 			end
 			else begin
+`ifdef VERILATOR
 			  $display("immi abort");
 			  npc_abort();
+`endif
 			end
 		  end
 		  default: begin
+`ifdef VERILATOR
 			$display("immi abort");
 			npc_abort();
+`endif
 		  end
 		endcase
 	  end
@@ -340,8 +358,10 @@ module idu(
 		  alu_op = `ALU_AND;
 		end
 		else begin
+`ifdef VERILATOR
 		  $display("reg abort");
 		  npc_abort();
+`endif
 		end
 	  end
 	  7'b1110011:begin
@@ -353,7 +373,9 @@ module idu(
 		  3'b000:begin
 			wen = 1'b0;
 			if(csr_addr == 12'h001)begin  //ebreak
+`ifdef VERILATOR
 			  ebreak();
+`endif
 			end
 			else if(csr_addr == 12'h000)begin  //ecall
 			  wen = 0;
@@ -389,14 +411,18 @@ module idu(
 			alu_op = `ALU_AND;
 		  end
 		  default:begin
+`ifdef VERILATOR
 			$display("csr abort");
 			npc_abort();
+`endif
 		  end
 		endcase
 	  end
 	  default begin
+`ifdef VERILATOR
 		$display("default abort");
 		npc_abort();
+`endif
 	  end
 	endcase
   end

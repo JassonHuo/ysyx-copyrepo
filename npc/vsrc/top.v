@@ -112,33 +112,6 @@ module top(
   wire done_wbu_ifu;
   assign done = done_wbu_ifu;
 
-  /*
-  wire reqValid_ifu_xbar;
-  wire reqReady_xbar_ifu;
-  wire [31: 0] addr_ifu_xbar;
-  wire respReady_ifu_xbar;
-  wire respValid_xbar_ifu;
-  wire [31: 0] rdata_xbar_ifu;
-
-  wire reqValid_lsu_xbar;
-  wire reqReady_xbar_lsu;
-  wire [31: 0] addr_lsu_xbar;
-  wire [31: 0] wdata_lsu_xbar;
-  wire [3: 0] mask_lsu_xbar;
-  wire respReady_lsu_xbar;
-  wire respValid_xbar_lsu;
-  wire [31: 0] rdata_xbar_lsu;
-
-  wire reqValid_xbar_mem;
-  wire reqReady_mem_xbar;
-  wire [31: 0] addr_xbar_mem;
-  wire [31: 0] wdata_xbar_mem;
-  wire [3: 0] mask_xbar_mem;
-  wire respReady_xbar_mem;
-  wire respValid_mem_xbar;
-  wire [31: 0] rdata_mem_xbar;
-  */
-
   wire arValid_xbar_mem;
   wire arReady_mem_xbar;
   wire [31: 0] araddr_xbar_mem;
@@ -200,6 +173,45 @@ module top(
   wire bValid_uart_xbar;
   wire bReady_xbar_uart;
 
+  wire arValid_xbar_clint;
+  wire arReady_clint_xbar;
+  wire [31: 0] araddr_xbar_clint;
+  wire rReady_xbar_clint;
+  wire rValid_clint_xbar;
+  wire [31: 0] rdata_clint_xbar;
+  wire rresp_clint_xbar;
+  wire [31: 0] awaddr_xbar_clint;
+  wire awValid_xbar_clint;
+  wire awReady_clint_xbar;
+  wire [31: 0] wdata_xbar_clint;
+  wire [3: 0] wstrb_xbar_clint;
+  wire wValid_xbar_clint;
+  wire wReady_clint_xbar;
+  wire bresp_clint_xbar;
+  wire bValid_clint_xbar;
+  wire bReady_xbar_clint;
+
+  clint clint0(
+	.clk(clk),
+  	.arValid(arValid_xbar_clint),
+  	.arReady(arReady_clint_xbar),
+  	.araddr(araddr_xbar_clint),
+	.rReady(rReady_xbar_clint),
+	.rValid(rValid_clint_xbar),
+  	.rdata(rdata_clint_xbar),
+	.rresp(rresp_clint_xbar),
+	.awaddr(awaddr_xbar_clint),
+	.awValid(awValid_xbar_clint),
+	.awReady(awReady_clint_xbar),
+  	.wdata(wdata_xbar_clint),
+  	.wstrb(wstrb_xbar_clint),
+	.wValid(wValid_xbar_clint),
+	.wReady(wReady_clint_xbar),
+	.bresp(bresp_clint_xbar),
+	.bValid(bValid_clint_xbar),
+	.bReady(bReady_xbar_clint)
+  );
+
   uart uart0(
 	.clk(clk),
   	.arValid(arValid_xbar_uart),
@@ -243,6 +255,7 @@ module top(
   );
 
   xbar xbar0(
+	.clk(clk),
   	.ifu_arValid(arValid_ifu_xbar),
   	.ifu_arReady(arReady_xbar_ifu),
   	.ifu_araddr(araddr_ifu_xbar),
@@ -290,8 +303,8 @@ module top(
   	.uart_arValid(arValid_xbar_uart),
   	.uart_arReady(arReady_uart_xbar),
   	.uart_araddr(araddr_xbar_uart),
-	.uart_rReady(rReady_xbar_uart),//
-	.uart_rValid(rValid_uart_xbar),//
+	.uart_rReady(rReady_xbar_uart),
+	.uart_rValid(rValid_uart_xbar),
   	.uart_rdata(rdata_uart_xbar),
 	.uart_rresp(rresp_uart_xbar),
 	.uart_awaddr(awaddr_xbar_uart),
@@ -303,7 +316,25 @@ module top(
 	.uart_wReady(wReady_uart_xbar),
 	.uart_bresp(bresp_uart_xbar),
 	.uart_bValid(bValid_uart_xbar),
-	.uart_bReady(bReady_xbar_uart)
+	.uart_bReady(bReady_xbar_uart),
+
+  	.clint_arValid(arValid_xbar_clint),
+  	.clint_arReady(arReady_clint_xbar),
+  	.clint_araddr(araddr_xbar_clint),
+	.clint_rReady(rReady_xbar_clint),
+	.clint_rValid(rValid_clint_xbar),
+  	.clint_rdata(rdata_clint_xbar),
+	.clint_rresp(rresp_clint_xbar),
+	.clint_awaddr(awaddr_xbar_clint),
+	.clint_awValid(awValid_xbar_clint),
+	.clint_awReady(awReady_clint_xbar),
+  	.clint_wdata(wdata_xbar_clint),
+  	.clint_wstrb(wstrb_xbar_clint),
+	.clint_wValid(wValid_xbar_clint),
+	.clint_wReady(wReady_clint_xbar),
+	.clint_bresp(bresp_clint_xbar),
+	.clint_bValid(bValid_clint_xbar),
+	.clint_bReady(bReady_xbar_clint)
   );
 
   ifu ifu0(

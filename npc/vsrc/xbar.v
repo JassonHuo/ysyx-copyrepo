@@ -1,4 +1,5 @@
 module xbar(
+  input clk,
   input ifu_arValid,
   output ifu_arReady,
   input [31: 0] ifu_araddr,
@@ -68,7 +69,28 @@ module xbar(
 
   input uart_bresp,
   input uart_bValid,
-  output uart_bReady
+  output uart_bReady,
+
+  output clint_arValid,
+  input clint_arReady,
+  output [31: 0] clint_araddr,
+  output clint_rReady,
+  input clint_rValid,
+  input [31: 0] clint_rdata,
+  input clint_rresp,
+
+  output [31: 0] clint_awaddr,
+  output clint_awValid,
+  input clint_awReady,
+
+  output [31: 0] clint_wdata,
+  output [3: 0] clint_wstrb,
+  output clint_wValid,
+  input clint_wReady,
+
+  input clint_bresp,
+  input clint_bValid,
+  output clint_bReady
 );
 
   reg arValid;
@@ -103,10 +125,34 @@ module xbar(
   assign lsu_bValid = bValid;
   assign bReady = lsu_bReady;
 
+  reg arbiter_state, next_arbiter;
+  parameter IFU = 0, LSU = 1;
+  always@(*)begin
+	case(arbiter_state)
+	  IFU: next_arbiter = (ifu_arValid & lsu_arValid) | (ifu_arValid & lsu_arValid) ? LSU: IFU;
+	  LSU: next_arbiter = (ifu_arValid & lsu_arValid) | (ifu_arValid & lsu_arValid) ? IFU: LSU;
+	  default: next_arbiter = IFU;
+	endcase
+  end
+
+  always@(posedge clk)begin
+	arbiter_state <= next_arbiter;
+  end
+
   always@(*)begin
 	arValid = 0;
 	araddr = 0;
-	if(ifu_arValid)begin
+	if(ifu_arValid & lsu_arValid)begin
+	  if(arbiter_state == IFU)begin
+		arValid = ifu_arValid;
+		araddr = ifu_araddr;
+	  end
+	  else begin
+		arValid = lsu_arValid;
+		araddr = lsu_araddr;
+	  end
+	end
+	else if(ifu_arValid)begin
 	  arValid = ifu_arValid;
 	  araddr = ifu_araddr;
 	end
@@ -142,13 +188,14 @@ module xbar(
   assign bresp = mem_bresp | uart_bresp;
   assign bValid = mem_bValid | uart_bValid;
 
-  assign arReady = mem_arReady | uart_arReady;
-  assign rValid = mem_rValid | uart_rValid;
-  assign rresp = mem_rresp | uart_rresp;
+  assign arReady = mem_arReady & clint_arReady;
+  assign rValid = mem_rValid | uart_rValid | clint_rValid;
+  assign rresp = mem_rresp | uart_rresp | clint_rresp;
 
   assign mem_rReady = rReady;
   assign uart_rReady = rReady;
-  assign rdata = mem_rdata | uart_rdata;
+  assign clint_rReady = rReady;
+  assign rdata = (mem_rdata & {32{mem_rValid}}) | (clint_rdata & {32{clint_rValid}});
   
   always@(*)begin
 	mem_awaddr = 0;
@@ -165,9 +212,15 @@ module xbar(
 	uart_wstrb = 0;
 	uart_wValid = 0;
 	uart_bReady = 0;
+	clint_arValid = 0;
+	clint_araddr = 0;
 	if(araddr >= 32'h80000000 & araddr <= 32'h80ffffff)begin
 	  mem_arValid = arValid;
 	  mem_araddr = araddr;
+	end
+	else if(araddr >= 32'h02000000 & araddr <= 32'h0200ffff)begin
+	  clint_arValid = arValid;
+	  clint_araddr = araddr;
 	end
 	if(awaddr >= 32'h80000000 & awaddr <= 32'h80ffffff)begin
 	  mem_awaddr = awaddr;

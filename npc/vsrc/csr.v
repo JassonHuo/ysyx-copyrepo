@@ -20,10 +20,17 @@ module csr(
   reg [31: 0] mcycleh = 32'b0;
   reg [31: 0] mvendorid = ysyx_ascii;
   reg [31: 0] marchid = ysyx_code;
+  `ifdef VERILATOR
   (* verilator public_flat_rw *)reg [31: 0] mepc = 32'b0;
   (* verilator public_flat_rw *)reg [31: 0] mstatus = 32'h1800;
   (* verilator public_flat_rw *)reg [31: 0] mcause = 32'b0;
   (* verilator public_flat_rw *)reg [31: 0] mtvec = 32'b0;
+  `else
+  reg [31: 0] mepc = 32'b0;
+  reg [31: 0] mstatus = 32'h1800;
+  reg [31: 0] mcause = 32'b0;
+  reg [31: 0] mtvec = 32'b0;
+  `endif
 
 
   assign mtvec_out = mtvec;

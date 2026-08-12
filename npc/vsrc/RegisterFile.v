@@ -8,7 +8,11 @@ module RegisterFile #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
   output [DATA_WIDTH-1:0] rdata2,
   input wen
 );
+`ifdef VERILATOR
   (* verilator public_flat_rw *) reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
+`else
+  reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
+`endif
   always @(posedge clk) begin
     if (wen && waddr != 0) rf[waddr] <= wdata;
   end
