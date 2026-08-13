@@ -436,9 +436,9 @@ void run_cycle(uint64_t n)
 	output_pc = true;
   for(uint64_t i = 0; i < n && NPC_state != NPC_END; i ++)
   {
+	uint32_t pc = c_get_Pc();
 #ifdef CONFIG_ITRACE
 	uint32_t isa_inst = c_get_Inst();
-	uint32_t pc = c_get_Pc();
 	int p = 0;
 	uint8_t* inst = (uint8_t*)&isa_inst;
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
