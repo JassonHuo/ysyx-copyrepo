@@ -48,7 +48,7 @@
 
 uint32_t mem[MEM_SIZE] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
-static Vtop *top = new Vtop;
+static TOP_NAME *top = new TOP_NAME;
 VerilatedVcdC* tfp = new VerilatedVcdC;
 
 static struct timeval tv;
