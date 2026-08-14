@@ -3,7 +3,7 @@
 import "DPI-C" function void ebreak();
 import "DPI-C" function void npc_abort();
 `endif
-module idu(
+module ysyx_26060166_idu(
   input clk,
   input rst,
   input [31: 0] inst_in,

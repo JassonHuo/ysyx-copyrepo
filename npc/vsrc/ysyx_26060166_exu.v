@@ -1,5 +1,5 @@
 `include "global.vh"
-module exu(
+module ysyx_26060166_exu(
   input clk,
   input rst,
   input [31: 0] pc_in,

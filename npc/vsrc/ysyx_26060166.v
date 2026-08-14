@@ -1,7 +1,36 @@
-module top(
-  input clk,
-  input rst,
-  output done
+module ysyx_26060166(
+  input clock,
+  input reset,
+  input io_interrupt,
+  input io_master_awReady,
+  output io_master_awValid,
+  output [31:0] io_master_awaddr,
+  output [3:0] io_master_awid,
+  output [7:0] io_master_awlen,
+  output [2:0] io_master_awsize,
+  output [1:0] io_master_awburst,
+  input io_master_wReady,
+  output io_master_wValid,
+  output [31:0]io_master_wdata,
+  output [3:0] io_master_wstrb,
+  output io_master_wlast,
+  output io_master_bReady,
+  input io_master_bValid,
+  input  [1:0] io_master_bresp,
+  input  [3:0] io_master_bid ,
+  input io_master_arReady,
+  output io_master_arValid,
+  output [31:0] io_master_araddr,
+  output [3:0] io_master_arid,
+  output [7:0] io_master_arlen,
+  output [2:0] io_master_arsize,
+  output [1:0] io_master_arburst,
+  output io_master_rReady,
+  input io_master_rValid,
+  input [1:0] io_master_rresp,
+  input [31:0] io_master_rdata,
+  input io_master_rlast,
+  input [3:0] io_master_rid
 );
 
   wire pc_en_wb_ifu;
@@ -110,25 +139,12 @@ module top(
   wire ready_lsu_exu;
   wire ready_wbu_lsu;
   wire done_wbu_ifu;
-  assign done = done_wbu_ifu;
-
-  wire arValid_xbar_mem;
-  wire arReady_mem_xbar;
-  wire [31: 0] araddr_xbar_mem;
-  wire [31: 0] rdata_mem_xbar;
-  wire rresp_mem_xbar;
-  wire rValid_mem_xbar;
-  wire rReady_xbar_mem;
-  wire [31: 0] awaddr_xbar_mem;
-  wire awValid_xbar_mem;
-  wire awReady_mem_xbar;
-  wire [31: 0] wdata_xbar_mem;
-  wire [3: 0] wstrb_xbar_mem;
-  wire wValid_xbar_mem;
-  wire wReady_mem_xbar;
-  wire bresp_mem_xbar;
-  wire bValid_mem_xbar;
-  wire bReady_xbar_mem;
+  wire [3: 0] arid_ifu_xbar;
+  wire [7: 0] arlen_ifu_xbar;
+  wire [2: 0] arsize_ifu_xbar;
+  wire [1: 0] arburst_ifu_xbar;
+  wire rlast_xbar_ifu;
+  wire [3: 0] rid_xbar_ifu;
 
   wire arValid_ifu_xbar;
   wire arReady_xbar_ifu;
@@ -136,14 +152,14 @@ module top(
   wire rReady_ifu_xbar;
   wire rValid_xbar_ifu;
   wire [31: 0] rdata_xbar_ifu;
-  wire rresp_xbar_ifu;
+  wire [1: 0] rresp_xbar_ifu;
   wire arValid_lsu_xbar;
   wire arReady_xbar_lsu;
   wire [31: 0] araddr_lsu_xbar;
   wire rReady_lsu_xbar;
   wire rValid_xbar_lsu;
   wire [31: 0] rdata_xbar_lsu;
-  wire rresp_xbar_lsu;
+  wire [1: 0] rresp_xbar_lsu;
   wire [31: 0] awaddr_lsu_xbar;
   wire awValid_lsu_xbar;
   wire awReady_xbar_lsu;
@@ -151,27 +167,21 @@ module top(
   wire [3: 0] wstrb_lsu_xbar;
   wire wValid_lsu_xbar;
   wire wReady_xbar_lsu;
-  wire bresp_xbar_lsu;
+  wire [1: 0] bresp_xbar_lsu;
   wire bValid_xbar_lsu;
   wire bReady_lsu_xbar;
-
-  wire arValid_xbar_uart;
-  wire arReady_uart_xbar;
-  wire [31: 0] araddr_xbar_uart;
-  wire rReady_xbar_uart;
-  wire rValid_uart_xbar;
-  wire [31: 0] rdata_uart_xbar;
-  wire rresp_uart_xbar;
-  wire [31: 0] awaddr_xbar_uart;
-  wire awValid_xbar_uart;
-  wire awReady_uart_xbar;
-  wire [31: 0] wdata_xbar_uart;
-  wire [3: 0] wstrb_xbar_uart;
-  wire wValid_xbar_uart;
-  wire wReady_uart_xbar;
-  wire bresp_uart_xbar;
-  wire bValid_uart_xbar;
-  wire bReady_xbar_uart;
+  wire [3: 0] rid_xbar_lsu;
+  wire rlast_xbar_lsu;
+  wire [1: 0] arburst_lsu_xbar;
+  wire [2: 0] arsize_lsu_xbar;
+  wire [7: 0] arlen_lsu_xbar;
+  wire [3: 0] arid_lsu_xbar;
+  wire [3: 0] bid_xbar_lsu;
+  wire wlast_lsu_xbar;
+  wire [1: 0] awburst_lsu_xbar;
+  wire [2: 0] awsize_lsu_xbar;
+  wire [7: 0] awlen_lsu_xbar;
+  wire [3: 0] awid_lsu_xbar;
 
   wire arValid_xbar_clint;
   wire arReady_clint_xbar;
@@ -179,7 +189,7 @@ module top(
   wire rReady_xbar_clint;
   wire rValid_clint_xbar;
   wire [31: 0] rdata_clint_xbar;
-  wire rresp_clint_xbar;
+  wire [1: 0] rresp_clint_xbar;
   wire [31: 0] awaddr_xbar_clint;
   wire awValid_xbar_clint;
   wire awReady_clint_xbar;
@@ -187,12 +197,24 @@ module top(
   wire [3: 0] wstrb_xbar_clint;
   wire wValid_xbar_clint;
   wire wReady_clint_xbar;
-  wire bresp_clint_xbar;
+  wire [1: 0] bresp_clint_xbar;
   wire bValid_clint_xbar;
   wire bReady_xbar_clint;
+  wire [3: 0] awid_clint_xbar;
+  wire [7: 0] awlen_clint_xbar;
+  wire [2: 0] awsize_clint_xbar;
+  wire [1: 0] awburst_clint_xbar;
+  wire wlast_clint_xbar;
+  wire [3: 0] bid_xbar_clint;
+  wire [3: 0] arid_clint_xbar;
+  wire [7: 0] arlen_clint_xbar;
+  wire [2: 0] arsize_clint_xbar;
+  wire [1: 0] arburst_clint_xbar;
+  wire rlast_xbar_clint;
+  wire [3: 0] rid_xbar_clint;
 
   clint clint0(
-	.clk(clk),
+	.clk(clock),
   	.arValid(arValid_xbar_clint),
   	.arReady(arReady_clint_xbar),
   	.araddr(araddr_xbar_clint),
@@ -209,11 +231,25 @@ module top(
 	.wReady(wReady_clint_xbar),
 	.bresp(bresp_clint_xbar),
 	.bValid(bValid_clint_xbar),
-	.bReady(bReady_xbar_clint)
+	.bReady(bReady_xbar_clint),
+
+	.awid(awid_clint_xbar),
+	.awlen(awlen_clint_xbar),
+	.awsize(awsize_clint_xbar),
+	.awburst(awburst_clint_xbar),
+	.wlast(wlast_clint_xbar),
+	.bid (bid_xbar_clint),
+	.arid(arid_clint_xbar),
+	.arlen(arlen_clint_xbar),
+	.arsize(arsize_clint_xbar),
+	.arburst(arburst_clint_xbar),
+	.rlast(rlast_xbar_clint),
+	.rid(rid_xbar_clint)
   );
 
+  /*
   uart uart0(
-	.clk(clk),
+	.clk(clock),
   	.arValid(arValid_xbar_uart),
   	.arReady(arReady_uart_xbar),
   	.araddr(araddr_xbar_uart),
@@ -234,7 +270,7 @@ module top(
   );
 
   memory mem0(
-	.clk(clk),
+	.clk(clock),
 	.arValid(arValid_xbar_mem),
 	.arReady(arReady_mem_xbar),
 	.araddr(araddr_xbar_mem),
@@ -253,9 +289,10 @@ module top(
 	.bValid(bValid_mem_xbar),
 	.bReady(bReady_xbar_mem)
   );
+  */
 
   xbar xbar0(
-	.clk(clk),
+	.clk(clock),
   	.ifu_arValid(arValid_ifu_xbar),
   	.ifu_arReady(arReady_xbar_ifu),
   	.ifu_araddr(araddr_ifu_xbar),
@@ -263,6 +300,12 @@ module top(
   	.ifu_rValid(rValid_xbar_ifu),
   	.ifu_rdata(rdata_xbar_ifu),
 	.ifu_rresp(rresp_xbar_ifu),
+	.ifu_arid(arid_ifu_xbar),
+	.ifu_arlen(arlen_ifu_xbar),
+	.ifu_arsize(arsize_ifu_xbar),
+	.ifu_arburst(arburst_ifu_xbar),
+	.ifu_rlast(rlast_xbar_ifu),
+    .ifu_rid(rid_xbar_ifu),
 
   	.lsu_arValid(arValid_lsu_xbar),
   	.lsu_arReady(arReady_xbar_lsu),
@@ -282,41 +325,48 @@ module top(
 	.lsu_bValid(bValid_xbar_lsu),
 	.lsu_bReady(bReady_lsu_xbar),
 
-  	.mem_arValid(arValid_xbar_mem),
-  	.mem_arReady(arReady_mem_xbar),
-  	.mem_araddr(araddr_xbar_mem),
-	.mem_rReady(rReady_xbar_mem),//
-	.mem_rValid(rValid_mem_xbar),//
-  	.mem_rdata(rdata_mem_xbar),
-	.mem_rresp(rresp_mem_xbar),
-	.mem_awaddr(awaddr_xbar_mem),
-	.mem_awValid(awValid_xbar_mem),
-	.mem_awReady(awReady_mem_xbar),
-  	.mem_wdata(wdata_xbar_mem),
-  	.mem_wstrb(wstrb_xbar_mem),
-	.mem_wValid(wValid_xbar_mem),
-	.mem_wReady(wReady_mem_xbar),
-	.mem_bresp(bresp_mem_xbar),
-	.mem_bValid(bValid_mem_xbar),
-	.mem_bReady(bReady_xbar_mem),
+	.lsu_awid(awid_lsu_xbar),
+	.lsu_awlen(awlen_lsu_xbar),
+	.lsu_awsize(awsize_lsu_xbar),
+	.lsu_awburst(awburst_lsu_xbar),
+	.lsu_wlast(wlast_lsu_xbar),
+	.lsu_bid(bid_xbar_lsu),
+	.lsu_arid(arid_lsu_xbar),
+	.lsu_arlen(arlen_lsu_xbar),
+	.lsu_arsize(arsize_lsu_xbar),
+	.lsu_arburst(arburst_lsu_xbar),
+	.lsu_rlast(rlast_xbar_lsu),
+	.lsu_rid(rid_xbar_lsu),
 
-  	.uart_arValid(arValid_xbar_uart),
-  	.uart_arReady(arReady_uart_xbar),
-  	.uart_araddr(araddr_xbar_uart),
-	.uart_rReady(rReady_xbar_uart),
-	.uart_rValid(rValid_uart_xbar),
-  	.uart_rdata(rdata_uart_xbar),
-	.uart_rresp(rresp_uart_xbar),
-	.uart_awaddr(awaddr_xbar_uart),
-	.uart_awValid(awValid_xbar_uart),
-	.uart_awReady(awReady_uart_xbar),
-  	.uart_wdata(wdata_xbar_uart),
-  	.uart_wstrb(wstrb_xbar_uart),
-	.uart_wValid(wValid_xbar_uart),
-	.uart_wReady(wReady_uart_xbar),
-	.uart_bresp(bresp_uart_xbar),
-	.uart_bValid(bValid_uart_xbar),
-	.uart_bReady(bReady_xbar_uart),
+	.io_master_awReady(io_master_awReady),
+	.io_master_awValid(io_master_awValid),
+	.io_master_awaddr(io_master_awaddr),
+	.io_master_awid(io_master_awid),
+	.io_master_awlen(io_master_awlen),
+	.io_master_awsize(io_master_awsize),
+	.io_master_awburst(io_master_awburst),
+	.io_master_wReady(io_master_wReady),
+	.io_master_wValid(io_master_wValid),
+	.io_master_wdata(io_master_wdata),
+	.io_master_wstrb(io_master_wstrb),
+	.io_master_wlast(io_master_wlast),
+	.io_master_bReady(io_master_bReady),
+	.io_master_bValid(io_master_bValid),
+	.io_master_bresp(io_master_bresp),
+	.io_master_bid (io_master_bid ),
+	.io_master_arReady(io_master_arReady),
+	.io_master_arValid(io_master_arValid),
+	.io_master_araddr(io_master_araddr),
+	.io_master_arid(io_master_arid),
+	.io_master_arlen(io_master_arlen),
+	.io_master_arsize(io_master_arsize),
+	.io_master_arburst(io_master_arburst),
+	.io_master_rReady(io_master_rReady),
+	.io_master_rValid(io_master_rValid),
+	.io_master_rresp(io_master_rresp),
+	.io_master_rdata(io_master_rdata),
+	.io_master_rlast(io_master_rlast),
+	.io_master_rid(io_master_rid),
 
   	.clint_arValid(arValid_xbar_clint),
   	.clint_arReady(arReady_clint_xbar),
@@ -334,12 +384,25 @@ module top(
 	.clint_wReady(wReady_clint_xbar),
 	.clint_bresp(bresp_clint_xbar),
 	.clint_bValid(bValid_clint_xbar),
-	.clint_bReady(bReady_xbar_clint)
+	.clint_bReady(bReady_xbar_clint),
+
+	.clint_awid(awid_clint_xbar),
+	.clint_awlen(awlen_clint_xbar),
+	.clint_awsize(awsize_clint_xbar),
+	.clint_awburst(awburst_clint_xbar),
+	.clint_wlast(wlast_clint_xbar),
+	.clint_bid (bid_xbar_clint),
+	.clint_arid(arid_clint_xbar),
+	.clint_arlen(arlen_clint_xbar),
+	.clint_arsize(arsize_clint_xbar),
+	.clint_arburst(arburst_clint_xbar),
+	.clint_rlast(rlast_xbar_clint),
+	.clint_rid(rid_xbar_clint)
   );
 
   ifu ifu0(
-	.clk(clk),
-	.rst(rst),
+	.clk(clock),
+	.rst(reset),
 	.pc_in(pc_wb_ifu),
 	.pc_en(pc_en_wb_ifu),
 	.inst_out(inst_ifu_idu),
@@ -354,12 +417,20 @@ module top(
   	.araddr(araddr_ifu_xbar),
   	.rReady(rReady_ifu_xbar),
   	.rValid(rValid_xbar_ifu),
-  	.inst_in(rdata_xbar_ifu)
+  	.rdata(rdata_xbar_ifu),
+	.rresp(rresp_xbar_ifu),
+
+	.arid(arid_ifu_xbar),
+	.arlen(arlen_ifu_xbar),
+	.arsize(arsize_ifu_xbar),
+	.arburst(arburst_ifu_xbar),
+	.rlast(rlast_xbar_ifu),
+	.rid(rid_xbar_ifu)
   );
 
   idu idu0(
-	.clk(clk),
-	.rst(rst),
+	.clk(clock),
+	.rst(reset),
 	.inst_in(inst_ifu_idu),
 	.pc_in(pc_ifu_idu),
 	.pc_sync_in(pc_sync_ifu_idu),
@@ -401,7 +472,7 @@ module top(
   );
 
   gpr gpr0(
-	.clk(clk),
+	.clk(clock),
 	.wdata(wdata_wbu_gpr),
 	.waddr(waddr_wbu_gpr),
 	.raddr1(raddr1_idu_gpr),
@@ -412,8 +483,8 @@ module top(
   );
 
   exu exu0(
-	.clk(clk),
-	.rst(rst),
+	.clk(clock),
+	.rst(reset),
 	.pc_in(pc_idu_exu),
 	.pc_sync_in(pc_sync_idu_exu),
 	.imm(imm_idu_exu),
@@ -465,8 +536,8 @@ module top(
   );
 
   lsu lsu0(
-	.clk(clk),
-	.rst(rst),
+	.clk(clock),
+	.rst(reset),
 	.pc_sync_in(pc_sync_exu_lsu),
 	.pc_in(pc_exu_lsu),
 	.alu(alu_exu_lsu),
@@ -510,28 +581,40 @@ module top(
 	.valid_aft(valid_lsu_wbu),
 	.ready_aft(ready_wbu_lsu),
 
-  	.arValid(arValid_lsu_xbar),
-  	.arReady(arReady_xbar_lsu),
-  	.araddr(araddr_lsu_xbar),
-	.rReady(rReady_lsu_xbar),//
-	.rValid(rValid_xbar_lsu),//
-  	.lsu_rdata(rdata_xbar_lsu),
-	.rresp(rresp_xbar_lsu),
-	.awaddr(awaddr_lsu_xbar),
-	.awValid(awValid_lsu_xbar),
 	.awReady(awReady_xbar_lsu),
-  	.wdata(wdata_lsu_xbar),
-  	.wstrb(wstrb_lsu_xbar),
-	.wValid(wValid_lsu_xbar),
+	.awValid(awValid_lsu_xbar),
+	.awaddr(awaddr_lsu_xbar),
+	.awid(awid_lsu_xbar),
+	.awlen(awlen_lsu_xbar),
+	.awsize(awsize_lsu_xbar),
+	.awburst(awburst_lsu_xbar),
 	.wReady(wReady_xbar_lsu),
-	.bresp(bresp_xbar_lsu),
+	.wValid(wValid_lsu_xbar),
+	.wdata(wdata_lsu_xbar),
+	.wstrb(wstrb_lsu_xbar),
+	.wlast(wlast_lsu_xbar),
+	.bReady(bReady_lsu_xbar),
 	.bValid(bValid_xbar_lsu),
-	.bReady(bReady_lsu_xbar)
+	.bresp(bresp_xbar_lsu),
+	.bid (bid_xbar_lsu),
+	.arReady(arReady_xbar_lsu),
+	.arValid(arValid_lsu_xbar),
+	.araddr(araddr_lsu_xbar),
+	.arid(arid_lsu_xbar),
+	.arlen(arlen_lsu_xbar),
+	.arsize(arsize_lsu_xbar),
+	.arburst(arburst_lsu_xbar),
+	.rReady(rReady_lsu_xbar),
+	.rValid(rValid_xbar_lsu),
+	.rresp(rresp_xbar_lsu),
+	.lsu_rdata(rdata_xbar_lsu),
+	.rlast(rlast_xbar_lsu),
+	.rid(rid_xbar_lsu)
   );
 
   wbu wbu0(
-	.clk(clk),
-	.rst(rst),
+	.clk(clock),
+	.rst(reset),
 	.pc_sync(pc_sync_lsu_wbu),
 	.pc_in(pc_lsu_wbu),
 	.alu(alu_lsu_wbu),
@@ -574,9 +657,9 @@ module top(
 	.csr_raddr(csr_addr_iduout),
 	.csr_waddr(csr_waddr_wbu_csr),
 	.csr_wdata(csr_wdata_wbu_csr),
-	.clk(clk),
+	.clk(clock),
 	.csr_en(csr_en_wbu_csr),
-	.rst(rst),
+	.rst(reset),
 	.csr_rdata_out(csr_data_csr_idu),
 	
 	.mepc_in(mepc_wbu_csr),

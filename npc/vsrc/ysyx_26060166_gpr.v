@@ -1,4 +1,4 @@
-module gpr(
+module ysyx_26060166_gpr(
   input clk,
   input [31: 0] wdata,
   input [3: 0] waddr,

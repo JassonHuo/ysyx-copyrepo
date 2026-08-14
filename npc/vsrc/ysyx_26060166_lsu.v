@@ -3,7 +3,7 @@ import "DPI-C" function int pmem_read(input int raddr);
 import "DPI-C" function void pmem_write(input int waddr, input int wdata, input byte wmask);
 `endif
 
-module lsu(
+module ysyx_26060166_lsu(
   input clk,
   input rst,
   input [31: 0] pc_sync_in,
@@ -58,30 +58,36 @@ module lsu(
   output valid_aft,
   input ready_aft,
 
-  output arValid,
+  input  awReady,
+  output awValid,
+  output [31:0] awaddr,
+  output [3:0] awid,
+  output [7:0] awlen,
+  output [2:0] awsize,
+  output [1:0] awburst,
+  input wReady,
+  output wValid,
+  output [31:0]wdata,
+  output [3:0] wstrb,
+  output wlast,
+  output bReady,
+  input bValid,
+  input  [1:0] bresp,
+  input  [3:0] bid ,
   input arReady,
-  output [31: 0] araddr,
+  output arValid,
+  output [31:0] araddr,
+  output [3:0] arid,
+  output [7:0] arlen,
+  output [2:0] arsize,
+  output [1:0] arburst,
   output rReady,
   input rValid,
-  input [31: 0] lsu_rdata,
-  input rresp,
-
-  output [31: 0] awaddr,
-  output awValid,
-  input awReady,
-
-  output [31: 0] wdata,
-  output [3: 0] wstrb,
-  output wValid,
-  input wReady,
-
-  input bresp,
-  input bValid,
-  output bReady
+  input [1:0] rresp,
+  input [31:0] lsu_rdata,
+  input rlast,
+  input [3:0] rid
 );
-
-//  wire reqValid;
-//  reg respValid;
 
   //lsfm
   reg [7: 0] lsfm;
@@ -95,53 +101,6 @@ module lsu(
   end
   //end
 
-  /*
-  reg write_done;
-  parameter AWIDLE = 0, AWWAIT_READY = 1, DONE = 2;
-  reg [1: 0] awstate, next_awstate;
-  always@(*)begin
-	if(rst)
-	  next_awstate = AWIDLE;
-	else begin
-	  case(awstate)
-		AWIDLE: next_awstate = mem_wen ? AWWAIT_READY: AWIDLE;
-		AWWAIT_READY: next_awstate = awReady ? DONE: AWWAIT_READY;
-		DONE: next_awstate = write_done ? AWIDLE: DONE;
-		default: next_awstate = AWIDLE;
-	  endcase
-	end
-  end
-  always@(posedge clk)begin
-	if(rst)
-	  awstate <= AWIDLE;
-	else
-	  awstate <= next_awstate;
-  end
-  assign awValid = (awstate == AWWAIT_READY);
-
-  parameter WIDLE = 0, WWAIT_READY = 1;
-  reg [1: 0] wstate, next_wstate;
-  always@(*)begin
-	if(rst)
-	  next_wstate = WIDLE;
-	else begin
-	  case(wstate)
-		WIDLE: next_wstate = mem_wen ? WWAIT_READY: WIDLE;
-		WWAIT_READY: next_wstate = wReady ? DONE: WWAIT_READY;
-		DONE: next_wstate = write_done ? WIDLE: DONE;
-		default: next_wstate = WIDLE;
-	  endcase
-	end
-  end
-  always@(posedge clk)begin
-	if(rst)
-	  wstate <= WIDLE;
-	else
-	  wstate <= next_wstate;
-  end
-  assign wValid = (wstate == WWAIT_READY);
-  */
-  
   parameter IDLE = 0, WAIT_ARREADY = 1, WAIT_RVALID = 2, RREADY = 3;
   parameter WAIT_READY = 4, WAIT_BVALID = 5, BREADY = 6;
   reg [2: 0] state, next_state;
@@ -154,7 +113,7 @@ module lsu(
 		WAIT_ARREADY: next_state = arReady ? WAIT_RVALID: WAIT_ARREADY;
 		WAIT_RVALID: next_state = rValid ? RREADY: WAIT_RVALID;
 		RREADY: next_state = IDLE;
-		WAIT_READY: next_state = /*(wstate == DONE & awstate == DONE)*/(awReady & wReady) ? WAIT_BVALID: WAIT_READY;
+		WAIT_READY: next_state = (awReady & wReady) ? WAIT_BVALID: WAIT_READY;
 		WAIT_BVALID: next_state = bValid ? BREADY: WAIT_BVALID;
 		BREADY: next_state = IDLE;
 		default: next_state = IDLE;
@@ -173,16 +132,20 @@ module lsu(
   assign arValid = (state == WAIT_ARREADY);
   assign rReady = (state == RREADY);
   assign bReady = (state == BREADY);
-//  assign write_done = (state == BREADY);
   assign araddr = alu;
   assign awaddr = alu;
   assign wdata = src2;
   assign wstrb = mask;
-//  assign lsu_rdata = rdata;
+  assign awlen = 8'b0;
+  assign awsize = {1'b0, width};
+  assign awburst = `BURST_FIXED;
+  assign arlen = 8'b0;
+  assign arsize = {1'b0, width};
+  assign arburst = `BURST_FIXED;
+  assign wlast = (state == WAIT_READY);
 
   assign ready_pre = valid_pre;
   wire pre_succ = ready_pre & valid_pre;
-//  assign valid_aft = pre_succ & ~next_state;
   assign valid_aft = pre_succ & (~mem_valid | (mem_valid & (state == BREADY | state == RREADY)));
 
   assign pc_sync_out = pc_sync_in;
@@ -206,33 +169,18 @@ module lsu(
   wire [3: 0] mask = (width == `MEM_WORD ? 4'b1111:
 	(width == `MEM_HALF ? 4'b11 << alu[1: 0]:
 	(width == `MEM_BYTE ? 4'b1  << alu[1: 0] : 4'b0)));
-//  reg [31: 0] lsu_rdata;
   reg [31: 0] ifu_wdata;
-
-
- /*
-  memory mem1(
-	.clk(clk),
-	.reqValid(reqValid),
-	.reqReady(reqReady),
-	.addr(alu),
-	.wen(mem_wen),
-	.wdata(src2),
-	.mask(mask),
-	.respValid(respValid),
-	.respReady(respReady),
-	.rdata(lsu_rdata)
-  );
-  */
-//  wire reqReady, respReady;
 
   always@(*)begin
 	if(mem_valid & valid_aft)begin
+	  /*
 	  rdata = (lsu_rdata >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
 	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
 		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
+	  */
+	  rdata = lsu_rdata;
 	  if(mem_wen)begin
 		ifu_wdata = src2;
 	  end

@@ -1,25 +1,35 @@
-module clint(
+import "DPI-C" function void TO_device();
+module ysyx_26060166_clint(
   input clk,
-  input arValid,
+  output  awReady,
+  input awValid,
+  input [31:0] awaddr,
+  input [3:0] awid,
+  input [7:0] awlen,
+  input [2:0] awsize,
+  input [1:0] awburst,
+  output wReady,
+  input wValid,
+  input [31:0]wdata,
+  input [3:0] wstrb,
+  input wlast,
+  input bReady,
+  output bValid,
+  output  [1:0] bresp,
+  output  [3:0] bid ,
   output arReady,
-  input [31: 0] araddr,
+  input arValid,
+  input [31:0] araddr,
+  input [3:0] arid,
+  input [7:0] arlen,
+  input [2:0] arsize,
+  input [1:0] arburst,
   input rReady,
   output rValid,
-  output reg [31: 0] rdata,
-  output rresp,
-
-  input [31: 0] awaddr,
-  input awValid,
-  output awReady,
-
-  input [31: 0] wdata,
-  input [3: 0] wstrb,
-  input wValid,
-  output wReady,
-
-  output bresp,
-  output bValid,
-  input bReady
+  output [1:0] rresp,
+  output reg [31:0] rdata,
+  output rlast,
+  output [3:0] rid
 );
 
   reg [31: 0] mtime, mtimeh;

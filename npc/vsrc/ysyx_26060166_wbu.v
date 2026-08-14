@@ -1,5 +1,5 @@
 `include "global.vh"
-module wbu(
+module ysyx_26060166_wbu(
   input clk,
   input rst,
   input [31: 0] pc_sync,

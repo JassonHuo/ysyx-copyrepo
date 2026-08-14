@@ -1,4 +1,4 @@
-module pc(
+module ysyx_26060166_pc(
   input pc_en,
   input [31: 0] pc_in,
   input rst,

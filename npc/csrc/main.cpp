@@ -262,6 +262,9 @@ static inline uint64_t get_time()
   return tv.tv_sec * 1000000 + tv.tv_usec - start_time;
 }
 
+extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
+extern "C" void mrom_read(int32_t addr, int32_t *data) { assert(0); }
+
 extern "C" void TO_device()
 {
   to_device = true;
@@ -562,6 +565,7 @@ void run_cycle(uint64_t n)
   }
 }
 int main(int argc, char** argv) {
+  verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
   top->trace(tfp, 99);

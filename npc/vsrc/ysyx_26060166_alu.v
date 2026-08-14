@@ -1,5 +1,5 @@
 `include "global.vh"
-module alu(
+module ysyx_26060166_alu(
   input [31: 0] x,
   input [31: 0] y,
   input is_signed,

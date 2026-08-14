@@ -1,4 +1,4 @@
-TOPNAME = top
+TOPNAME = ysyxSoCFull
 NXDC_FILE = constr/top.nxdc
 INC_PATH ?= 
 
@@ -7,7 +7,8 @@ include ../Makefile
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc --x-assign fast \
-					--x-initial fast --noassert
+					--x-initial fast --noassert \
+					--timescale "1ns/1ns" --no-timing
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
@@ -35,6 +36,8 @@ $(shell mkdir -p $(BUILD_DIR))
 #	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 VSRC = $(NPC_HOME)/vsrc/*.v
+VSRC += $(SOC_HOME)/perip/*/*.v
+VSRC += $(SOC_HOME)/build/ysyxSoCFull.v
 CSRC = $(NPC_HOME)/csrc/*.c
 CSRC += $(NPC_HOME)/csrc/*.cpp
 

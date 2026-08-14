@@ -1,4 +1,4 @@
-module csr(
+module ysyx_26060166_csr(
   input [11: 0] csr_raddr,
   input [11: 0] csr_waddr,
   input [31: 0] csr_wdata,
