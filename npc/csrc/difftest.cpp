@@ -99,7 +99,7 @@ bool reg_check()
 void init_difftest()
 {
 #ifdef CONFIG_DIFFTEST
-  printf(BLUE "[%s %d %s] Difftest opened\n" RESET, __FILE__, __LINE__, __func__);
+  printf(BLUE "[%s %d %s] Difftest opened" RESET "\n", __FILE__, __LINE__, __func__);
   void *dl_handle = dlopen("../nemu/build/riscv32-nemu-interpreter-so", RTLD_LAZY);
   assert(dl_handle);
 
