@@ -38,6 +38,7 @@ char *march_func(uint32_t addr)
 
 void init_elf(char *file_name)
 {
+#ifdef CONFIG_FTRACE
   file_name = strtok(file_name, ",");
   if(file_name == NULL)
   {
@@ -98,4 +99,5 @@ void init_elf(char *file_name)
   }
   for(int i = 0; i < func_top; i ++)
 	printf(BLUE "[%s %d %s] parse function: %s(%08x-%08x)\n" RESET, __FILE__, __LINE__, __func__, FUNC_table[i].name, FUNC_table[i].addr, FUNC_table[i].addr + FUNC_table[i].size - 1);
+#endif
 }
