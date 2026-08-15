@@ -143,7 +143,7 @@ module ysyx_26060166_exu(
 	endcase
   end
 
-  alu alu0(
+  ysyx_26060166_alu alu0(
 	.x(alu_num1),
 	.y(alu_num2),
 	.alu_op(alu_op),

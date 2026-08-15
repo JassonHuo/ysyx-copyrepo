@@ -9,7 +9,7 @@ module ysyx_26060166_gpr(
   input wen
 );
 
-  RegisterFile #(4, 32) Gpr
+  ysyx_26060166_RegisterFile #(4, 32) Gpr
   (
 	.clk(clk),
 	.wdata(wdata),

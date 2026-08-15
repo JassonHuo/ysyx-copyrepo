@@ -235,7 +235,7 @@ module ysyx_26060166_xbar(
 	end
   end
 
-  assign awReady = clint_rReady | io_master_rReady;
+  assign awReady = clint_awReady | io_master_awReady;
   assign wReady = clint_wReady | io_master_wReady;
   assign bresp = clint_bresp | io_master_bresp;
   assign bValid = clint_bValid | io_master_bValid;

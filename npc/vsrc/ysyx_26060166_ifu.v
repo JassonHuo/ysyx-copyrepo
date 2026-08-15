@@ -44,7 +44,7 @@ module ysyx_26060166_ifu(
 		IF_WAITARREADY: next_state = arReady ? IF_WAITRVALID: IF_WAITARREADY;
 		IF_WAITRVALID: next_state = rValid ? IF_RREADY: IF_WAITRVALID;
 		IF_RREADY: next_state = IF_RUN;
-		IF_RUN: next_state = done ? IF_WAITRVALID: IF_RUN;
+		IF_RUN: next_state = done ? IF_WAITARREADY: IF_RUN;
 		default: next_state = IF_WAITARREADY;
 	  endcase
 	end
@@ -83,7 +83,7 @@ module ysyx_26060166_ifu(
   end
   assign inst_out = inst;
 
-  pc pc0(
+  ysyx_26060166_pc pc0(
 	.pc_en(done & pc_en),
 	.pc_in(pc_in),
 	.rst(rst),

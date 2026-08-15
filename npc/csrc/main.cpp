@@ -1,9 +1,11 @@
 #include <stdio.h>
-#include <Vtop.h>
+//#include <Vtop.h>
+#include <VysyxSoCFull.h>
 #include <verilated.h>
 #include <stdint.h>
 #include "svdpi.h"
-#include "Vtop__Dpi.h"
+//#include "Vtop__Dpi.h"
+#include "VysyxSoCFull__Dpi.h"
 #include <limits.h>
 #include <fstream>
 #include <cstring>
@@ -14,7 +16,8 @@
 #include "sdb.h"
 #include <capstone/capstone.h>
 #include <verilated_vcd_c.h>
-#include "Vtop___024root.h"
+//#include "Vtop___024root.h"
+#include "VysyxSoCFull___024root.h"
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -32,7 +35,7 @@
 #define cat(a, b) a##b
 #define CONCAT(x, y) cat(x, y)
 #define CSRCAT(x) CONCAT(CSR_PUBLIC_PATH, x)
-#define CSR_PUBLIC_PATH top->rootp->top__DOT__csr0__DOT__
+#define CSR_PUBLIC_PATH top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__csr0__DOT__
 
 #define TRACE(a) CONFIG_##a##TRACE
 #define CONFIG_TRACES  \
@@ -263,7 +266,7 @@ static inline uint64_t get_time()
 }
 
 extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
-extern "C" void mrom_read(int32_t addr, int32_t *data) { assert(0); }
+extern "C" void mrom_read(int32_t addr, int32_t *data) { *data = mem[(addr - 0x20000000) >> 2]; }
 
 extern "C" void TO_device()
 {
@@ -302,7 +305,7 @@ extern "C" int pmem_read(int addr)
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask)
 {
-  //if(top->clk)
+  //if(top->clock)
   {
 #ifdef CONFIG_MTRACE
 	char tmp[100];
@@ -402,7 +405,7 @@ uint32_t c_get_Reg(int idx)
   return (uint32_t)get_Reg(idx);
   */
   if(idx >= 0 && idx <= 15)
-	return top->rootp->top__DOT__gpr0__DOT__Gpr__DOT__rf[idx];
+	return top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__gpr0__DOT__Gpr__DOT__rf[idx];
   return 0;
 }
 
@@ -413,7 +416,7 @@ uint32_t c_get_Inst()
   svSetScope(svGetScopeFromName("TOP.top.idu0"));
   return (uint32_t)get_Inst();
   */
-  return top->rootp->top__DOT__ifu0__DOT__inst;
+  return top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu0__DOT__inst;
 }
 
 uint32_t c_get_Pc()
@@ -423,7 +426,7 @@ uint32_t c_get_Pc()
   svSetScope(svGetScopeFromName("TOP.top.ifu0.pc0"));
   return (uint32_t)get_Pc();
   */
-  return top->rootp->top__DOT__ifu0__DOT__pc0__DOT__pc;
+  return top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu0__DOT__pc0__DOT__pc;
 }
 
 uint32_t c_get_Csr(int idx)
@@ -532,7 +535,7 @@ void run_cycle(uint64_t n)
 	  }
 	}
 #endif
-	top->clk = 0;
+	top->clock = 0;
 	top->eval();
 //	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 #ifdef CONFIG_WAVE
@@ -540,7 +543,7 @@ void run_cycle(uint64_t n)
 	contextp->timeInc(1);
 	tfp->flush();
 #endif
-	top->clk = 1;
+	top->clock = 1;
 	top->eval();
 #ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
@@ -565,7 +568,7 @@ void run_cycle(uint64_t n)
   }
 }
 int main(int argc, char** argv) {
-  verilated::commandArgs(argc, argv);
+  Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
   top->trace(tfp, 99);
@@ -579,15 +582,15 @@ int main(int argc, char** argv) {
   read_arg(argc, argv);
   init_disasm();
 
-  top->rst = 1;
+  top->reset = 1;
   for(int i = 0; i < 10; i ++)
   {
-	top->clk = 0;
+	top->clock = 0;
 	top->eval();
-	top->clk = 1;
+	top->clock = 1;
 	top->eval();
   }
-  top->rst = 0;
+  top->reset = 0;
 
   time_init();
 #ifdef CONFIG_DIFFTEST

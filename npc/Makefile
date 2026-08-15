@@ -36,10 +36,15 @@ $(shell mkdir -p $(BUILD_DIR))
 #	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 VSRC = $(NPC_HOME)/vsrc/*.v
-VSRC += $(SOC_HOME)/perip/*/*.v
+#VSRC += $(SOC_HOME)/perip/*/*.v
+VSRC += $(shell find $(SOC_HOME)/perip -name "*.v")
 VSRC += $(SOC_HOME)/build/ysyxSoCFull.v
 CSRC = $(NPC_HOME)/csrc/*.c
 CSRC += $(NPC_HOME)/csrc/*.cpp
+VERILATOR_INCPATH += $(NPC_HOME)/vsrc
+VERILATOR_INCPATH += $(SOC_HOME)/perip/uart16550/rtl
+VERILATOR_INCPATH += $(SOC_HOME)/perip/spi/rtl
+VERILATOR_INCFLAGS = $(addprefix -I, $(VERILATOR_INCPATH))
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
@@ -49,7 +54,7 @@ CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 #CXXFLAGS += -DCONFIG_FTRACE
 #CXXFLAGS += -DCONFIG_DIFFTEST
 #CXXFLAGS += -DCONFIG_MEMDIFFTEST
-#CXXFLAGS += -DCONFIG_WAVE
+CXXFLAGS += -DCONFIG_WAVE
 
 LDFLAGS += -lreadline -g
 
@@ -60,11 +65,12 @@ $(BIN): $(VSRC) $(CSRC)
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
-		-j 0 -I$(NPC_HOME)/vsrc\
+		-j 0 $(VERILATOR_INCFLAGS)\
 		--trace-vcd
 #		-LDFLAGS "-lreadline"
 
 IMG ?= $(NPC_HOME)/csrc/dummy.bin
+IMG = $(NPC_HOME)/char-test.bin
 ELF ?= $(NPC_HOME)/csrc/dummy.elf
 
 

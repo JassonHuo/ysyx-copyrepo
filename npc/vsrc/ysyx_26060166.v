@@ -2,35 +2,65 @@ module ysyx_26060166(
   input clock,
   input reset,
   input io_interrupt,
-  input io_master_awReady,
-  output io_master_awValid,
+  input io_master_awready,
+  output io_master_awvalid,
   output [31:0] io_master_awaddr,
   output [3:0] io_master_awid,
   output [7:0] io_master_awlen,
   output [2:0] io_master_awsize,
   output [1:0] io_master_awburst,
-  input io_master_wReady,
-  output io_master_wValid,
+  input io_master_wready,
+  output io_master_wvalid,
   output [31:0]io_master_wdata,
   output [3:0] io_master_wstrb,
   output io_master_wlast,
-  output io_master_bReady,
-  input io_master_bValid,
+  output io_master_bready,
+  input io_master_bvalid,
   input  [1:0] io_master_bresp,
   input  [3:0] io_master_bid ,
-  input io_master_arReady,
-  output io_master_arValid,
+  input io_master_arready,
+  output io_master_arvalid,
   output [31:0] io_master_araddr,
   output [3:0] io_master_arid,
   output [7:0] io_master_arlen,
   output [2:0] io_master_arsize,
   output [1:0] io_master_arburst,
-  output io_master_rReady,
-  input io_master_rValid,
+  output io_master_rready,
+  input io_master_rvalid,
   input [1:0] io_master_rresp,
   input [31:0] io_master_rdata,
   input io_master_rlast,
-  input [3:0] io_master_rid
+  input [3:0] io_master_rid,
+
+  output io_slave_awready,
+  input io_slave_awvalid,
+  input [31:0] io_slave_awaddr,
+  input [3:0] io_slave_awid,
+  input [7:0] io_slave_awlen,
+  input [2:0] io_slave_awsize,
+  input [1:0] io_slave_awburst,
+  output io_slave_wready,
+  input  io_slave_wvalid,
+  input [31:0] io_slave_wdata,
+  input [3:0] io_slave_wstrb,
+  input  io_slave_wlast,
+  input  io_slave_bready,
+  output io_slave_bvalid,
+  output [1:0] io_slave_bresp,
+  output [3:0] io_slave_bid,
+  output io_slave_arready,
+  input  io_slave_arvalid,
+  input [31:0] io_slave_araddr,
+  input [3:0] io_slave_arid,
+  input [7:0] io_slave_arlen,
+  input [2:0] io_slave_arsize,
+  input [1:0] io_slave_arburst,
+  input  io_slave_rready,
+  output io_slave_rvalid,
+  output [1:0] io_slave_rresp,
+  output [31:0] io_slave_rdata,
+  output io_slave_rlast,
+  output [3:0] io_slave_rid
 );
 
   wire pc_en_wb_ifu;
@@ -213,7 +243,7 @@ module ysyx_26060166(
   wire rlast_xbar_clint;
   wire [3: 0] rid_xbar_clint;
 
-  clint clint0(
+  ysyx_26060166_clint clint0(
 	.clk(clock),
   	.arValid(arValid_xbar_clint),
   	.arReady(arReady_clint_xbar),
@@ -291,7 +321,7 @@ module ysyx_26060166(
   );
   */
 
-  xbar xbar0(
+  ysyx_26060166_xbar xbar0(
 	.clk(clock),
   	.ifu_arValid(arValid_ifu_xbar),
   	.ifu_arReady(arReady_xbar_ifu),
@@ -338,31 +368,31 @@ module ysyx_26060166(
 	.lsu_rlast(rlast_xbar_lsu),
 	.lsu_rid(rid_xbar_lsu),
 
-	.io_master_awReady(io_master_awReady),
-	.io_master_awValid(io_master_awValid),
+	.io_master_awReady(io_master_awready),
+	.io_master_awValid(io_master_awvalid),
 	.io_master_awaddr(io_master_awaddr),
 	.io_master_awid(io_master_awid),
 	.io_master_awlen(io_master_awlen),
 	.io_master_awsize(io_master_awsize),
 	.io_master_awburst(io_master_awburst),
-	.io_master_wReady(io_master_wReady),
-	.io_master_wValid(io_master_wValid),
+	.io_master_wReady(io_master_wready),
+	.io_master_wValid(io_master_wvalid),
 	.io_master_wdata(io_master_wdata),
 	.io_master_wstrb(io_master_wstrb),
 	.io_master_wlast(io_master_wlast),
-	.io_master_bReady(io_master_bReady),
-	.io_master_bValid(io_master_bValid),
+	.io_master_bReady(io_master_bready),
+	.io_master_bValid(io_master_bvalid),
 	.io_master_bresp(io_master_bresp),
 	.io_master_bid (io_master_bid ),
-	.io_master_arReady(io_master_arReady),
-	.io_master_arValid(io_master_arValid),
+	.io_master_arReady(io_master_arready),
+	.io_master_arValid(io_master_arvalid),
 	.io_master_araddr(io_master_araddr),
 	.io_master_arid(io_master_arid),
 	.io_master_arlen(io_master_arlen),
 	.io_master_arsize(io_master_arsize),
 	.io_master_arburst(io_master_arburst),
-	.io_master_rReady(io_master_rReady),
-	.io_master_rValid(io_master_rValid),
+	.io_master_rReady(io_master_rready),
+	.io_master_rValid(io_master_rvalid),
 	.io_master_rresp(io_master_rresp),
 	.io_master_rdata(io_master_rdata),
 	.io_master_rlast(io_master_rlast),
@@ -400,7 +430,7 @@ module ysyx_26060166(
 	.clint_rid(rid_xbar_clint)
   );
 
-  ifu ifu0(
+  ysyx_26060166_ifu ifu0(
 	.clk(clock),
 	.rst(reset),
 	.pc_in(pc_wb_ifu),
@@ -428,7 +458,7 @@ module ysyx_26060166(
 	.rid(rid_xbar_ifu)
   );
 
-  idu idu0(
+  ysyx_26060166_idu idu0(
 	.clk(clock),
 	.rst(reset),
 	.inst_in(inst_ifu_idu),
@@ -471,7 +501,7 @@ module ysyx_26060166(
 	.ready_aft(ready_exu_idu)
   );
 
-  gpr gpr0(
+  ysyx_26060166_gpr gpr0(
 	.clk(clock),
 	.wdata(wdata_wbu_gpr),
 	.waddr(waddr_wbu_gpr),
@@ -482,7 +512,7 @@ module ysyx_26060166(
 	.wen(wen_wb_gpr)
   );
 
-  exu exu0(
+  ysyx_26060166_exu exu0(
 	.clk(clock),
 	.rst(reset),
 	.pc_in(pc_idu_exu),
@@ -535,7 +565,7 @@ module ysyx_26060166(
 	.ready_aft(ready_lsu_exu)
   );
 
-  lsu lsu0(
+  ysyx_26060166_lsu lsu0(
 	.clk(clock),
 	.rst(reset),
 	.pc_sync_in(pc_sync_exu_lsu),
@@ -612,7 +642,7 @@ module ysyx_26060166(
 	.rid(rid_xbar_lsu)
   );
 
-  wbu wbu0(
+  ysyx_26060166_wbu wbu0(
 	.clk(clock),
 	.rst(reset),
 	.pc_sync(pc_sync_lsu_wbu),
@@ -653,7 +683,7 @@ module ysyx_26060166(
 //	.ready_aft(ready_wbu_lsu)
   );
 
-  csr csr0(
+  ysyx_26060166_csr csr0(
 	.csr_raddr(csr_addr_iduout),
 	.csr_waddr(csr_waddr_wbu_csr),
 	.csr_wdata(csr_wdata_wbu_csr),
