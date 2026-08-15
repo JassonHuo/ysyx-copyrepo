@@ -27,10 +27,14 @@ extern uint32_t skip_pc;
 
 #ifdef CONFIG_MEMDIFFTEST
 uint32_t ref_mem[MEM_SIZE] = {0};
+uint32_t ref_sram[0x00ffffff] = {0};
+uint32_t ref_mrom[0x00000fff] = {0};
 
 void get_ref_mem()
 {
   difftest_memcpy(0x80000000, (void*)ref_mem,0x7ffffff, DIFFTEST_TO_DUT);
+  difftest_memcpy(0x0f000000, (void*)ref_sram, 0x00ffffff, DIFFTEST_TO_DUT);
+  difftest_memcpy(0x0f000000, (void*)ref_mrom, 0x00000fff, DIFFTEST_TO_DUT);
 }
 
 bool mem_check()
@@ -111,6 +115,7 @@ void init_difftest()
   assert(difftest_exec);
 
   difftest_memcpy(0x80000000, (void*)mem, 0x7ffffff, DIFFTEST_TO_REF);
+  difftest_memcpy(0x20000000, (void*)mem, 0x00000fff, DIFFTEST_TO_REF);
   get_all_Regs();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
 #endif

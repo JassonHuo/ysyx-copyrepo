@@ -31,6 +31,8 @@ static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
+static uint8_t mrom[0x00000fff];
+static uint8_t sram[0x00ffffff];
 
 #ifdef CONFIG_MTRACE
 #define MB_SIZE 100
@@ -61,13 +63,74 @@ uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static word_t pmem_read(paddr_t addr, int len) {
-  word_t ret = host_read(guest_to_host(addr), len);
+  word_t ret = 0;
+  if(addr >= 0x0f000000 && addr <= 0x0fffffff)
+  {
+	switch(len)
+	{
+	  case 1:
+		ret = *(sram + addr - 0x0f000000);
+		break;
+	  case 2:
+		ret = *(uint16_t*)(sram + addr - 0x0f000000);
+		break;
+	  case 4:
+		ret = *(uint32_t*)(sram + addr - 0x0f000000);
+	}
+  }
+  else if(addr >= 0x20000000 && addr <= 0x20000fff)
+  {
+	switch(len)
+	{
+	  case 1:
+		ret = *(mrom + addr - 0x0f000000);
+		break;
+	  case 2:
+		ret = *(uint16_t*)(mrom + addr - 0x0f000000);
+		break;
+	  case 4:
+		ret = *(uint32_t*)(mrom + addr - 0x0f000000);
+		break;
+	}
+  }
+  else
+	ret = host_read(guest_to_host(addr), len);
 //  printf("ret in pmem: %x\t", (uint32_t)ret);
   return ret;
 }
 
 static void pmem_write(paddr_t addr, int len, word_t data) {
-  host_write(guest_to_host(addr), len, data);
+  if(addr >= 0x0f000000 && addr <= 0x0fffffff)
+  {
+	switch(len)
+	{
+	  case 1:
+		*(sram + addr - 0x0f000000) = (uint8_t)data;
+		break;
+	  case 2:
+		*(uint16_t*)(sram + addr - 0x0f000000) = (uint16_t)data;
+		break;
+	  case 4:
+		*(uint32_t*)(sram + addr - 0x0f000000) = (uint32_t)data;
+		break;
+	}
+  }
+  else if(addr >= 0x20000000 && addr <= 0x20000fff)
+  {
+	switch(len)
+	{
+	  case 1:
+		*(mrom + addr - 0x0f000000) = (uint8_t)data;
+		break;
+	  case 2:
+		*(uint16_t*)(mrom + addr - 0x0f000000) = (uint16_t)data;
+		break;
+	  case 4:
+		*(uint32_t*)(mrom + addr - 0x0f000000) = (uint32_t)data;
+	}
+  }
+  else
+	host_write(guest_to_host(addr), len, data);
 }
 
 static void out_of_bound(paddr_t addr) {

@@ -68,7 +68,9 @@ module ysyx_26060166_wbu(
   end
 
   assign ready_pre = valid_pre;
-  assign done = ready_pre & valid_pre;
+  (* verilator public_flat_rw *)wire pre_succ;
+  assign pre_succ = ready_pre & valid_pre;
+  assign done = pre_succ;
 
   assign rd_addr_out = rd_addr;
   assign wen_out = wen & done;
