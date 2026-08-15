@@ -120,13 +120,13 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 	switch(len)
 	{
 	  case 1:
-		*(mrom + addr - 0x0f000000) = (uint8_t)data;
+		*(mrom + addr - 0x20000000) = (uint8_t)data;
 		break;
 	  case 2:
-		*(uint16_t*)(mrom + addr - 0x0f000000) = (uint16_t)data;
+		*(uint16_t*)(mrom + addr - 0x20000000) = (uint16_t)data;
 		break;
 	  case 4:
-		*(uint32_t*)(mrom + addr - 0x0f000000) = (uint32_t)data;
+		*(uint32_t*)(mrom + addr - 0x20000000) = (uint32_t)data;
 	}
   }
   else
@@ -189,7 +189,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   }
 #endif
 #endif
-  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
+  if (likely(in_pmem(addr)) || (addr >= 0x0f000000 && addr <= 0x0fffffff) || (addr >= 0x20000000 && addr <= 0x20000fff)) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }

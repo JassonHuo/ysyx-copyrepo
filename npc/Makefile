@@ -6,10 +6,10 @@ include ../Makefile
 
 
 VERILATOR = verilator
-VERILATOR_CFLAGS += -MMD --build -cc --x-assign fast \
+VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign fast \
 					--x-initial fast --noassert \
 					--timescale "1ns/1ns" --no-timing \
-					--autoflush
+					--autoflush --public-flat-rw
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
@@ -71,7 +71,6 @@ $(BIN): $(VSRC) $(CSRC)
 #		-LDFLAGS "-lreadline"
 
 IMG ?= $(NPC_HOME)/csrc/dummy.bin
-IMG = $(NPC_HOME)/char-test.bin
 ELF ?= $(NPC_HOME)/csrc/dummy.elf
 
 

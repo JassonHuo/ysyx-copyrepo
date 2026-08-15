@@ -469,7 +469,7 @@ void run_cycle(uint64_t n)
 	for(int i = 3; i >= 0; i --)
 	  p += sprintf(inst_str + strlen(inst_str), "%02x ", inst[i]);
 	sprintf(tmp, "\t%s", inst_str);
-	if(top->done)
+	if(top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done)
 	  ib_inQue(tmp);
 	if(output_pc)
 	  printf("%s\n", inst_str);
@@ -554,7 +554,7 @@ void run_cycle(uint64_t n)
 	static bool done;
 	static bool pre_done;
 	pre_done = done;
-	done = top->done;
+	done = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done;
 	if(pre_done & ~done)
 	  difftest_step();
 #endif
