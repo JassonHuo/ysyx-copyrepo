@@ -134,7 +134,7 @@ module ysyx_26060166_lsu(
   assign bReady = (state == BREADY);
   assign araddr = alu;
   assign awaddr = alu;
-  assign wdata = src2;
+  assign wdata = src2 << {alu[1: 0], 3'b0};
   assign wstrb = mask;
   assign awlen = 8'b0;
   assign awsize = {1'b0, width};
@@ -173,14 +173,12 @@ module ysyx_26060166_lsu(
 
   always@(*)begin
 	if(mem_valid & valid_aft)begin
-	  /*
 	  rdata = (lsu_rdata >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
 	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
 		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
-	  */
-	  rdata = lsu_rdata;
+//	  rdata = lsu_rdata;
 	  if(mem_wen)begin
 		ifu_wdata = src2;
 	  end
