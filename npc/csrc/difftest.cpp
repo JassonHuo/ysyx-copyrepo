@@ -6,6 +6,7 @@
 
 #define RED "\033[31m"
 #define YELLOW "\033[33m"
+#define BLUE "\033[34m"
 #define RESET "\033[0m"
 #define MEM_SIZE 134217727
 
@@ -26,10 +27,12 @@ extern uint32_t skip_pc;
 
 #ifdef CONFIG_MEMDIFFTEST
 uint32_t ref_mem[MEM_SIZE] = {0};
+uint32_t ref_mrom[0x00000fff] = {0};
 
 void get_ref_mem()
 {
   difftest_memcpy(0x80000000, (void*)ref_mem,0x7ffffff, DIFFTEST_TO_DUT);
+  difftest_memcpy(0x20000000, (void*)ref_mrom, 0x00000fff, DIFFTEST_TO_DUT);
 }
 
 bool mem_check()
@@ -69,26 +72,6 @@ void get_all_Regs()
 
 bool reg_check()
 {
-  /*
-  for(int i = 0; i < 33; i ++)
-  {
-	if(npc_reg[i] != ref_reg[i])
-	{
-	  for(int j = 0; j < 33; j ++)
-	  {
-		if(i == j)
-		  printf(RED);
-		else if(ref_reg[j])
-		  printf(YELLOW);
-		if(j == 32) printf("pc : ");
-		else printf("%-3s: ", get_reg_name(j));
-		printf("nemu: %08x, npc: %08x" RESET "\n", ref_reg[j], npc_reg[j]);
-	  }
-	  return false;
-	}
-  }
-  return true;
-  */
   int ret = memcmp(ref_reg, npc_reg, (4096 + 33) * 4);
   if(ret)
   {
@@ -118,7 +101,7 @@ bool reg_check()
 void init_difftest()
 {
 #ifdef CONFIG_DIFFTEST
-  printf("Difftest opened\n");
+  printf(BLUE "[%s %d %s] Difftest opened" RESET "\n", __FILE__, __LINE__, __func__);
   void *dl_handle = dlopen("../nemu/build/riscv32-nemu-interpreter-so", RTLD_LAZY);
   assert(dl_handle);
 
@@ -129,7 +112,8 @@ void init_difftest()
   difftest_exec = (void(*)(uint64_t))dlsym(dl_handle, "difftest_exec");
   assert(difftest_exec);
 
-  difftest_memcpy(0x80000000, (void*)mem, 0x7ffffff, DIFFTEST_TO_REF);
+//  difftest_memcpy(0x80000000, (void*)mem, 0x7ffffff, DIFFTEST_TO_REF);
+  difftest_memcpy(0x20000000, (void*)mem, 0x1000, DIFFTEST_TO_REF);
   get_all_Regs();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
 #endif
@@ -143,7 +127,6 @@ void difftest_skip()
 
 void difftest_step()
 {
-//  printf("test, pc: %08x pc_in: %08x\n", c_get_Pc(), test_pc);
   if(to_device)
   {
 	if(c_get_Pc() == skip_pc)

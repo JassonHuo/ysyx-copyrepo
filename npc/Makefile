@@ -1,4 +1,4 @@
-TOPNAME = top
+TOPNAME = ysyxSoCFull
 NXDC_FILE = constr/top.nxdc
 INC_PATH ?= 
 
@@ -7,7 +7,9 @@ include ../Makefile
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign fast \
-					--x-initial fast --noassert
+					--x-initial fast --noassert \
+					--timescale "1ns/1ns" --no-timing \
+					--autoflush --public-flat-rw
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
@@ -35,17 +37,25 @@ $(shell mkdir -p $(BUILD_DIR))
 #	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 VSRC = $(NPC_HOME)/vsrc/*.v
+#VSRC += $(SOC_HOME)/perip/*/*.v
+VSRC += $(shell find $(SOC_HOME)/perip -name "*.v")
+VSRC += $(SOC_HOME)/build/ysyxSoCFull.v
 CSRC = $(NPC_HOME)/csrc/*.c
 CSRC += $(NPC_HOME)/csrc/*.cpp
+VERILATOR_INCPATH += $(NPC_HOME)/vsrc
+VERILATOR_INCPATH += $(SOC_HOME)/perip/uart16550/rtl
+VERILATOR_INCPATH += $(SOC_HOME)/perip/spi/rtl
+VERILATOR_INCFLAGS = $(addprefix -I, $(VERILATOR_INCPATH))
 
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
+#CXXFLAGS += -O0 -g
 #CXXFLAGS += -DCONFIG_ITRACE
 #CXXFLAGS += -DCONFIG_MTRACE
 #CXXFLAGS += -DCONFIG_FTRACE
-#CXXFLAGS += -DCONFIG_DIFFTEST
+CXXFLAGS += -DCONFIG_DIFFTEST
 #CXXFLAGS += -DCONFIG_MEMDIFFTEST
-#$(info INCFLAGS = $(INCFLAGS))
+#CXXFLAGS += -DCONFIG_WAVE
 
 LDFLAGS += -lreadline -g
 
@@ -56,7 +66,7 @@ $(BIN): $(VSRC) $(CSRC)
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))\
-		-j 0 -I$(NPC_HOME)/vsrc\
+		-j 0 $(VERILATOR_INCFLAGS)\
 		--trace-vcd
 #		-LDFLAGS "-lreadline"
 
@@ -67,8 +77,9 @@ ELF ?= $(NPC_HOME)/csrc/dummy.elf
 all: default
 #	@echo "Write this Makefile by your self."
 
-run: $(BIN)
+run: $(BIN) 
 #	@$^
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) -b
 
 gdb: $(BIN)

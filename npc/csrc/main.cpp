@@ -1,9 +1,11 @@
 #include <stdio.h>
-#include <Vtop.h>
+//#include <Vtop.h>
+#include <VysyxSoCFull.h>
 #include <verilated.h>
 #include <stdint.h>
 #include "svdpi.h"
-#include "Vtop__Dpi.h"
+//#include "Vtop__Dpi.h"
+#include "VysyxSoCFull__Dpi.h"
 #include <limits.h>
 #include <fstream>
 #include <cstring>
@@ -14,6 +16,8 @@
 #include "sdb.h"
 #include <capstone/capstone.h>
 #include <verilated_vcd_c.h>
+//#include "Vtop___024root.h"
+#include "VysyxSoCFull___024root.h"
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -28,7 +32,10 @@
 #define BUFFER_MEMORY 1
 #define BUFFER_FUNCTION 2
 
-#define cat(a) a##buffer
+#define cat(a, b) a##b
+#define CONCAT(x, y) cat(x, y)
+#define CSRCAT(x) CONCAT(CSR_PUBLIC_PATH, x)
+#define CSR_PUBLIC_PATH top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__csr0__DOT__
 
 #define TRACE(a) CONFIG_##a##TRACE
 #define CONFIG_TRACES  \
@@ -44,7 +51,7 @@
 
 uint32_t mem[MEM_SIZE] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
-static Vtop *top = new Vtop;
+static TOP_NAME *top = new TOP_NAME;
 VerilatedVcdC* tfp = new VerilatedVcdC;
 
 static struct timeval tv;
@@ -89,26 +96,11 @@ static int IB_tail = 0;
 
 static void ib_inQue(char *str)
 {
-  /*
-  memcpy(iring_buffer[ib_tail], str, 100);
-  ib_tail = (ib_tail + 1) % IB_SIZE;
-  if(ib_tail == ib_head)
-	ib_head = (ib_head + 1) % IB_SIZE;
-	*/
   INQUE(iring, IB);
 }
 
 static void display_ib()
 {
-  /*
-  for(int i = ib_head; i != ib_tail;)
-  {
-	if(i == (ib_tail - 1 + IB_SIZE) % IB_SIZE)
-		printf(RED " -->");
-	printf("%s" RESET "\n", iring_buffer[i]);
-	i = (i + 1) % IB_SIZE;
-  }
-  */
   DISPLAY(iring, IB);
 }
 #endif
@@ -120,7 +112,7 @@ static int MB_tail = 0;
 
 static void mb_inQue(char *str)
 {
-  /*
+ /*
   memcpy(memory_buffer[mb_tail], str, 100);
   mb_tail = (mb_tail + 1) % MB_SIZE;
   */
@@ -171,6 +163,7 @@ void init_elf(char *args);
 
 int batch_mode_open();
 uint32_t c_get_Pc();
+uint32_t c_get_Reg(int idx);
 
 FILE *fp = NULL;
 
@@ -272,6 +265,14 @@ static inline uint64_t get_time()
   return tv.tv_sec * 1000000 + tv.tv_usec - start_time;
 }
 
+extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
+extern "C" void mrom_read(int32_t addr, int32_t *data) { *data = mem[(addr - 0x20000000) >> 2]; }
+
+extern "C" void TO_device()
+{
+  to_device = true;
+}
+
 extern "C" int pmem_read(int addr)
 {
 #ifdef CONFIG_MTRACE
@@ -287,7 +288,7 @@ extern "C" int pmem_read(int addr)
 #endif
 #endif
 
-  if(addr == 0x10000000) {to_device = true; skip_pc = c_get_Pc(); return 0;}
+  if(addr == 0x02000000) {to_device = true; skip_pc = c_get_Pc(); return 0;}
   else if(addr == 0x10000048) {to_device = true;skip_pc = c_get_Pc(); return (uint32_t)get_time();}
   else if(addr == 0x1000004c){to_device = true;  skip_pc = c_get_Pc(); return get_time() >> 32;}
   else if(addr >= 0x80000000 && addr <= 0x87ffffff) return mem[((uint32_t)addr - 0x80000000) >> 2];
@@ -304,7 +305,7 @@ extern "C" int pmem_read(int addr)
 
 extern "C" void pmem_write(int waddr, int wdata, char wmask)
 {
-  if(top->clk)
+  //if(top->clock)
   {
 #ifdef CONFIG_MTRACE
 	char tmp[100];
@@ -342,6 +343,8 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 	  uint32_t tmp_mask = mask;
 	  while(tmp_mask % 2 == 0)
 	  {
+		if(!tmp_mask)
+		  break;
 		tmp_mask = tmp_mask >> 4;
 	  }
 	  wdata = wdata & tmp_mask;
@@ -372,11 +375,11 @@ extern "C" void do_quitcheck()
   {
 	printf(RED "ABORT " RESET);
   }
-  else if(!top->a0)
+  else if(!c_get_Reg(10))
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
-  printf("at pc = %08x\n", top->pc);
+  printf("at pc = %08x\n", c_get_Pc());
 //  if(NPC_state == NPC_ABORT)
 //	exit(1);
 }
@@ -394,38 +397,57 @@ uint32_t hex2num(std::string &hex)
 
 uint32_t c_get_Reg(int idx)
 {
+  /*
   extern int get_Reg(int idx);
+  assert(top != NULL);
+  assert(svGetScopeFromName("TOP") != NULL);
   svSetScope(svGetScopeFromName("TOP.top.gpr0.Gpr"));
   return (uint32_t)get_Reg(idx);
+  */
+  if(idx >= 0 && idx <= 15)
+	return top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__gpr0__DOT__Gpr__DOT__rf[idx];
+  return 0;
 }
 
 uint32_t c_get_Inst()
 {
+  /*
   extern int get_Inst();
   svSetScope(svGetScopeFromName("TOP.top.idu0"));
   return (uint32_t)get_Inst();
+  */
+  return top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu0__DOT__inst;
 }
 
 uint32_t c_get_Pc()
 {
+  /*
   extern int get_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.pc0"));
+  svSetScope(svGetScopeFromName("TOP.top.ifu0.pc0"));
   return (uint32_t)get_Pc();
+  */
+  return top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__ifu0__DOT__pc0__DOT__pc;
 }
 
 uint32_t c_get_Csr(int idx)
 {
+  /*
   extern int get_Csr(int idx);
   svSetScope(svGetScopeFromName("TOP.top.csr0"));
   return (uint32_t)get_Csr(idx);
+  */
+  if(idx == 0x341)
+	return CSRCAT(mepc);
+  else if(idx == 0x342)
+	return CSRCAT(mcause);
+  else if(idx == 0x300)
+	return CSRCAT(mstatus);
+  else if(idx == 0x305)
+	return CSRCAT(mtvec);
+  else
+	return 0;
 }
 
-uint32_t c_get_next_Pc()
-{
-  extern int get_next_Pc();
-  svSetScope(svGetScopeFromName("TOP.top.pc0"));
-  return (uint32_t)get_next_Pc();
-}
 
 unsigned long long cycle = 0;
 
@@ -449,7 +471,8 @@ void run_cycle(uint64_t n)
 	for(int i = 3; i >= 0; i --)
 	  p += sprintf(inst_str + strlen(inst_str), "%02x ", inst[i]);
 	sprintf(tmp, "\t%s", inst_str);
-	ib_inQue(tmp);
+	if(top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done)
+	  ib_inQue(tmp);
 	if(output_pc)
 	  printf("%s\n", inst_str);
 #endif
@@ -514,30 +537,47 @@ void run_cycle(uint64_t n)
 	  }
 	}
 #endif
-	top->clk = 0;
+	top->clock = 0;
 	top->eval();
 	cycle ++;
 //	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
-	top->clk = 1;
-	top->eval();
+#ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 	tfp->flush();
+#endif
+	top->clock = 1;
+	top->eval();
+#ifdef CONFIG_WAVE
+	tfp->dump(contextp->time());
+	contextp->timeInc(1);
+	tfp->flush();
+#endif
 #ifdef CONFIG_DIFFTEST
-	difftest_step();
+	static bool done;
+	static bool pre_done;
+	pre_done = done;
+	done = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done;
+	if(pre_done & ~done)
+	  difftest_step();
 #endif
 	if(NPC_state != NPC_RUNNING)
 	{
 #ifdef CONFIG_ITRACE
-	 display_ib();
+	  display_ib();
 #endif
+	  return;
 	}
   }
 }
 int main(int argc, char** argv) {
+  Verilated::commandArgs(argc, argv);
+#ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
   top->trace(tfp, 99);
   tfp->open("wave.vcd");
+  printf(BLUE "[%s %d %s] Open wave dump to wave.vcd" RESET "\n", __FILE__, __LINE__, __func__);
+#endif
   printf(BLUE "Open physical memory area [0x80000000, 0x87ffffff]" RESET "\n");
   printf(BLUE "Open device serial at [0x10000000, 0x10000004]" RESET "\n");
   printf(BLUE "Open device rtc at [0x10000048, 0x1000004f]" RESET "\n");
@@ -545,29 +585,31 @@ int main(int argc, char** argv) {
   read_arg(argc, argv);
   init_disasm();
 
-  top->rst = 1;
+  top->reset = 1;
   for(int i = 0; i < 10; i ++)
   {
-	top->clk = 0;
+	top->clock = 0;
 	top->eval();
-	top->clk = 1;
+	top->clock = 1;
 	top->eval();
   }
-  top->rst = 0;
+  top->reset = 0;
 
   time_init();
 #ifdef CONFIG_DIFFTEST
   init_difftest();
 #endif
   sdb_mainloop();
-  printf("cycle num: %lld\n", cycle);
   delete top;
 #ifdef CONFIG_FTRACE
   display_fb();
 #endif
+#ifdef CONFIG_WAVE
+  tfp->close();
+#endif
   if(NPC_state == NPC_QUIT)
 	return 0;
-  tfp->close();
   do_quitcheck();
-  return top->a0;
+//  return c_get_Reg(10);
+  return (NPC_state == NPC_ABORT | c_get_Reg(10));
 }
