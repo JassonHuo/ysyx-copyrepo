@@ -39,12 +39,10 @@ SECTIONS {
   end = .;
   _end = .;
   _heap_start = ALIGN(0x1000);
-  /*
-  . = _heap_start + 0xfff;
-  */
+  . = _heap_start + 0x800;
   _heap_end = .;
   _stack_top = ALIGN(0x1000);
-  . = _stack_top + 0x1000;
+  . = 0x0f001fff;
   _stack_pointer = .;
   /*
   end = .;
