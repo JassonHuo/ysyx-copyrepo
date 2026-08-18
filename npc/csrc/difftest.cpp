@@ -127,7 +127,6 @@ void difftest_skip()
 
 void difftest_step()
 {
-  printf("test\n");
   if(to_device)
   {
 	if(c_get_Pc() == skip_pc)
@@ -137,6 +136,7 @@ void difftest_step()
 	}
 	else
 	{
+	  printf("test\n");
 	  get_all_Regs();
 	  difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
 	  to_device = false;
