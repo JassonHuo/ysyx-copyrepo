@@ -131,7 +131,6 @@ void difftest_step()
   {
 	if(c_get_Pc() == skip_pc)
 	{
-	  printf("test\n");
 	  difftest_skip();
 	  return;
 	}
