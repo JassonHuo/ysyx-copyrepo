@@ -137,9 +137,9 @@ module ysyx_26060166_xbar(
   wire [3:0] rid;
 
   always@(*)begin
-	if(araddr <= 32'h20000000 || araddr >= 32'h0fffffff || araddr <= 32'h20000fff && araddr >= 32'h0fffffff)
+	if(araddr >= 32'h20000000 || araddr <= 32'h0fffffff || araddr <= 32'h20000fff && araddr >= 32'h0fffffff)
 	  TO_device();
-	if(awaddr <= 32'h20000000 || awaddr >= 32'h0fffffff || awaddr <= 32'h20000fff && awaddr >= 32'h0fffffff)
+	if(awaddr >= 32'h20000000 || awaddr <= 32'h0fffffff || awaddr <= 32'h20000fff && awaddr >= 32'h0fffffff)
 	  TO_device();
   end
 
