@@ -546,6 +546,8 @@ void run_cycle(uint64_t n)
 #endif
 	top->clock = 1;
 	top->eval();
+	if(to_device)
+	  printf("test\n");
 #ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
