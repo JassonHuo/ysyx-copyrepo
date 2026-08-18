@@ -34,7 +34,8 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
   }
   else
 	assert(0);
-  printf("%08x\n", paddr_read(0x20000000 + 4, 4));
+  for(int i = 0; i < 10; i ++)
+  printf("%08x\n", paddr_read(0x20000000 + 4 * i, 4));
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
