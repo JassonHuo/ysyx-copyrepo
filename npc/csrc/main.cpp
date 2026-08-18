@@ -18,6 +18,8 @@
 #include <verilated_vcd_c.h>
 //#include "Vtop___024root.h"
 #include "VysyxSoCFull___024root.h"
+#include <signal.h>
+#include <unistd.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -570,7 +572,14 @@ void run_cycle(uint64_t n)
 	}
   }
 }
+
+void handle_sigint(int sig)
+{
+  NPC_state = NPC_ABORT;
+}
+
 int main(int argc, char** argv) {
+  signal(SIGINT, handle_sigint);
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
