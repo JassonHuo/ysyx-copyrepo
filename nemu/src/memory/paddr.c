@@ -173,6 +173,7 @@ word_t paddr_read(paddr_t addr, int len) {
   else if (addr >= 0x0f000000 & addr <= 0x0fffffff) return sram[(addr - 0x0f000000) >> 2];
   else if (addr >= 0x20000000 & addr <= 0x20000fff) return mrom[(addr - 0x20000000) >> 2];
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
+  printf("test\n");
   out_of_bound(addr);
   return 0;
 }
@@ -193,6 +194,5 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 #endif
   if (likely(in_pmem(addr)) || (addr >= 0x0f000000 && addr <= 0x0fffffff) || (addr >= 0x20000000 && addr <= 0x20000fff)) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
-  printf("test\n");
   out_of_bound(addr);
 }
