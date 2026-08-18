@@ -106,13 +106,13 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 	switch(len)
 	{
 	  case 1:
-		*(uint8_t*)(sram + addr - 0x0f000000) = (uint8_t)data;
+		*((uint8_t*)sram + addr - 0x0f000000) = (uint8_t)data;
 		break;
 	  case 2:
-		*(uint16_t*)(sram + addr - 0x0f000000) = (uint16_t)data;
+		*((uint16_t*)sram + addr - 0x0f000000) = (uint16_t)data;
 		break;
 	  case 4:
-		*(uint32_t*)(sram + addr - 0x0f000000) = (uint32_t)data;
+		*((uint32_t*)sram + addr - 0x0f000000) = (uint32_t)data;
 		break;
 	}
   }
@@ -121,13 +121,13 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 	switch(len)
 	{
 	  case 1:
-		*(uint8_t*)(mrom + addr - 0x20000000) = (uint8_t)data;
+		*((uint8_t*)mrom + addr - 0x20000000) = (uint8_t)data;
 		break;
 	  case 2:
-		*(uint16_t*)(mrom + addr - 0x20000000) = (uint16_t)data;
+		*((uint16_t*)mrom + addr - 0x20000000) = (uint16_t)data;
 		break;
 	  case 4:
-		*(uint32_t*)(mrom + addr - 0x20000000) = (uint32_t)data;
+		*((uint32_t*)mrom + addr - 0x20000000) = (uint32_t)data;
 		break;
 	}
   }
