@@ -49,7 +49,6 @@ void halt(int code) {
 
 void _trm_init() {
   data_copy();
-  /*
   uint8_t LCR = 0;
   volatile uint8_t* base = (volatile uint8_t *)0x10000000;
   LCR = base[3];
@@ -57,7 +56,6 @@ void _trm_init() {
   base[0] = 1;
   base[1] = 0;
   base[3] = LCR;
-  */
   /*
   asm volatile("lb %0, 3(%1)": "=r"(LCR): "r"(base));
   LCR = LCR | 0x80;
