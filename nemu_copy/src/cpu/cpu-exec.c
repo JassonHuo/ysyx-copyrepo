@@ -310,6 +310,8 @@ static void execute(uint64_t n) {
 	  */
     if (nemu_state.state != NEMU_RUNNING) 
 	{
+	  if(nemu_state.state == NEMU_ABORT)
+	  {
 #ifdef CONFIG_FTRACE
 	  display_ft_buffer();
 #endif
@@ -324,6 +326,7 @@ static void execute(uint64_t n) {
 #ifdef CONFIG_ITRACE
 	  display_iring();
 #endif
+	  }
 	  break;
 	}
     IFDEF(CONFIG_DEVICE, device_update());

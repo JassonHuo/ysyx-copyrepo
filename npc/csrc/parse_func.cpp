@@ -5,9 +5,6 @@
 #include <string.h>
 #include <errno.h>
 
-#define BLUE "\033[34m"
-#define RESET "\033[0m"
-
 FILE *elf_fp = NULL;
 typedef struct{
   char name[20];
@@ -38,7 +35,6 @@ char *march_func(uint32_t addr)
 
 void init_elf(char *file_name)
 {
-#ifdef CONFIG_FTRACE
   file_name = strtok(file_name, ",");
   if(file_name == NULL)
   {
@@ -50,7 +46,7 @@ void init_elf(char *file_name)
   {
 	printf("Elf file %s open fail,try again\n", file_name);
 	perror("fopen failed");
-  	printf("Error code:%d\n", errno);
+	printf("Error code:%d\n", errno);
 	exit(1);
   }
   Elf32_Ehdr Ehdr;
@@ -74,7 +70,7 @@ void init_elf(char *file_name)
   {
 	if(Shdr[offset].sh_type == SHT_SYMTAB)
 	{
-	  sym = (Elf32_Sym*)malloc(Shdr[offset].sh_size);
+	  sym = (Elf32_Sym*)malloc(Shdr[offset].sh_size * sizeof(Elf32_Sym));
 	  fseek(elf_fp, Shdr[offset].sh_offset, SEEK_SET);
 	  ret = fread(sym, Shdr[offset].sh_size, 1, elf_fp);
 	  assert(ret >= 1);
@@ -94,10 +90,8 @@ void init_elf(char *file_name)
 	  while(*p)
 		FUNC_table[func_top].name[tmp_pos ++] = *p++;
 	  FUNC_table[func_top].name[tmp_pos] = '\0';
+//	  printf("%s\n", FUNC_table[func_top].name);
 	  func_top++;
 	}
   }
-  for(int i = 0; i < func_top; i ++)
-	printf(BLUE "[%s %d %s] parse function: %s(%08x-%08x)\n" RESET, __FILE__, __LINE__, __func__, FUNC_table[i].name, FUNC_table[i].addr, FUNC_table[i].addr + FUNC_table[i].size - 1);
-#endif
 }
