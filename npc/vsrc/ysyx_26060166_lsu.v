@@ -173,6 +173,7 @@ module ysyx_26060166_lsu(
 
   always@(*)begin
 	if(mem_valid & valid_aft)begin
+	  $display(lsu_rdata);
 	  rdata = (lsu_rdata >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
