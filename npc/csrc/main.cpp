@@ -548,6 +548,7 @@ void run_cycle(uint64_t n)
 	before_pc = c_get_Pc();
 	top->clock = 1;
 	top->eval();
+	printf("%08x ,skip_pc %08x\n", c_get_Pc(), skip_pc);
 #ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
