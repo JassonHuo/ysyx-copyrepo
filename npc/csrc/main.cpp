@@ -18,15 +18,12 @@
 #include <verilated_vcd_c.h>
 //#include "Vtop___024root.h"
 #include "VysyxSoCFull___024root.h"
-#include <signal.h>
-#include <unistd.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
 #define GREEN "\033[32m"
 #define RED "\033[31m"
 #define BLUE "\033[34m"
-#define YELLOW "\033[33m"
 #define RESET "\033[0m"
 #define IB_SIZE 16
 #define MB_SIZE 100
@@ -380,10 +377,6 @@ extern "C" void do_quitcheck()
   {
 	printf(RED "ABORT " RESET);
   }
-  else if(NPC_state == NPC_INTERUPT)
-  {
-	printf(YELLOW "INTERUPT " RESET);
-  }
   else if(!c_get_Reg(10))
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
@@ -577,14 +570,7 @@ void run_cycle(uint64_t n)
 	}
   }
 }
-
-void handle_sigint(int sig)
-{
-  NPC_state = NPC_INTERUPT;
-}
-
 int main(int argc, char** argv) {
-  signal(SIGINT, handle_sigint);
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);

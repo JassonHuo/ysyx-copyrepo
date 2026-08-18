@@ -6,6 +6,5 @@
 #define NPC_END 2
 #define NPC_QUIT 3
 #define NPC_ABORT 4
-#define NPC_INTERUPT 5
 #define MEM_SIZE 134217727
 
