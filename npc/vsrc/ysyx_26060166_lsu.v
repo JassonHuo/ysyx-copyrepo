@@ -177,10 +177,11 @@ module ysyx_26060166_lsu(
 	  rdata = (lsu_rdata >> {alu[1: 0], 3'b0}) & (width == `MEM_WORD ? ~32'b0:
 		(width == `MEM_HALF ? 32'hFFFF:
 		(width == `MEM_BYTE ? 32'hFF: 32'b0)));
-	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
-		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
 	  */
 	  rdata = lsu_rdata;
+	  rdata = rdata | (width == `MEM_HALF ? {{16{is_signed & rdata[15]}}, 16'b0}:
+		(width == `MEM_BYTE ? {{24{is_signed & rdata[7]}}, 8'b0}: 32'b0));
+//	  rdata = lsu_rdata;
 	  if(mem_wen)begin
 		ifu_wdata = src2;
 	  end
