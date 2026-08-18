@@ -271,6 +271,7 @@ extern "C" void mrom_read(int32_t addr, int32_t *data) { *data = mem[(addr - 0x2
 extern "C" void TO_device()
 {
   to_device = true;
+  skip_pc = c_get_Pc();
 }
 
 extern "C" int pmem_read(int addr)
