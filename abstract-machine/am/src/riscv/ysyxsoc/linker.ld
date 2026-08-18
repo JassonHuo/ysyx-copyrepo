@@ -33,8 +33,9 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sram AT > mrom
-  . = _pmem_start;
+	_bss_end = .;
+  } > sram
+  . = _bss_end;
   end = .;
   _end = .;
   _heap_start = ALIGN(0x1000);
