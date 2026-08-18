@@ -30,17 +30,10 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 	for(int i = 0; i < n; i ++)
 	{
 	  paddr_write(addr + i, 1, *(char*)(buf + i));
-//	  printf("write data: %08x to %08x, read: %08x\n", *(uint8_t*)(buf + i), addr + i, paddr_read(addr + i, 1));
-//  	  printf("copy memory at %08x\n", addr + i);
 	}
   }
   else
 	assert(0);
-}
-
-__EXPORT void difftest_memtodut(void *dut, void *ref, size_t n)
-{
-  memcpy(dut, ref, n);
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {

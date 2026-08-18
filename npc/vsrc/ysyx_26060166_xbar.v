@@ -136,12 +136,16 @@ module ysyx_26060166_xbar(
   wire rlast;
   wire [3:0] rid;
 
-  always@(*)begin
-	if(araddr <= 32'h20000000 || araddr >= 32'h0fffffff || araddr <= 32'h20000fff && araddr >= 32'h0fffffff)
+`ifdef VERILATOR
+  always@(posedge clk)begin
+	if(arValid & araddr < 32'h02000000 | awValid & awaddr < 32'h02000000)
+	  npc_abort();
+	if(arValid & (araddr > 32'h20000fff || araddr < 32'h0f000000 || (araddr < 32'h20000000 && araddr > 32'h0f001fff)))
 	  TO_device();
-	if(awaddr <= 32'h20000000 || awaddr >= 32'h0fffffff || awaddr <= 32'h20000fff && awaddr >= 32'h0fffffff)
+	else if(awValid & (awaddr > 32'h20000fff || awaddr < 32'h0f000000 || (awaddr < 32'h20000000 && awaddr > 32'h0f001fff)))
 	  TO_device();
   end
+`endif
 
   assign awaddr = lsu_awaddr;
   assign awValid = lsu_awValid;

@@ -20,8 +20,12 @@ SECTIONS {
     *(.rodata*)
   } > mrom AT > mrom
   .data : {
+	_data_start = .;
     *(.data*)
+	_data_end = .;
   } > sram AT > mrom : data
+  _data_load_start = LOADADDR(.data);
+  _data_size = _data_end - _data_start;
   edata = .;
   _data = .;
   .bss : {
@@ -29,8 +33,9 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
-  } > sram AT > mrom
-  . = _pmem_start;
+	_bss_end = .;
+  } > sram
+  . = _bss_end;
   end = .;
   _end = .;
   _heap_start = ALIGN(0x1000);

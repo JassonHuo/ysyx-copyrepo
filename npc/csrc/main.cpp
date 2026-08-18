@@ -57,6 +57,7 @@ VerilatedVcdC* tfp = new VerilatedVcdC;
 static struct timeval tv;
 static uint8_t *serial_base = NULL;
 static uint64_t start_time;
+static uint32_t before_pc;
 
 void sdb_mainloop();
 char *march_func(uint32_t addr);
@@ -271,6 +272,7 @@ extern "C" void mrom_read(int32_t addr, int32_t *data) { *data = mem[(addr - 0x2
 extern "C" void TO_device()
 {
   to_device = true;
+  skip_pc = c_get_Pc();
 }
 
 extern "C" int pmem_read(int addr)
@@ -379,7 +381,7 @@ extern "C" void do_quitcheck()
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
-  printf("at pc = %08x\n", c_get_Pc());
+  printf("at pc = %08x\n", before_pc);
 //  if(NPC_state == NPC_ABORT)
 //	exit(1);
 }
@@ -449,8 +451,6 @@ uint32_t c_get_Csr(int idx)
 }
 
 
-unsigned long long cycle = 0;
-
 void run_cycle(uint64_t n)
 {
   bool output_pc = false;
@@ -458,9 +458,9 @@ void run_cycle(uint64_t n)
 	output_pc = true;
   for(uint64_t i = 0; i < n && NPC_state != NPC_END; i ++)
   {
-	uint32_t pc = c_get_Pc();
 #ifdef CONFIG_ITRACE
 	uint32_t isa_inst = c_get_Inst();
+	uint32_t pc = c_get_Pc();
 	int p = 0;
 	uint8_t* inst = (uint8_t*)&isa_inst;
 	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
@@ -539,13 +539,13 @@ void run_cycle(uint64_t n)
 #endif
 	top->clock = 0;
 	top->eval();
-	cycle ++;
 //	if(NPC_state == NPC_END || NPC_state == NPC_ABORT)break;
 #ifdef CONFIG_WAVE
 	tfp->dump(contextp->time());
 	contextp->timeInc(1);
 	tfp->flush();
 #endif
+	before_pc = c_get_Pc();
 	top->clock = 1;
 	top->eval();
 #ifdef CONFIG_WAVE
