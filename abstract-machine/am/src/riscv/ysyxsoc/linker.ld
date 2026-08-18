@@ -18,10 +18,13 @@ SECTIONS {
   _etext = .;
   .rodata : {
     *(.rodata*)
+	*(.srodata*)
   } > mrom AT > mrom
   .data : {
 	_data_start = .;
     *(.data*)
+	*(.sdata)
+	*(.sdata*)
 	_data_end = .;
   } > sram AT > mrom : data
   _data_load_start = LOADADDR(.data);
@@ -33,17 +36,18 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+	*(COMMON)
 	_bss_end = .;
   } > sram
   . = _bss_end;
   end = .;
   _end = .;
   _heap_start = ALIGN(0x1000);
-  . = _heap_start + 0xfff;
+  . = _heap_start + 0x800;
   _heap_end = .;
   _stack_top = ALIGN(0x1000);
-  . = _stack_top + 0x1000;
-  _stack_pointer = .;
+  . = 0x0f001fff;
+  _stack_pointer = ALIGN(0x1000);
   /*
   end = .;
   _end = .;
