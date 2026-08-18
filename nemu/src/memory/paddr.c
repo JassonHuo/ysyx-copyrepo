@@ -127,6 +127,7 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 		break;
 	  case 4:
 		*(uint32_t*)(mrom + addr - 0x20000000) = (uint32_t)data;
+		break;
 	}
   }
   else
