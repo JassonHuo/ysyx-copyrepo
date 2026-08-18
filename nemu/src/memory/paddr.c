@@ -193,5 +193,6 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 #endif
   if (likely(in_pmem(addr)) || (addr >= 0x0f000000 && addr <= 0x0fffffff) || (addr >= 0x20000000 && addr <= 0x20000fff)) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
+  printf("test\n");
   out_of_bound(addr);
 }
