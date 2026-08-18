@@ -70,6 +70,7 @@ __EXPORT void difftest_raise_intr(word_t NO) {
 __EXPORT void difftest_init(int port) {
   void init_mem();
   init_mem();
+  printf("%08x\n", paddr_read(0x20000000 + 4, 4));
   /* Perform ISA dependent initialization. */
   init_isa();
 }
