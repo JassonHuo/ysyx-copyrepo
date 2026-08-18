@@ -50,7 +50,7 @@ VERILATOR_INCFLAGS = $(addprefix -I, $(VERILATOR_INCPATH))
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 #CXXFLAGS += -O0 -g
-#CXXFLAGS += -DCONFIG_ITRACE
+CXXFLAGS += -DCONFIG_ITRACE
 #CXXFLAGS += -DCONFIG_MTRACE
 #CXXFLAGS += -DCONFIG_FTRACE
 CXXFLAGS += -DCONFIG_DIFFTEST
@@ -80,7 +80,7 @@ all: default
 run: $(BIN) 
 #	@$^
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) -b
+	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) 
 
 gdb: $(BIN)
 	gdb $(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) 
