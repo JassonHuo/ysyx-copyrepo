@@ -18,6 +18,7 @@ SECTIONS {
   _etext = .;
   .rodata : {
     *(.rodata*)
+	*(.srodata*)
   } > mrom AT > mrom
   .data : {
 	_data_start = .;
@@ -35,6 +36,7 @@ SECTIONS {
     *(.bss*)
     *(.sbss*)
     *(.scommon)
+	*(COMMON)
 	_bss_end = .;
   } > sram
   . = _bss_end;
