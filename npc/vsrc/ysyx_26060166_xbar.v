@@ -142,7 +142,7 @@ module ysyx_26060166_xbar(
 	  npc_abort();
 	if(arValid & (araddr > 32'h20000fff || araddr < 32'h0f000000 || (araddr < 32'h20000000 && araddr > 32'h0f001fff)))
 	  TO_device();
-	if(awValid & (awaddr > 32'h20000fff || awaddr < 32'h0f000000 || (awaddr < 32'h20000000 && awaddr > 32'h0f001fff)))
+	else if(awValid & (awaddr > 32'h20000fff || awaddr < 32'h0f000000 || (awaddr < 32'h20000000 && awaddr > 32'h0f001fff)))
 	  TO_device();
   end
 `endif
