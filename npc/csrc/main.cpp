@@ -57,6 +57,7 @@ VerilatedVcdC* tfp = new VerilatedVcdC;
 static struct timeval tv;
 static uint8_t *serial_base = NULL;
 static uint64_t start_time;
+static uint32_t before_pc;
 
 void sdb_mainloop();
 char *march_func(uint32_t addr);
@@ -380,7 +381,7 @@ extern "C" void do_quitcheck()
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
 	printf(RED "HIT BAD TRAP " RESET);
-  printf("at pc = %08x\n", c_get_Pc());
+  printf("at pc = %08x\n", before_pc);
 //  if(NPC_state == NPC_ABORT)
 //	exit(1);
 }
@@ -544,6 +545,7 @@ void run_cycle(uint64_t n)
 	contextp->timeInc(1);
 	tfp->flush();
 #endif
+	before_pc = c_get_Pc();
 	top->clock = 1;
 	top->eval();
 	printf("skip pc: %08x, pc: %08x\n", skip_pc, c_get_Pc());
