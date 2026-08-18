@@ -20,8 +20,12 @@ SECTIONS {
     *(.rodata*)
   } > mrom AT > mrom
   .data : {
+	_data_start = .;
     *(.data*)
+	_data_end = .;
   } > sram AT > mrom : data
+  _data_load_start = LOADADDR(.data);
+  _data_size = _data_end - _data_start;
   edata = .;
   _data = .;
   .bss : {
