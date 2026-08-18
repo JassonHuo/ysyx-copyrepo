@@ -69,7 +69,7 @@ static word_t pmem_read(paddr_t addr, int len) {
 	switch(len)
 	{
 	  case 1:
-		ret = *(sram + addr - 0x0f000000);
+		ret = *(uint8_t*)(sram + addr - 0x0f000000);
 		break;
 	  case 2:
 		ret = *(uint16_t*)(sram + addr - 0x0f000000);
@@ -83,7 +83,7 @@ static word_t pmem_read(paddr_t addr, int len) {
 	switch(len)
 	{
 	  case 1:
-		ret = *(mrom + addr - 0x0f000000);
+		ret = *(uint8_t*)(mrom + addr - 0x0f000000);
 		break;
 	  case 2:
 		ret = *(uint16_t*)(mrom + addr - 0x0f000000);
@@ -100,13 +100,12 @@ static word_t pmem_read(paddr_t addr, int len) {
 }
 
 static void pmem_write(paddr_t addr, int len, word_t data) {
-  printf("%08x\n", data);
   if(addr >= 0x0f000000 && addr <= 0x0fffffff)
   {
 	switch(len)
 	{
 	  case 1:
-		*(sram + addr - 0x0f000000) = (uint8_t)data;
+		*(uint8_t*)(sram + addr - 0x0f000000) = (uint8_t)data;
 		break;
 	  case 2:
 		*(uint16_t*)(sram + addr - 0x0f000000) = (uint16_t)data;
@@ -121,7 +120,7 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 	switch(len)
 	{
 	  case 1:
-		*(mrom + addr - 0x20000000) = (uint8_t)data;
+		*(uint8_t*)(mrom + addr - 0x20000000) = (uint8_t)data;
 		break;
 	  case 2:
 		*(uint16_t*)(mrom + addr - 0x20000000) = (uint16_t)data;
