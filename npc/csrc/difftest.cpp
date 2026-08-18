@@ -114,10 +114,6 @@ void init_difftest()
 
 //  difftest_memcpy(0x80000000, (void*)mem, 0x7ffffff, DIFFTEST_TO_REF);
   difftest_memcpy(0x20000000, (void*)mem, 0x1000, DIFFTEST_TO_REF);
-  for(int i = 0; i < MEM_SIZE; i ++)
-  {
-	printf("%08x\n", mem[i]);
-  }
   get_all_Regs();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
 #endif
