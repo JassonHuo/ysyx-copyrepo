@@ -170,6 +170,8 @@ word_t paddr_read(paddr_t addr, int len) {
 #endif
 #endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
+  else if (addr >= 0x0f000000 & addr <= 0x0fffffff) return sram[(addr - 0x0f000000) >> 2];
+  else if (addr >= 0x20000000 & addr <= 0x20000fff) return mrom[(addr - 0x20000000) >> 2];
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
   return 0;
