@@ -43,7 +43,7 @@ SECTIONS {
   _heap_end = .;
   _stack_top = ALIGN(0x1000);
   . = 0x0f001fff;
-  _stack_pointer = .;
+  _stack_pointer = ALIGN(0x1000);
   /*
   end = .;
   _end = .;
