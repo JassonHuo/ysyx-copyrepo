@@ -138,14 +138,12 @@ module ysyx_26060166_xbar(
 
 `ifdef VERILATOR
   always@(posedge clk)begin
-	if(arValid || awValid)begin
-	if(araddr < 32'h02000000 || awaddr < 32'h02000000)
+	if(arValid & araddr < 32'h02000000 | awValid & awaddr < 32'h02000000)
 	  npc_abort();
-	if(araddr > 32'h20000fff || araddr < 32'h0f000000 || (araddr < 32'h20000000 && araddr > 32'h0f001fff))
+	if(arValid & (araddr > 32'h20000fff || araddr < 32'h0f000000 || (araddr < 32'h20000000 && araddr > 32'h0f001fff)))
 	  TO_device();
-	if(awaddr > 32'h20000fff || awaddr < 32'h0f000000 || (awaddr < 32'h20000000 && awaddr > 32'h0f001fff))
+	if(awValid & (awaddr > 32'h20000fff || awaddr < 32'h0f000000 || (awaddr < 32'h20000000 && awaddr > 32'h0f001fff)))
 	  TO_device();
-  end
   end
 `endif
 
