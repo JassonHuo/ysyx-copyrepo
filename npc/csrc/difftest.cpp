@@ -131,12 +131,12 @@ void difftest_step()
   {
 	if(c_get_Pc() == skip_pc)
 	{
+	  printf("test\n");
 	  difftest_skip();
 	  return;
 	}
 	else
 	{
-	  printf("test\n");
 	  get_all_Regs();
 	  difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
 	  to_device = false;
