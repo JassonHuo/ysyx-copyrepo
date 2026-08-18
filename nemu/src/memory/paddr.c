@@ -100,7 +100,6 @@ static word_t pmem_read(paddr_t addr, int len) {
 }
 
 static void pmem_write(paddr_t addr, int len, word_t data) {
-  printf("%d\n", len);
   if(addr >= 0x0f000000 && addr <= 0x0fffffff)
   {
 	switch(len)
