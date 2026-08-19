@@ -113,7 +113,7 @@ void init_difftest()
   assert(difftest_exec);
 
 //  difftest_memcpy(0x80000000, (void*)mem, 0x7ffffff, DIFFTEST_TO_REF);
-  difftest_memcpy(0x20000000, (void*)mem, 0x1000, DIFFTEST_TO_REF);
+  difftest_memcpy(0x20000000, (void*)mem, 0xfff, DIFFTEST_TO_REF);
   get_all_Regs();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
 #endif
