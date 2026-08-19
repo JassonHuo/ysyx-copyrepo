@@ -256,7 +256,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   nemu_current_pc = s->pc;
-  printf("%08x: %08x\n", s->pc, s->isa.inst);
 //  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
