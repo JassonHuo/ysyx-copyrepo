@@ -258,7 +258,6 @@ static void exec_once(Decode *s, vaddr_t pc) {
   nemu_current_pc = s->pc;
 //  printf("%08x, %08x\n", s->pc, s->snpc);
   cpu.pc = s->dnpc;
-  printf("nemu pc %08x: %08x\n", pc, s->isa.inst);
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
