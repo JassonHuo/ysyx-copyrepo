@@ -63,7 +63,6 @@ uint8_t* guest_to_host(paddr_t paddr) { return pmem + paddr - CONFIG_MBASE; }
 paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static word_t pmem_read(paddr_t addr, int len) {
-  printf("pc: %08x, addr: %08x, len: %d, mrom[1]: %08x\n", cpu.pc, addr, len, mrom[1]);
   word_t ret = 0;
   if(addr >= 0x0f000000 && addr <= 0x0f001fff)
   {
@@ -96,6 +95,7 @@ static word_t pmem_read(paddr_t addr, int len) {
   }
   else
 	ret = host_read(guest_to_host(addr), len);
+  printf("pc: %08x, addr: %08x, len: %d, mrom[1]: %08x, ret: %08x\n", cpu.pc, addr, len, mrom[1], ret);
   return ret;
 }
 
