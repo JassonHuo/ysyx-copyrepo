@@ -96,8 +96,7 @@ static word_t pmem_read(paddr_t addr, int len) {
   else
 	ret = host_read(guest_to_host(addr), len);
   if(cpu.pc == 0x20000194)
-	printf("nemu pc: %08x\n", ret);
-//  printf("ret in pmem: %x\t", (uint32_t)ret);
+	printf("nemu: %08x\n", ret);
   return ret;
 }
 
@@ -172,6 +171,8 @@ word_t paddr_read(paddr_t addr, int len) {
   }
 #endif
 #endif
+  if(cpu.pc == 0x20000194)
+	printf("nemu: %08x\n", mrom[0x194 >> 2]);
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   else if (addr >= 0x0f000000 && addr <= 0x0fffffff) return sram[(addr - 0x0f000000) >> 2];
   else if (addr >= 0x20000000 && addr <= 0x20000fff) return mrom[(addr - 0x20000000) >> 2];
