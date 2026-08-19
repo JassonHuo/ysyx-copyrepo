@@ -64,7 +64,7 @@ paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static word_t pmem_read(paddr_t addr, int len) {
   word_t ret = 0;
-  if(addr >= 0x0f000000 && addr <= 0x0fffffff)
+  if(addr >= 0x0f000000 && addr <= 0x0f001fff)
   {
 	switch(len)
 	{
@@ -95,8 +95,6 @@ static word_t pmem_read(paddr_t addr, int len) {
   }
   else
 	ret = host_read(guest_to_host(addr), len);
-  if(cpu.pc == 0x20000194)
-	printf("nemu: %08x\n", ret);
   return ret;
 }
 
