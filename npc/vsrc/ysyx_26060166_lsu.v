@@ -97,7 +97,7 @@ module ysyx_26060166_lsu(
   end
   
   always@(posedge clk)begin
-	$display(lsu_rdata);
+	$display("pc: %08x, data: %08x", pc_in, lsu_rdata);
 	lsfm <= {lsfm[6: 0], lsfm[0] ^ lsfm[3] ^ lsfm[7] ^ lsfm[2]};
   end
   //end
