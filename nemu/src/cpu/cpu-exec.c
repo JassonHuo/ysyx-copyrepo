@@ -252,6 +252,7 @@ uint32_t get_current_pc()
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
+  printf("%08x\n", pc);
   s->pc = pc;
   s->snpc = pc;
   isa_exec_once(s);
