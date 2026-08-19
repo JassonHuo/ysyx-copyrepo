@@ -13,8 +13,8 @@ int PRINT(const char *fmt, va_list args)
   buffer_top = 0;
   for(int fmt_pos = 0; fmt[fmt_pos]; fmt_pos ++)
   {
-	int left_align = 0;
-	int zero_pad = 0;
+	bool left_align = 0;
+	bool zero_pad = 0;
 	int width = 0;
 	int total_len = 0;
 	int point_acc = 0;

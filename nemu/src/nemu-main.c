@@ -47,16 +47,8 @@ sscanf(CONFIG_RANGE_END, "%x", &range_end);
   for (int i = 0; i < 10000; i ++)
   {
 	FILE *fp;
-//	FILE *out = stdout;
 	fp = popen("/home/jasonhuo/ysyx/ysyx-workbench/nemu/tools/gen-expr/build/gen-expr 2>/dev/null", "r");
-//	char buffer[70000];
 	Assert(fp, "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
-	//Assert(fgets(buffer, 60000, fp) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
-//	printf("%s\n", buffer);
-//	uint32_t result = (uint32_t)atoi(strtok(buffer, " "));
-//	char result[10];
-//	char expression[700];
-//	Assert(fscanf(fp, "%s,%s", result, expression) == 2, "%s %s %d: Memory Allocation Error", __FILE__, __func__, __LINE__);
 	char line[4096];
 	Assert(fgets(line, sizeof(line), fp), "%s %s %d:Memory Allocation Error", __FILE__, __func__, __LINE__);
 	line[strcspn(line, "\n")] = '\0';
@@ -65,21 +57,14 @@ sscanf(CONFIG_RANGE_END, "%x", &range_end);
 	*comma = '\0';
 	char *result = line;
 	char *expression = comma + 1;
-//	printf("expression: %s \n", expression);
-//	printf("perfect result %u\n", atoi(result));
 	unsigned int real_result = expr(expression, &success);
 	if(div_by_zero == true)
 	{
 	  printf("div_by_zero: %d\n", div_by_zero);
-//	  div_by_zero = false;
 	  i --;
 	  pclose(fp);
 	  continue;
 	}
-//	char buffer_real[70000];
-//	Assert(fgets(buffer_real, 70000, out) != NULL, "%s %s %d: Error", __FILE__, __func__, __LINE__);
-//	uint32_t real_result = atoi(buffer_real);
-//	printf("result: %u\n", real_result);
 	if(!success || atoi(result) != real_result)
 	{
 	  printf("Result Error\n");

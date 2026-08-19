@@ -31,8 +31,8 @@ static uint8_t *pmem = NULL;
 #else // CONFIG_PMEM_GARRAY
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
-static uint32_t mrom[0x00000fff];
-static uint32_t sram[0x00ffffff];
+static uint8_t mrom[0x00001000];
+static uint8_t sram[0x00002000];
 
 #ifdef CONFIG_MTRACE
 #define MB_SIZE 100
@@ -64,7 +64,7 @@ paddr_t host_to_guest(uint8_t *haddr) { return haddr - pmem + CONFIG_MBASE; }
 
 static word_t pmem_read(paddr_t addr, int len) {
   word_t ret = 0;
-  if(addr >= 0x0f000000 && addr <= 0x0fffffff)
+  if(addr >= 0x0f000000 && addr <= 0x0f001fff)
   {
 	switch(len)
 	{
@@ -83,35 +83,34 @@ static word_t pmem_read(paddr_t addr, int len) {
 	switch(len)
 	{
 	  case 1:
-		ret = *(uint8_t*)(mrom + addr - 0x0f000000);
+		ret = *(uint8_t*)(mrom + addr - 0x20000000);
 		break;
 	  case 2:
-		ret = *(uint16_t*)(mrom + addr - 0x0f000000);
+		ret = *(uint16_t*)(mrom + addr - 0x20000000);
 		break;
 	  case 4:
-		ret = *(uint32_t*)(mrom + addr - 0x0f000000);
+		ret = *(uint32_t*)(mrom + addr - 0x20000000);
 		break;
 	}
   }
   else
 	ret = host_read(guest_to_host(addr), len);
-//  printf("ret in pmem: %x\t", (uint32_t)ret);
   return ret;
 }
 
 static void pmem_write(paddr_t addr, int len, word_t data) {
-  if(addr >= 0x0f000000 && addr <= 0x0fffffff)
+  if(addr >= 0x0f000000 && addr <= 0x0f001fff)
   {
 	switch(len)
 	{
 	  case 1:
-		*((uint8_t*)sram + addr - 0x0f000000) = (uint8_t)data;
+		*(uint8_t*)(sram + addr - 0x0f000000) = (uint8_t)data;
 		break;
 	  case 2:
-		*((uint16_t*)sram + addr - 0x0f000000) = (uint16_t)data;
+		*(uint16_t*)(sram + addr - 0x0f000000) = (uint16_t)data;
 		break;
 	  case 4:
-		*((uint32_t*)sram + addr - 0x0f000000) = (uint32_t)data;
+		*(uint32_t*)(sram + addr - 0x0f000000) = (uint32_t)data;
 		break;
 	}
   }
@@ -120,13 +119,13 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 	switch(len)
 	{
 	  case 1:
-		*((uint8_t*)mrom + addr - 0x20000000) = (uint8_t)data;
+		*(uint8_t*)(mrom + addr - 0x20000000) = (uint8_t)data;
 		break;
 	  case 2:
-		*((uint16_t*)mrom + addr - 0x20000000) = (uint16_t)data;
+		*(uint16_t*)(mrom + addr - 0x20000000) = (uint16_t)data;
 		break;
 	  case 4:
-		*((uint32_t*)mrom + addr - 0x20000000) = (uint32_t)data;
+		*(uint32_t*)(mrom + addr - 0x20000000) = (uint32_t)data;
 		break;
 	}
   }
@@ -171,8 +170,10 @@ word_t paddr_read(paddr_t addr, int len) {
 #endif
 #endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
+  /*
   else if (addr >= 0x0f000000 && addr <= 0x0fffffff) return sram[(addr - 0x0f000000) >> 2];
   else if (addr >= 0x20000000 && addr <= 0x20000fff) return mrom[(addr - 0x20000000) >> 2];
+  */
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
   return 0;
@@ -192,7 +193,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   }
 #endif
 #endif
-  if (likely(in_pmem(addr)) || (addr >= 0x0f000000 && addr <= 0x0fffffff) || (addr >= 0x20000000 && addr <= 0x20000fff)) {pmem_write(addr, len, data); return; }
+  if (likely(in_pmem(addr))) {pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }

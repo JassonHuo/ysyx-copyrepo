@@ -18,6 +18,13 @@ void data_copy()
 	memcpy(_data_start, _data_load_start, (size_t)_data_size);
 }
 
+void clear_bss()
+{
+  volatile char *p = NULL;
+  for(p = _bss_start; p <= _bss_end; p ++)
+	*p = 0;
+}
+
 int main(const char *args);
 
 extern char _pmem_start;
@@ -49,6 +56,7 @@ void halt(int code) {
 
 void _trm_init() {
   data_copy();
+  clear_bss();
   uint8_t LCR = 0;
   volatile uint8_t* base = (volatile uint8_t *)0x10000000;
   LCR = base[3];

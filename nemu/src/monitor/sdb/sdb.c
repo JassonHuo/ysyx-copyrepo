@@ -156,7 +156,6 @@ static int cmd_x(char *args)
   uint32_t beg_addr;
   sscanf(addr, "%x", &beg_addr);
   printf("%d, %08x\n", n, beg_addr);
-//  uint32_t pmem = pmem_read((paddr_t)beg_addr, 4);
   for (int i = 0; i < n; i ++)
   {
 	uint32_t pmem = host_read(guest_to_host(beg_addr), 4);
