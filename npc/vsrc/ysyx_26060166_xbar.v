@@ -1,7 +1,7 @@
 module ysyx_26060166_xbar(
   input clk,
 
-  output ifu_arReady,
+  output reg ifu_arReady,
   input ifu_arValid,
   input [31:0] ifu_araddr,
   input [3:0] ifu_arid,//
@@ -31,7 +31,7 @@ module ysyx_26060166_xbar(
   output lsu_bValid,
   output  [1:0] lsu_bresp,
   output  [3:0] lsu_bid ,
-  output lsu_arReady,
+  output reg lsu_arReady,
   input lsu_arValid,
   input [31:0] lsu_araddr,
   input [3:0] lsu_arid,
@@ -185,6 +185,8 @@ module ysyx_26060166_xbar(
 	arlen = 0;
 	arsize = 0;
 	arburst = 0;
+	ifu_arReady = 0;
+	lsu_arReady = 0;
 	if(ifu_arValid & lsu_arValid)begin
 	  if(arbiter_state == IFU)begin
 		arValid = ifu_arValid;
@@ -193,6 +195,7 @@ module ysyx_26060166_xbar(
 		arlen = ifu_arlen;
 		arsize = ifu_arsize;
 		arburst = ifu_arburst;
+		ifu_arReady = arReady;
 	  end
 	  else begin
 		arValid = lsu_arValid;
@@ -201,6 +204,7 @@ module ysyx_26060166_xbar(
 		arlen = lsu_arlen;
 		arsize = lsu_arsize;
 		arburst = lsu_arburst;
+		lsu_arReady = arReady;
 	  end
 	end
 	else if(ifu_arValid)begin
@@ -210,6 +214,7 @@ module ysyx_26060166_xbar(
 	  arlen = ifu_arlen;
 	  arsize = ifu_arsize;
 	  arburst = ifu_arburst;
+	  ifu_arReady = arReady;
 	end
 	else if(lsu_arValid)begin
 	  arValid = lsu_arValid;
@@ -218,13 +223,12 @@ module ysyx_26060166_xbar(
 	  arlen = lsu_arlen;
 	  arsize = lsu_arsize;
 	  arburst = lsu_arburst;
+	  lsu_arReady = arReady;
 	end
   end
 
   assign ifu_rValid = rValid;
   assign lsu_rValid = rValid;
-  assign ifu_arReady = arReady;
-  assign lsu_arReady = arReady;
   assign rReady = ifu_rReady | lsu_rReady;
   assign ifu_rlast = rlast;
   assign lsu_rlast = rlast;
