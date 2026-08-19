@@ -171,11 +171,15 @@ word_t paddr_read(paddr_t addr, int len) {
   }
 #endif
 #endif
+  /*
   if(cpu.pc == 0x20000194)
 	printf("nemu: %08x\n", mrom[0x1f1 >> 2]);
+  */
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
+  /*
   else if (addr >= 0x0f000000 && addr <= 0x0fffffff) return sram[(addr - 0x0f000000) >> 2];
   else if (addr >= 0x20000000 && addr <= 0x20000fff) return mrom[(addr - 0x20000000) >> 2];
+  */
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   out_of_bound(addr);
   return 0;
@@ -195,7 +199,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   }
 #endif
 #endif
-  if (likely(in_pmem(addr)) || (addr >= 0x0f000000 && addr <= 0x0fffffff) || (addr >= 0x20000000 && addr <= 0x20000fff)) {pmem_write(addr, len, data); return; }
+  if (likely(in_pmem(addr))) {pmem_write(addr, len, data); return;}
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   out_of_bound(addr);
 }
