@@ -99,6 +99,7 @@ static word_t pmem_read(paddr_t addr, int len) {
 }
 
 static void pmem_write(paddr_t addr, int len, word_t data) {
+  printf("%08x: %08x\n", cpu.pc, mrom[1]);
   if(addr >= 0x0f000000 && addr <= 0x0f000fff)
   {
 	switch(len)
