@@ -32,7 +32,7 @@ static uint8_t *pmem = NULL;
 static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 static uint8_t mrom[0x00001000];
-static uint8_t sram[0x01000000];
+static uint8_t sram[0x00002000];
 
 #ifdef CONFIG_MTRACE
 #define MB_SIZE 100
