@@ -95,6 +95,8 @@ static word_t pmem_read(paddr_t addr, int len) {
   }
   else
 	ret = host_read(guest_to_host(addr), len);
+  if(cpu.pc == 0x20000194)
+	printf("nemu pc: %08x\n", ret);
 //  printf("ret in pmem: %x\t", (uint32_t)ret);
   return ret;
 }
