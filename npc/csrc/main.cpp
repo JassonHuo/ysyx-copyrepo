@@ -50,6 +50,7 @@
 }while(0)
 
 uint32_t mem[MEM_SIZE] = {0};
+uint8_t flash[0x10000000] = {0};
 static VerilatedContext *contextp = new VerilatedContext;
 static TOP_NAME *top = new TOP_NAME;
 VerilatedVcdC* tfp = new VerilatedVcdC;
@@ -266,7 +267,7 @@ static inline uint64_t get_time()
   return tv.tv_sec * 1000000 + tv.tv_usec - start_time;
 }
 
-extern "C" void flash_read(int32_t addr, int32_t *data) { assert(0); }
+extern "C" void flash_read(int32_t addr, int32_t *data) { *data = *(int32_t*)(flash + addr);}
 extern "C" void mrom_read(int32_t addr, int32_t *data) { *data = mem[(addr - 0x20000000) >> 2]; }
 
 extern "C" void TO_device()
@@ -586,6 +587,10 @@ int main(int argc, char** argv) {
   init_disasm();
 
   top->reset = 1;
+
+  for(int p = 0; p < 0x1000; p += 4)
+	*(volatile uint32_t*)(flash + p) = p + 0x30000000;
+
   for(int i = 0; i < 10; i ++)
   {
 	top->clock = 0;
