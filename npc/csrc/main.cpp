@@ -600,7 +600,7 @@ int main(int argc, char** argv) {
   top->reset = 1;
 
   for(int p = 0; p < 0x1000; p += 4)
-	*(volatile uint32_t*)(flash + p) = p + 0x30000000;
+	*(volatile uint32_t*)(flash + p) = __builtin_bswap32((uint32_t)p + 0x30000000);
 
   for(int i = 0; i < 10; i ++)
   {
