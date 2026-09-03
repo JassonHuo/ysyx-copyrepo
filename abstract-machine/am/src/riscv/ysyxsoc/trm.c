@@ -5,23 +5,23 @@
 
 extern char _heap_start;
 extern char _heap_end;
-extern char _data_start[];
-extern char _data_load_start[];
-extern char _data_end[];
-extern char _data_size[];
-extern char _bss_start[];
-extern char _bss_end[];
+extern char _data_start;
+extern char _data_load_start;
+extern char _data_end;
+extern char _data_size;
+extern char _bss_start;
+extern char _bss_end;
 
 void data_copy()
 {
-  if(_data_start != _data_load_start)
-	memcpy(_data_start, _data_load_start, (size_t)_data_size);
+  if(&_data_start != &_data_load_start)
+	memcpy(&_data_start, &_data_load_start, (size_t)_data_size);
 }
 
 void clear_bss()
 {
   volatile char *p = NULL;
-  for(p = _bss_start; p <= _bss_end; p ++)
+  for(p = &_bss_start; p <= &_bss_end; p ++)
 	*p = 0;
 }
 
