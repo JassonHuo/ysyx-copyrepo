@@ -269,7 +269,8 @@ static inline uint64_t get_time()
   return tv.tv_sec * 1000000 + tv.tv_usec - start_time;
 }
 
-extern "C" void flash_read(int32_t addr, int32_t *data) { *data = *(int32_t*)(flash + addr);}
+extern "C" void flash_read(int32_t addr, int32_t *data) { *data = *(int32_t*)(flash + addr);
+  if(getenv("NPC_FLASHDBG")) printf("flash_read addr=0x%08x data=0x%08x\n", (uint32_t)addr, (uint32_t)*data); }
 extern "C" void mrom_read(int32_t addr, int32_t *data) { *data = mem[(addr - 0x20000000) >> 2]; }
 
 extern "C" void TO_device()
