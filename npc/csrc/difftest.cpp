@@ -127,7 +127,6 @@ void difftest_skip()
 
 void difftest_step()
 {
-  if(getenv("NPC_DIFFDBG")) { printf("DT to_dev=%d pc=%08x\n", to_device, c_get_Pc()); fflush(stdout); }
   if(to_device)
   {
 	if(c_get_Pc() == skip_pc)
