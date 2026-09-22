@@ -43,9 +43,11 @@ Area heap = RANGE(&_heap_start, &_heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = TOSTRING(MAINARGS_PLACEHOLDER); // defined in CFLAGS
 
 void putch(char ch) {
+  /*
   volatile uint8_t* base = (volatile uint8_t*)0x10000000;
   uint8_t LSR = base[5];
   while(~LSR & 0x10) LSR = base[5];
+  */
   outb(0x10000000,ch);
 }
 
