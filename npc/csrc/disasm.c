@@ -35,6 +35,7 @@ void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte)
 {
   cs_insn *insn;
   assert(cs_disasm_dl != NULL);
+//  printf("pc: %08lx\n", pc);
   size_t count = cs_disasm_dl(handle, code, nbyte, pc, 0, &insn);
   assert(count == 1);
   int ret = snprintf(str, size, "%-8s", insn->mnemonic);

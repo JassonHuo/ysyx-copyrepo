@@ -25,6 +25,26 @@ void clear_bss()
 	*p = 0;
 }
 
+/*
+uint32_t flash_read(uint32_t addr)
+{
+  volatile uint8_t *base = (volatile uint8_t*)0x10001000;
+  volatile uint32_t *tx = (uint32_t*)base;
+  volatile uint32_t *rx = tx;
+  volatile uint32_t *div = (uint32_t*)(base + 0x14);
+  volatile uint32_t *ctrl = (uint32_t*)(base + 0x10);
+  volatile uint32_t *ss = (uint32_t*)(base + 0x18);
+  while (*ctrl & 0x100);
+  *ctrl = 0b10001001000000;
+  *tx = (0x03 << 24) | (addr & 0xffffff);
+  *div = 1;
+  *ss = 1;
+  *ctrl |= 1 << 8;
+  while (*ctrl & 0x100);
+  return *rx;
+}
+*/
+
 int main(const char *args);
 
 extern char _pmem_start;
@@ -43,11 +63,9 @@ Area heap = RANGE(&_heap_start, &_heap_end);
 static const char mainargs[MAINARGS_MAX_LEN] = TOSTRING(MAINARGS_PLACEHOLDER); // defined in CFLAGS
 
 void putch(char ch) {
-  /*
   volatile uint8_t* base = (volatile uint8_t*)0x10000000;
   uint8_t LSR = base[5];
-  while(~LSR & 0x10) LSR = base[5];
-  */
+  while(~LSR & 0x20) LSR = base[5];
   outb(0x10000000,ch);
 }
 
@@ -66,12 +84,6 @@ void _trm_init() {
   base[0] = 1;
   base[1] = 0;
   base[3] = LCR;
-  /*
-  asm volatile("lb %0, 3(%1)": "=r"(LCR): "r"(base));
-  LCR = LCR | 0x80;
-  asm volatile("sb %0, 3(%1)": "r"(LCR): "r"(base));
-  asm volatile("sb %0, 0(%1)": "r"(1): "r"(base));
-  */
   int ret = main(mainargs);
   halt(ret);
 }

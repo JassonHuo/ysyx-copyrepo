@@ -268,6 +268,26 @@ static inline uint64_t get_time()
 }
 
 extern "C" void flash_read(int32_t addr, int32_t *data) { *data = *(int32_t*)(flash + addr);}
+/*
+uint32_t flash_read(uint32_t addr)
+{
+  volatile uint8_t *base = (volatile uint8_t*)0x10001000;
+  volatile uint32_t *tx = (uint32_t*)base;
+  volatile uint32_t *rx = tx;
+  volatile uint32_t *div = (uint32_t*)(base + 0x14);
+  volatile uint32_t *ctrl = (uint32_t*)(base + 0x10);
+  volatile uint32_t *ss = (uint32_t*)(base + 0x18);
+  while (*ctrl & 0x100);
+ 	*tx = (0x03 << 24) | (addr & 0xffffff);
+  *ctrl = 0b10001001000000;
+  *div = 1;
+  *ss = 1;
+  *ctrl |= 1 << 8;
+  while (*ctrl & 0x100);
+	return *rx;
+}
+*/
+
 extern "C" void mrom_read(int32_t addr, int32_t *data) { *data = mem[(addr - 0x20000000) >> 2]; }
 
 extern "C" void TO_device()
@@ -468,7 +488,8 @@ void run_cycle(uint64_t n)
 	char inst_str[90];
 	char tmp[100];
 	p += sprintf(inst_str, "0x%08x: ", pc);
-	disassemble(inst_str + p, 100, (uint64_t)pc, inst, 4);
+	if(isa_inst)
+	  disassemble(inst_str + p, 100, (uint64_t)pc, inst, 4);
 	for(int i = 3; i >= 0; i --)
 	  p += sprintf(inst_str + strlen(inst_str), "%02x ", inst[i]);
 	sprintf(tmp, "\t%s", inst_str);
