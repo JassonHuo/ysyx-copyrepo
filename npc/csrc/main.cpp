@@ -593,6 +593,11 @@ void run_cycle(uint64_t n)
   }
 }
 int main(int argc, char** argv) {
+  for(int i = 0; i < 10; i ++)
+  {
+	uint32_t* p = (uint32_t*)flash;
+	*(p++) = i;
+  }
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
