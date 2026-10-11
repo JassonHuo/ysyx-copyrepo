@@ -268,26 +268,6 @@ static inline uint64_t get_time()
 }
 
 extern "C" void flash_read(int32_t addr, int32_t *data) { *data = *(int32_t*)(flash + addr);}
-/*
-uint32_t flash_read(uint32_t addr)
-{
-  volatile uint8_t *base = (volatile uint8_t*)0x10001000;
-  volatile uint32_t *tx = (uint32_t*)base;
-  volatile uint32_t *rx = tx;
-  volatile uint32_t *div = (uint32_t*)(base + 0x14);
-  volatile uint32_t *ctrl = (uint32_t*)(base + 0x10);
-  volatile uint32_t *ss = (uint32_t*)(base + 0x18);
-  while (*ctrl & 0x100);
- 	*tx = (0x03 << 24) | (addr & 0xffffff);
-  *ctrl = 0b10001001000000;
-  *div = 1;
-  *ss = 1;
-  *ctrl |= 1 << 8;
-  while (*ctrl & 0x100);
-	return *rx;
-}
-*/
-
 extern "C" void mrom_read(int32_t addr, int32_t *data) { *data = mem[(addr - 0x20000000) >> 2]; }
 
 extern "C" void TO_device()
@@ -593,10 +573,11 @@ void run_cycle(uint64_t n)
   }
 }
 int main(int argc, char** argv) {
-  for(int i = 0; i < 10; i ++)
+  for(uint32_t i = 0; i < 100000; i ++)
   {
-	uint32_t* p = (uint32_t*)flash;
-	*(p++) = i;
+	uint32_t addr = 0x30000000;
+	static uint32_t* p = (uint32_t*)flash;
+	*(p++) = addr + i * 4;
   }
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
@@ -614,8 +595,10 @@ int main(int argc, char** argv) {
 
   top->reset = 1;
 
+  /*
   for(int p = 0; p < 0x1000; p += 4)
 	*(volatile uint32_t*)(flash + p) = p + 0x30000000;
+	*/
 
   for(int i = 0; i < 10; i ++)
   {
