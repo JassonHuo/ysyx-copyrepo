@@ -583,6 +583,10 @@ uint32_t char_test[] = {
 };
 int main(int argc, char** argv) {
   memcpy(flash, char_test, 4 * 6);
+  for(int i = 0; i < 6; i ++)
+  {
+	printf("%08x\n", ((uint32_t*)flash)[i]);
+  }
 
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
