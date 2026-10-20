@@ -11,8 +11,6 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign fast \
 					--timescale "1ns/1ns" --no-timing \
 					--autoflush --public-flat-rw
 
-#VERILATOR_CFLAGS += -DRANDOMIZE_MEM_INIT
-#VERILATOR_CFLAGS += +define+RANDOM=1
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)

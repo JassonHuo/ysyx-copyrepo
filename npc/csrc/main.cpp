@@ -572,13 +572,20 @@ void run_cycle(uint64_t n)
 	}
   }
 }
+
+uint32_t char_test[] = {
+  0x100007b7,
+  0x04100713,
+  0x00e78023,
+  0x00a00713,
+  0x00e78023,
+  0x00100073
+};
 int main(int argc, char** argv) {
-  for(uint32_t i = 0; i < 100000; i ++)
-  {
-	uint32_t addr = 0x30000000;
-	static uint32_t* p = (uint32_t*)flash;
-	*(p++) = addr + i * 4;
-  }
+  static uint32_t* flash_p = (uint32_t*)flash;
+  for(int i = 0; i < 6; i ++)
+	flash_p[i] = char_test[i];
+
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
