@@ -583,7 +583,7 @@ uint32_t char_test[] = {
   0x00008067
 };
 int main(int argc, char** argv) {
-  memcpy(flash, char_test, 4 * 8);
+  memcpy(flash, char_test, 4 * 7);
   for(int i = 0; i < 7; i ++)
 	printf("%08x\n", ((uint32_t*)flash)[i]);
   Verilated::commandArgs(argc, argv);
