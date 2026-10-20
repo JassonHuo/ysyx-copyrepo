@@ -579,10 +579,11 @@ uint32_t char_test[] = {
   0x00e78023,
   0x00a00713,
   0x00e78023,
+  0x00000513,
   0x00100073
 };
 int main(int argc, char** argv) {
-  memcpy(flash, char_test, 4 * 6);
+  memcpy(flash, char_test, 4 * 7);
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
