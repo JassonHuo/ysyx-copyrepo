@@ -582,9 +582,7 @@ uint32_t char_test[] = {
   0x00100073
 };
 int main(int argc, char** argv) {
-  static uint32_t* flash_p = (uint32_t*)flash;
-  for(int i = 0; i < 6; i ++)
-	flash_p[i] = char_test[i];
+  memcpy(flash, char_test, 4 * 6);
 
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
