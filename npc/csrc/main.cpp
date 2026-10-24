@@ -585,6 +585,7 @@ uint32_t char_test[] = {
 
 int main(int argc, char** argv) {
 //  for(uint32_t i = 0; i < sizeof(char_test) / sizeof(char_test[0]) / 4; i ++)
+  printf("li: %d, single: %d, div: %d\n", sizeof(char_test), sizeof(char_test[0]), sizeof(char_test) / sizeof(char_test[0]) / 4);
   for(int i = 0; i < 7; i ++)
   {
 	static uint32_t* p = (uint32_t*)flash;
