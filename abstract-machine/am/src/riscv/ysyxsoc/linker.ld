@@ -42,11 +42,6 @@ SECTIONS {
   . = _bss_end;
   end = .;
   _end = .;
-  /**/
-  _char_test_ = ALIGN(0x1000);
-  . = _char_test_ + 0x100;
-  _char_test_end_ = .;
-  /**/
   _heap_start = ALIGN(0x1000);
   . = _heap_start + 0x800;
   _heap_end = .;
