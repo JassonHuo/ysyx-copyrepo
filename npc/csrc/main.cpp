@@ -13,7 +13,6 @@
 #include <sstream>
 #include <time.h>
 #include <sys/time.h>
-#include <stdlib.h>
 #include "sdb.h"
 #include <capstone/capstone.h>
 #include <verilated_vcd_c.h>
@@ -70,7 +69,6 @@ void init_difftest();
 int NPC_state = NPC_STOP;
 bool to_device = false;
 uint32_t skip_pc = 0;
-bool diff_skip = false;   // set to true when env NPC_NODIFF exists
 
 #ifdef CONFIG_TRACES
 
@@ -464,29 +462,21 @@ void run_cycle(uint64_t n)
 #ifdef CONFIG_ITRACE
 	uint32_t isa_inst = c_get_Inst();
 	uint32_t pc = c_get_Pc();
-	/*
-	 * The IFU fetches over the AXI bus, so it takes a few cycles before the
-	 * first instruction (and each following one) arrives.  During those
-	 * cycles the instruction register still holds 0, which capstone cannot
-	 * disassemble.  Only trace cycles where a real instruction was fetched.
-	 */
-	if(isa_inst != 0)
-	{
-	  int p = 0;
-	  uint8_t* inst = (uint8_t*)&isa_inst;
-	  void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-	  char inst_str[90];
-	  char tmp[100];
-	  p += sprintf(inst_str, "0x%08x: ", pc);
+	int p = 0;
+	uint8_t* inst = (uint8_t*)&isa_inst;
+	void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+	char inst_str[90];
+	char tmp[100];
+	p += sprintf(inst_str, "0x%08x: ", pc);
+	if(isa_inst)
 	  disassemble(inst_str + p, 100, (uint64_t)pc, inst, 4);
-	  for(int i = 3; i >= 0; i --)
-		p += sprintf(inst_str + strlen(inst_str), "%02x ", inst[i]);
-	  sprintf(tmp, "\t%s", inst_str);
-	  if(top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done)
-		ib_inQue(tmp);
-	  if(output_pc)
-		printf("%s\n", inst_str);
-	}
+	for(int i = 3; i >= 0; i --)
+	  p += sprintf(inst_str + strlen(inst_str), "%02x ", inst[i]);
+	sprintf(tmp, "\t%s", inst_str);
+	if(top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done)
+	  ib_inQue(tmp);
+	if(output_pc)
+	  printf("%s\n", inst_str);
 #endif
 
 #ifdef CONFIG_FTRACE
@@ -570,7 +560,7 @@ void run_cycle(uint64_t n)
 	static bool pre_done;
 	pre_done = done;
 	done = top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done;
-	if(!diff_skip && (pre_done & ~done))
+	if(pre_done & ~done)
 	  difftest_step();
 #endif
 	if(NPC_state != NPC_RUNNING)
@@ -582,7 +572,23 @@ void run_cycle(uint64_t n)
 	}
   }
 }
+
+uint32_t char_test[] = {
+  0x100007b7,
+  0x04100713,
+  0x00e78023,
+  0x00a00713,
+  0x00000513,
+  0x00008067
+};
+
 int main(int argc, char** argv) {
+//  for(uint32_t i = 0; i < sizeof(char_test) / sizeof(char_test[0]) / 4; i ++)
+  for(int i = 0; i < sizeof(char_test) / sizeof(char_test[0]); i ++)
+  {
+	static uint32_t* p = (uint32_t*)flash;
+	*(p++) = char_test[i];
+  }
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
@@ -599,8 +605,10 @@ int main(int argc, char** argv) {
 
   top->reset = 1;
 
+  /*
   for(int p = 0; p < 0x1000; p += 4)
 	*(volatile uint32_t*)(flash + p) = p + 0x30000000;
+	*/
 
   for(int i = 0; i < 10; i ++)
   {
@@ -612,12 +620,8 @@ int main(int argc, char** argv) {
   top->reset = 0;
 
   time_init();
-  diff_skip = (getenv("NPC_NODIFF") != NULL);
 #ifdef CONFIG_DIFFTEST
-  if(!diff_skip)
-	init_difftest();
-  else
-	printf(BLUE "[%s %d %s] Difftest skipped by NPC_NODIFF" RESET "\n", __FILE__, __LINE__, __func__);
+  init_difftest();
 #endif
   sdb_mainloop();
   delete top;
