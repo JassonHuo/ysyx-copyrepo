@@ -40,9 +40,9 @@
 `define PC_MTVEC 4
 `define PC_MEPC 5
 
-`define MEM_WORD 0
+`define MEM_BYTE 0
 `define MEM_HALF 1
-`define MEM_BYTE 2
+`define MEM_WORD 2
 
 `define SIZE1 0
 `define SIZE2 1

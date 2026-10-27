@@ -10,6 +10,9 @@ VERILATOR_CFLAGS += -MMD --build -cc -O3 --x-assign fast \
 					--x-initial fast --noassert \
 					--timescale "1ns/1ns" --no-timing \
 					--autoflush --public-flat-rw
+
+#VERILATOR_CFLAGS += -DRANDOMIZE_MEM_INIT
+#VERILATOR_CFLAGS += +define+RANDOM=1
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 BIN = $(BUILD_DIR)/$(TOPNAME)
@@ -53,7 +56,7 @@ CXXFLAGS += -O0 -g
 CXXFLAGS += -DCONFIG_ITRACE
 #CXXFLAGS += -DCONFIG_MTRACE
 #CXXFLAGS += -DCONFIG_FTRACE
-CXXFLAGS += -DCONFIG_DIFFTEST
+#CXXFLAGS += -DCONFIG_DIFFTEST
 #CXXFLAGS += -DCONFIG_MEMDIFFTEST
 CXXFLAGS += -DCONFIG_WAVE
 
