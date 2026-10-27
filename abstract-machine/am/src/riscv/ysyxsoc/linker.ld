@@ -1,5 +1,5 @@
 ENTRY(_start)
-PHDRS { text PT_LOAD; data PT_LOAD; }
+PHDRS { text PT_LOAD; data PT_LOAD; bss PT_LOAD;}
 
 MEMORY {
   mrom : ORIGIN = 0x20000000, LENGTH = 4K
@@ -38,7 +38,7 @@ SECTIONS {
     *(.scommon)
 	*(COMMON)
 	_bss_end = .;
-  } > sram
+  } > sram : bss
   . = _bss_end;
   end = .;
   _end = .;
