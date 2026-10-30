@@ -4,29 +4,30 @@ PHDRS { text PT_LOAD; data PT_LOAD; bss PT_LOAD;}
 MEMORY {
   mrom : ORIGIN = 0x20000000, LENGTH = 4K
   sram : ORIGIN = 0x0f000000, LENGTH = 8K
+  flash : ORIGIN = 0x30000000, LENGTH = 256M
 }
 
 SECTIONS {
   /* _pmem_start and _entry_offset are defined in LDFLAGS */
   . = _pmem_start + _entry_offset;
-  . = ORIGIN(mrom);
+  . = ORIGIN(flash);
   .text : {
     *(entry)
     *(.text*)
-  } > mrom AT > mrom : text
+  } > flash AT > flash : text
   etext = .;
   _etext = .;
   .rodata : {
     *(.rodata*)
 	*(.srodata*)
-  } > mrom AT > mrom
+  } > flash AT > flash
   .data : {
 	_data_start = .;
     *(.data*)
 	*(.sdata)
 	*(.sdata*)
 	_data_end = .;
-  } > sram AT > mrom : data
+  } > sram AT > flash : data
   _data_load_start = LOADADDR(.data);
   _data_size = _data_end - _data_start;
   edata = .;
