@@ -420,7 +420,7 @@ module ysyx_26060166_idu(
 	  end
 	  default begin
 `ifdef VERILATOR
-		$display("default abort");
+		$display("default abort, code: %08x", inst_in);
 		npc_abort();
 `endif
 	  end
