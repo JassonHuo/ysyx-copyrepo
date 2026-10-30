@@ -231,7 +231,8 @@ void init_file(char *args)
 	exit(1);
   }
   int mem_top = 0;
-  while(fread(mem + mem_top++, 4, 1, fp));
+//  while(fread(mem + mem_top++, 4, 1, fp));
+  while(fread(flash + mem_top++, 4, 1, fp));
 }
 
 void init_batch_mode(char *args)
