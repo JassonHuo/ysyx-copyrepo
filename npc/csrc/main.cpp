@@ -232,7 +232,7 @@ void init_file(char *args)
   }
   int mem_top = 0;
 //  while(fread(mem + mem_top++, 4, 1, fp));
-  while(fread(flash + mem_top++, 4, 1, fp));
+  while(fread((uint32_t*)flash + mem_top++, 4, 1, fp));
 }
 
 void init_batch_mode(char *args)
@@ -619,7 +619,6 @@ int main(int argc, char** argv) {
 	top->eval();
   }
   top->reset = 0;
-
   time_init();
 #ifdef CONFIG_DIFFTEST
   init_difftest();
