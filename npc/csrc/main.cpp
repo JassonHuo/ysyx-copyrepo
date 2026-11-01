@@ -632,7 +632,6 @@ int main(int argc, char** argv) {
   init_difftest();
 #endif
   sdb_mainloop();
-END_PRCE:
   delete top;
 #ifdef CONFIG_FTRACE
   display_fb();
