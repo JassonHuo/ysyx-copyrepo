@@ -18,6 +18,7 @@
 #include <verilated_vcd_c.h>
 //#include "Vtop___024root.h"
 #include "VysyxSoCFull___024root.h"
+#include <signal.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
@@ -73,8 +74,6 @@ uint32_t skip_pc = 0;
 
 void sigint_handler(int sig)
 {
-  const char msg[] = "have handed\n";
-  write(STDOUT_FILENO, msg, sizeof(msg) - 1);
   NPC_state = NPC_INTERUPT;
 }
 
@@ -594,6 +593,11 @@ uint32_t char_test[] = {
 };
 
 int main(int argc, char** argv) {
+  struct sigaction sa;
+  sa.sa_handler = sigint_handler;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+  sigaction(SIGINT, &sa, NULL);
 //  for(uint32_t i = 0; i < sizeof(char_test) / sizeof(char_test[0]) / 4; i ++)
   for(int i = 0; i < sizeof(char_test) / sizeof(char_test[0]); i ++)
   {
