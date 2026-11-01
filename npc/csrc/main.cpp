@@ -24,6 +24,7 @@
 #define GREEN "\033[32m"
 #define RED "\033[31m"
 #define BLUE "\033[34m"
+#define YELLOW "\033[33m"
 #define RESET "\033[0m"
 #define IB_SIZE 16
 #define MB_SIZE 100
@@ -70,9 +71,9 @@ int NPC_state = NPC_STOP;
 bool to_device = false;
 uint32_t skip_pc = 0;
 
-bool get_done()
+void sigint_handler(int sig)
 {
-  return top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done;
+  NPC_state = NPC_INTERUPT;
 }
 
 #ifdef CONFIG_TRACES
@@ -384,6 +385,8 @@ extern "C" void do_quitcheck()
   {
 	printf(RED "ABORT " RESET);
   }
+  else if(NPC_state == NPC_INTERUPT)
+	printf(YELLOW "INTERUPT" RESET);
   else if(!c_get_Reg(10))
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
@@ -629,6 +632,7 @@ int main(int argc, char** argv) {
   init_difftest();
 #endif
   sdb_mainloop();
+END_PRCE:
   delete top;
 #ifdef CONFIG_FTRACE
   display_fb();
