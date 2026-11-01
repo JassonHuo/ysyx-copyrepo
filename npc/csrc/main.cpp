@@ -387,7 +387,7 @@ extern "C" void do_quitcheck()
 	printf(RED "ABORT " RESET);
   }
   else if(NPC_state == NPC_INTERUPT)
-	printf(YELLOW "INTERUPT" RESET);
+	printf(YELLOW "INTERUPT " RESET);
   else if(!c_get_Reg(10))
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
