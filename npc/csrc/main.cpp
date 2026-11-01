@@ -18,12 +18,14 @@
 #include <verilated_vcd_c.h>
 //#include "Vtop___024root.h"
 #include "VysyxSoCFull___024root.h"
+#include <signal.h>
 
 #define EBREAK 0x00100073 
 #define MEM_SIZE 134217727
 #define GREEN "\033[32m"
 #define RED "\033[31m"
 #define BLUE "\033[34m"
+#define YELLOW "\033[33m"
 #define RESET "\033[0m"
 #define IB_SIZE 16
 #define MB_SIZE 100
@@ -69,6 +71,11 @@ void init_difftest();
 int NPC_state = NPC_STOP;
 bool to_device = false;
 uint32_t skip_pc = 0;
+
+void sigint_handler(int sig)
+{
+  NPC_state = NPC_INTERUPT;
+}
 
 #ifdef CONFIG_TRACES
 
@@ -379,6 +386,8 @@ extern "C" void do_quitcheck()
   {
 	printf(RED "ABORT " RESET);
   }
+  else if(NPC_state == NPC_INTERUPT)
+	printf(YELLOW "INTERUPT " RESET);
   else if(!c_get_Reg(10))
 	printf(GREEN "HIT GOOD TRAP " RESET);
   else
@@ -584,6 +593,11 @@ uint32_t char_test[] = {
 };
 
 int main(int argc, char** argv) {
+  struct sigaction sa;
+  sa.sa_handler = sigint_handler;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = 0;
+  sigaction(SIGINT, &sa, NULL);
 //  for(uint32_t i = 0; i < sizeof(char_test) / sizeof(char_test[0]) / 4; i ++)
   for(int i = 0; i < sizeof(char_test) / sizeof(char_test[0]); i ++)
   {

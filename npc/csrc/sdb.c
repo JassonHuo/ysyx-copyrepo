@@ -171,7 +171,7 @@ int cmd_q(char *args)
 
 void sdb_mainloop()
 {
-  while(NPC_state != NPC_QUIT)
+  while(NPC_state != NPC_QUIT || NPC_state != NPC_INTERUPT)
   {
   if(batch_mode)
   {
