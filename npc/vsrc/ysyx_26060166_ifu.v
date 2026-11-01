@@ -63,7 +63,6 @@ module ysyx_26060166_ifu(
 	lsfm = 4'b1001;
   end
   always@(posedge clk)begin
-	$display("%08x", pc_out);
 	if(lsfm == 0)
 	  lsfm <= 4'b1001;
 	lsfm <= {lsfm[2: 0], lsfm[0] ^ lsfm[1] ^ lsfm[3]};
