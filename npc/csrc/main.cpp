@@ -70,6 +70,11 @@ int NPC_state = NPC_STOP;
 bool to_device = false;
 uint32_t skip_pc = 0;
 
+bool get_done()
+{
+  return top->rootp->ysyxSoCFull__DOT__asic__DOT__cpu__DOT__cpu__DOT__wbu0__DOT__done;
+}
+
 #ifdef CONFIG_TRACES
 
 #define INQUE(a, b) do{\

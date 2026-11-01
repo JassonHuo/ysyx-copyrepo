@@ -15,6 +15,7 @@ static int cmd_c(char *args);
 static bool batch_mode = false;
 extern int NPC_state;
 extern uint32_t c_get_Pc();
+extern bool get_done();
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2", 
@@ -99,7 +100,8 @@ int cmd_si(char *args)
   NPC_state = NPC_RUNNING;
   if(arg)
 	n = atoi(arg);
-  run_cycle(n);
+  while(!get_done())
+	run_cycle(n);
   NPC_state = NPC_STOP;
   return 0;
 }
