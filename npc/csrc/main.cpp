@@ -73,6 +73,8 @@ uint32_t skip_pc = 0;
 
 void sigint_handler(int sig)
 {
+  const char msg[] = "have handed\n";
+  write(STDOUT_FILENO, msg, sizeof(msg) - 1);
   NPC_state = NPC_INTERUPT;
 }
 
