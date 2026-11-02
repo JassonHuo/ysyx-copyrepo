@@ -33,6 +33,7 @@ static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};
 #endif
 static uint8_t mrom[0x00001000];
 static uint8_t sram[0x00002000];
+static uint8_t flash[0x10000000];
 
 #ifdef CONFIG_MTRACE
 #define MB_SIZE 100
@@ -90,6 +91,21 @@ static word_t pmem_read(paddr_t addr, int len) {
 		break;
 	  case 4:
 		ret = *(uint32_t*)(mrom + addr - 0x20000000);
+		break;
+	}
+  }
+  else if(addr >= 0x30000000 && addr <= 0x3fffffff)
+  {
+	switch(len)
+	{
+	  case 1:
+		ret = *(uint8_t*)(flash + addr - 0x20000000);
+		break;
+	  case 2:
+		ret = *(uint16_t*)(flash + addr - 0x20000000);
+		break;
+	  case 4:
+		ret = *(uint32_t*)(flash + addr - 0x20000000);
 		break;
 	}
   }
