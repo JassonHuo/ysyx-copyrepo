@@ -83,7 +83,7 @@ all: default
 run: $(BIN) Makefile
 #	@$^
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
-	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) 
+	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) -b
 
 gdb: $(BIN)
 	gdb $(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) 
