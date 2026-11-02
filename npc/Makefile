@@ -54,8 +54,8 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 CXXFLAGS += -O0 -g
 CXXFLAGS += -DCONFIG_ITRACE
-#CXXFLAGS += -DCONFIG_MTRACE
-CXXFLAGS += -DCONFIG_FTRACE
+CXXFLAGS += -DCONFIG_MTRACE
+#CXXFLAGS += -DCONFIG_FTRACE
 CXXFLAGS += -DCONFIG_DIFFTEST
 #CXXFLAGS += -DCONFIG_MEMDIFFTEST
 CXXFLAGS += -DCONFIG_WAVE
@@ -80,7 +80,7 @@ ELF ?= $(NPC_HOME)/csrc/dummy.elf
 all: default
 #	@echo "Write this Makefile by your self."
 
-run: $(BIN) 
+run: $(BIN) Makefile
 #	@$^
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	$(BIN) -f $(IMG) $(NPCFLAGS) -e $(ELF) 
