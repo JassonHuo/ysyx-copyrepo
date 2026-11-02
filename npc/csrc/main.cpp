@@ -333,6 +333,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 #endif
 	if(waddr == 0x10000048) {to_device = true; skip_pc = c_get_Pc(); return;}
 	else if(waddr == 0x1000004c) {to_device = true; skip_pc = c_get_Pc(); return;}
+	else if(waddr >= 0x30000000 && waddr <= 0x3fffffff) {printf("You cannot change the flash!\n"); assert(1);}
 	else if(waddr == 0x10000000)
 	{
 	  to_device = true;

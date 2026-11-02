@@ -131,7 +131,6 @@ void difftest_step()
 {
   if(to_device)
   {
-	printf("to device\n");
 	if(c_get_Pc() == skip_pc)
 	{
 	  difftest_skip();
