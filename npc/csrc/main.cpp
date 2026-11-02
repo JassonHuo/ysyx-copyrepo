@@ -601,11 +601,13 @@ int main(int argc, char** argv) {
   sa.sa_flags = 0;
   sigaction(SIGINT, &sa, NULL);
 //  for(uint32_t i = 0; i < sizeof(char_test) / sizeof(char_test[0]) / 4; i ++)
+  /*
   for(int i = 0; i < sizeof(char_test) / sizeof(char_test[0]); i ++)
   {
 	static uint32_t* p = (uint32_t*)flash;
 	*(p++) = char_test[i];
   }
+  */
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);
