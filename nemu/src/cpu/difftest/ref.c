@@ -37,7 +37,7 @@ __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction)
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
-  printf("test\n");
+//  printf("test\n");
   char *p = (char*)&cpu;
   if(direction == DIFFTEST_TO_DUT)
   {
