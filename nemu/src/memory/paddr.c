@@ -99,13 +99,13 @@ static word_t pmem_read(paddr_t addr, int len) {
 	switch(len)
 	{
 	  case 1:
-		ret = *(uint8_t*)(flash + addr - 0x20000000);
+		ret = *(uint8_t*)(flash + addr - 0x30000000);
 		break;
 	  case 2:
-		ret = *(uint16_t*)(flash + addr - 0x20000000);
+		ret = *(uint16_t*)(flash + addr - 0x30000000);
 		break;
 	  case 4:
-		ret = *(uint32_t*)(flash + addr - 0x20000000);
+		ret = *(uint32_t*)(flash + addr - 0x30000000);
 		break;
 	}
   }
@@ -142,6 +142,21 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 		break;
 	  case 4:
 		*(uint32_t*)(mrom + addr - 0x20000000) = (uint32_t)data;
+		break;
+	}
+  }
+  else if(addr >= 0x30000000 && addr <= 0x3fffffff)
+  {
+	switch(len)
+	{
+	  case 1:
+		*(uint8_t*)(flash + addr - 0x30000000) = (uint8_t)data;
+		break;
+	  case 2:
+		*(uint16_t*)(flash + addr - 0x30000000) = (uint16_t)data;
+		break;
+	  case 4:
+		*(uint32_t*)(flash + addr - 0x30000000) = (uint32_t)data;
 		break;
 	}
   }
