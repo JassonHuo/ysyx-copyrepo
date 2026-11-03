@@ -67,8 +67,8 @@ void _trm_init() {
 
   uint32_t ysyx_ascii = 0;
   uint32_t ysyx_idcode = 0;
-  asm volatile ("csrrs %0, 11, x0": "=r"(ysyx_ascii));
-  asm volatile ("csrrs %0, 12, x0": "=r"(ysyx_idcode));
+  asm volatile ("csrrs %0, 0xf11, x0": "=r"(ysyx_ascii));
+  asm volatile ("csrrs %0, 0xf12, x0": "=r"(ysyx_idcode));
   printf("YSYX ASCII : %d\n", ysyx_ascii);
   printf("YSYX IDCODE: %d\n", ysyx_idcode);
 
