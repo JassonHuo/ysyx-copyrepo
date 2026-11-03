@@ -83,7 +83,7 @@ module ysyx_26060166_ifu(
 	if(rValid & rReady)
 	  inst <= rdata;
   end
-  assign inst_out = rst ? NOP: inst;
+  assign inst_out = inst;
 
   ysyx_26060166_pc pc0(
 	.pc_en(done & pc_en),
