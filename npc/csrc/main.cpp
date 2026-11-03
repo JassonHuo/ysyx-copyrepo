@@ -303,6 +303,7 @@ extern "C" int pmem_read(int addr)
   else if(addr == 0x10000048) {to_device = true;skip_pc = c_get_Pc(); return (uint32_t)get_time();}
   else if(addr == 0x1000004c){to_device = true;  skip_pc = c_get_Pc(); return get_time() >> 32;}
   else if(addr >= 0x80000000 && addr <= 0x87ffffff) return mem[((uint32_t)addr - 0x80000000) >> 2];
+  else if(addr >= 0x30000000 && addr <= 0x3fffffff) return flash[((uint32_t)addr - 0x30000000) >> 2];
   else 
   {
 #ifdef CONFIG_MTRACE
@@ -332,6 +333,7 @@ extern "C" void pmem_write(int waddr, int wdata, char wmask)
 #endif
 	if(waddr == 0x10000048) {to_device = true; skip_pc = c_get_Pc(); return;}
 	else if(waddr == 0x1000004c) {to_device = true; skip_pc = c_get_Pc(); return;}
+	else if(waddr >= 0x30000000 && waddr <= 0x3fffffff) {printf("You cannot change the flash!\n"); assert(1);}
 	else if(waddr == 0x10000000)
 	{
 	  to_device = true;
@@ -599,11 +601,13 @@ int main(int argc, char** argv) {
   sa.sa_flags = 0;
   sigaction(SIGINT, &sa, NULL);
 //  for(uint32_t i = 0; i < sizeof(char_test) / sizeof(char_test[0]) / 4; i ++)
+  /*
   for(int i = 0; i < sizeof(char_test) / sizeof(char_test[0]); i ++)
   {
 	static uint32_t* p = (uint32_t*)flash;
 	*(p++) = char_test[i];
   }
+  */
   Verilated::commandArgs(argc, argv);
 #ifdef CONFIG_WAVE
   Verilated::traceEverOn(true);

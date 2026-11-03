@@ -21,6 +21,7 @@ uint32_t c_get_Csr(int idx);
 uint32_t c_get_next_Pc();
 const char *get_reg_name(int i);
 extern uint32_t mem[];
+extern uint8_t flash[];
 extern int NPC_state;
 extern bool to_device;
 extern uint32_t skip_pc;
@@ -114,6 +115,7 @@ void init_difftest()
 
 //  difftest_memcpy(0x80000000, (void*)mem, 0x7ffffff, DIFFTEST_TO_REF);
   difftest_memcpy(0x20000000, (void*)mem, 0x1000, DIFFTEST_TO_REF);
+  difftest_memcpy(0x30000000, (void*)flash, 0x10000000, DIFFTEST_TO_REF);
   get_all_Regs();
   difftest_regcpy((void*)npc_reg, DIFFTEST_TO_REF);
 #endif
