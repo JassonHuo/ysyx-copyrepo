@@ -55,13 +55,6 @@ void halt(int code) {
 }
 
 void _trm_init() {
-  uint32_t ysyx_ascii = 0;
-  uint32_t ysyx_idcode = 0;
-  asm volatile ("csrrs %0, 11, x0": "=r"(ysyx_ascii));
-  asm volatile ("csrrs %0, 12, x0": "=r"(ysyx_idcode));
-  printf("YSYX ASCII : %d\n", ysyx_ascii);
-  printf("YSYX IDCODE: %d\n", ysyx_idcode);
-
   data_copy();
   clear_bss();
   uint8_t LCR = 0;
@@ -71,6 +64,14 @@ void _trm_init() {
   base[0] = 1;
   base[1] = 0;
   base[3] = LCR;
+
+  uint32_t ysyx_ascii = 0;
+  uint32_t ysyx_idcode = 0;
+  asm volatile ("csrrs %0, 11, x0": "=r"(ysyx_ascii));
+  asm volatile ("csrrs %0, 12, x0": "=r"(ysyx_idcode));
+  printf("YSYX ASCII : %d\n", ysyx_ascii);
+  printf("YSYX IDCODE: %d\n", ysyx_idcode);
+
   int ret = main(mainargs);
   halt(ret);
 }
