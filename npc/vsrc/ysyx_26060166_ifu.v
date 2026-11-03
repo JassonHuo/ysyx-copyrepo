@@ -30,6 +30,8 @@ module ysyx_26060166_ifu(
   input [3:0] rid//
 );
 
+  parameter NOP = 32'h00000013;
+
   assign arlen = 8'b0;
   assign arsize = `SIZE4;
   assign arburst = `BURST_FIXED;
@@ -81,7 +83,7 @@ module ysyx_26060166_ifu(
 	if(rValid & rReady)
 	  inst <= rdata;
   end
-  assign inst_out = inst;
+  assign inst_out = rst ? NOP: inst;
 
   ysyx_26060166_pc pc0(
 	.pc_en(done & pc_en),
